@@ -241,17 +241,17 @@ const SearchMask: React.FC<SearchMaskProps> = ({ initialLocation = "" }) => {
                         {/* STEP 2: WANN */}
                         {currentStep === 2 && (
                             <div className="w-full max-w-5xl px-4 text-center animate-in slide-in-from-right-8 duration-500">
-                                <h2 className="text-6xl font-black text-slate-900 mb-4 tracking-tighter">Wann möchtest du reisen?</h2>
-                                <p className="text-slate-500 text-lg mb-12">Wähle einen Zeitraum oder spezifische Daten.</p>
+                                <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-4 tracking-tighter">Wann möchtest du reisen?</h2>
+                                <p className="text-slate-500 text-lg md:text-xl mb-12 font-medium">Wähle einen Zeitraum oder spezifische Daten.</p>
 
-                                <div className="flex flex-col lg:flex-row gap-12 items-start justify-center">
+                                <div className="flex flex-col-reverse lg:flex-row gap-8 lg:gap-12 items-start justify-center">
                                     {/* Shortcuts */}
-                                    <div className="space-y-6 w-full lg:w-96">
+                                    <div className="flex flex-col gap-4 lg:gap-6 w-full lg:w-96">
                                         <button
                                             onClick={() => setCurrentStep(3)}
-                                            className="w-full p-8 bg-white border border-slate-100 rounded-[2.5rem] flex items-center gap-6 hover:border-[#FF385C] transition-all group text-left shadow-sm"
+                                            className="w-full p-6 lg:p-8 bg-white border border-slate-100 rounded-[2rem] lg:rounded-[2.5rem] flex items-center gap-6 hover:border-[#FF385C] transition-all group text-left shadow-sm order-2 lg:order-1"
                                         >
-                                            <div className="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-colors">
+                                            <div className="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-colors shrink-0">
                                                 <i className="fa-solid fa-bolt"></i>
                                             </div>
                                             <div>
@@ -262,9 +262,9 @@ const SearchMask: React.FC<SearchMaskProps> = ({ initialLocation = "" }) => {
 
                                         <button
                                             onClick={() => setCurrentStep(3)}
-                                            className="w-full p-8 bg-white border border-slate-100 rounded-[2.5rem] flex items-center gap-6 hover:border-blue-500 transition-all group text-left shadow-sm"
+                                            className="w-full p-6 lg:p-8 bg-white border border-slate-100 rounded-[2.5rem] flex items-center gap-6 hover:border-blue-500 transition-all group text-left shadow-sm hidden lg:flex order-3 lg:order-2"
                                         >
-                                            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                                            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors shrink-0">
                                                 <i className="fa-regular fa-calendar-check"></i>
                                             </div>
                                             <div>
@@ -273,7 +273,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ initialLocation = "" }) => {
                                             </div>
                                         </button>
 
-                                        <div className="bg-[#1a1a1a] p-8 rounded-[2.5rem] text-white text-center">
+                                        <div className="bg-[#1a1a1a] p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] text-white text-center order-1 lg:order-3">
                                             <p className="text-[10px] font-bold uppercase tracking-widest text-[#ffffff60] mb-2">Gewählter Zeitraum</p>
                                             <div className="flex items-center justify-center gap-4 text-xl font-black">
                                                 <span>{checkIn ? checkIn.toLocaleDateString('de-DE') : 'Anreise'}</span>
@@ -284,7 +284,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ initialLocation = "" }) => {
                                     </div>
 
                                     {/* Calendar */}
-                                    <div className="flex-1">
+                                    <div className="flex-1 w-full">
                                         {renderCalendar()}
                                     </div>
                                 </div>
