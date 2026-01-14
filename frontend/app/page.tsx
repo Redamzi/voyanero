@@ -13,7 +13,7 @@ export default function Home() {
     // Check backend health on load
     api.get("/health")
       .then((res) => setBackendStatus(`Online ✅ (${res.data.status})`))
-      .catch((err) => setBackendStatus("Offline ❌ (Connection failed)"));
+      .catch(() => setBackendStatus("Offline ❌ (Connection failed)"));
   }, []);
 
   return (
