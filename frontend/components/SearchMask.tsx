@@ -21,8 +21,8 @@ const SearchMask: React.FC<SearchMaskProps> = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
     const [location, setLocation] = useState("");
-    const [checkIn, setCheckIn] = useState("");
-    const [checkOut, setCheckOut] = useState("");
+    const [checkIn] = useState("");
+    const [checkOut] = useState("");
     const [guests, setGuests] = useState(1);
     const [isLocating, setIsLocating] = useState(false);
 
@@ -211,7 +211,10 @@ const SearchMask: React.FC<SearchMaskProps> = () => {
                     <footer className="px-10 py-10 border-t border-slate-100 bg-white shrink-0 flex items-center justify-center">
                         <div className="w-full max-w-4xl flex items-center justify-between">
                             <button
-                                onClick={() => setCurrentStep(Math.max(1, currentStep - 1) as any)}
+                                onClick={() => {
+                                    const prev = Math.max(1, currentStep - 1);
+                                    if (prev === 1 || prev === 2 || prev === 3) setCurrentStep(prev);
+                                }}
                                 className={`flex items-center gap-4 text-sm font-black text-slate-400 uppercase tracking-widest hover:text-slate-900 transition-colors ${currentStep === 1 ? 'opacity-0 pointer-events-none' : ''}`}
                             >
                                 <i className="fa-solid fa-arrow-left"></i>
@@ -221,7 +224,10 @@ const SearchMask: React.FC<SearchMaskProps> = () => {
                             <div className="flex items-center gap-4">
                                 {currentStep < 3 ? (
                                     <button
-                                        onClick={() => setCurrentStep((currentStep + 1) as any)}
+                                        onClick={() => {
+                                            const next = currentStep + 1;
+                                            if (next === 2 || next === 3) setCurrentStep(next);
+                                        }}
                                         className="bg-slate-900 text-white px-16 py-6 rounded-[2rem] font-black text-sm uppercase tracking-widest hover:bg-black transition-all shadow-xl flex items-center gap-4"
                                     >
                                         Weiter
