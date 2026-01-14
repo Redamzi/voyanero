@@ -300,31 +300,106 @@ const SearchMask: React.FC<SearchMaskProps> = ({ initialLocation = "" }) => {
                         )}
 
                         {/* STEP 3: WER */}
+                        {/* STEP 3: WER */}
                         {currentStep === 3 && (
-                            <div className="w-full max-w-4xl px-4 text-center animate-in slide-in-from-right-8 duration-500">
-                                <h2 className="text-6xl font-black text-slate-900 mb-4 tracking-tighter">Wer reist mit?</h2>
-                                <p className="text-slate-500 text-lg mb-12">Anzahl der Gäste für passende Angebote.</p>
+                            <div className="w-full max-w-lg mx-auto px-4 text-center animate-in slide-in-from-right-8 duration-500">
+                                <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-8 tracking-tighter">Wer reist mit?</h2>
 
-                                <div className="max-w-xl mx-auto bg-white border border-slate-100 p-12 rounded-[3.5rem] shadow-xl flex items-center justify-between">
-                                    <div className="text-left">
-                                        <h3 className="text-3xl font-black text-slate-900 mb-1">Gäste</h3>
-                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Erwachsene & Kinder</p>
+                                <div className="bg-white border border-slate-100 p-8 rounded-[2.5rem] shadow-xl text-left space-y-8">
+                                    {/* Erwachsene */}
+                                    <div className="flex items-center justify-between pb-8 border-b border-slate-50">
+                                        <div>
+                                            <p className="font-black text-lg text-slate-900">Erwachsene</p>
+                                            <p className="text-slate-400 text-sm font-medium">Ab 13 Jahren</p>
+                                        </div>
+                                        <div className="flex items-center gap-6">
+                                            <button
+                                                onClick={() => setAdults(Math.max(1, adults - 1))}
+                                                className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${adults > 1 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
+                                                disabled={adults <= 1}
+                                            >
+                                                <i className="fa-solid fa-minus text-sm"></i>
+                                            </button>
+                                            <span className="text-xl font-black text-slate-900 w-6 text-center">{adults}</span>
+                                            <button
+                                                onClick={() => setAdults(adults + 1)}
+                                                className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
+                                            >
+                                                <i className="fa-solid fa-plus text-sm"></i>
+                                            </button>
+                                        </div>
                                     </div>
 
-                                    <div className="flex items-center gap-8">
-                                        <button
-                                            onClick={() => setGuests(Math.max(1, guests - 1))}
-                                            className="w-16 h-16 rounded-full border-2 border-slate-100 flex items-center justify-center hover:border-slate-900 transition-all"
-                                        >
-                                            <i className="fa-solid fa-minus text-slate-400"></i>
-                                        </button>
-                                        <span className="text-4xl font-black text-slate-900 w-8 text-center">{guests}</span>
-                                        <button
-                                            onClick={() => setGuests(guests + 1)}
-                                            className="w-16 h-16 rounded-full border-2 border-slate-100 flex items-center justify-center hover:border-slate-900 transition-all"
-                                        >
-                                            <i className="fa-solid fa-plus text-slate-400"></i>
-                                        </button>
+                                    {/* Kinder */}
+                                    <div className="flex items-center justify-between pb-8 border-b border-slate-50">
+                                        <div>
+                                            <p className="font-black text-lg text-slate-900">Kinder</p>
+                                            <p className="text-slate-400 text-sm font-medium">2–12 Jahre alt</p>
+                                        </div>
+                                        <div className="flex items-center gap-6">
+                                            <button
+                                                onClick={() => setChildren(Math.max(0, children - 1))}
+                                                className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${children > 0 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
+                                                disabled={children <= 0}
+                                            >
+                                                <i className="fa-solid fa-minus text-sm"></i>
+                                            </button>
+                                            <span className="text-xl font-black text-slate-900 w-6 text-center">{children}</span>
+                                            <button
+                                                onClick={() => setChildren(children + 1)}
+                                                className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
+                                            >
+                                                <i className="fa-solid fa-plus text-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Kleinkinder */}
+                                    <div className="flex items-center justify-between pb-8 border-b border-slate-50">
+                                        <div>
+                                            <p className="font-black text-lg text-slate-900">Kleinkinder</p>
+                                            <p className="text-slate-400 text-sm font-medium">Unter 2 Jahren</p>
+                                        </div>
+                                        <div className="flex items-center gap-6">
+                                            <button
+                                                onClick={() => setInfants(Math.max(0, infants - 1))}
+                                                className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${infants > 0 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
+                                                disabled={infants <= 0}
+                                            >
+                                                <i className="fa-solid fa-minus text-sm"></i>
+                                            </button>
+                                            <span className="text-xl font-black text-slate-900 w-6 text-center">{infants}</span>
+                                            <button
+                                                onClick={() => setInfants(infants + 1)}
+                                                className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
+                                            >
+                                                <i className="fa-solid fa-plus text-sm"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Haustiere */}
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="font-black text-lg text-slate-900">Haustiere</p>
+                                            <a href="#" className="text-slate-400 text-sm font-medium underline underline-offset-4 hover:text-slate-800 transition-colors">Hast du ein Assistenztier dabei?</a>
+                                        </div>
+                                        <div className="flex items-center gap-6">
+                                            <button
+                                                onClick={() => setPets(Math.max(0, pets - 1))}
+                                                className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${pets > 0 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
+                                                disabled={pets <= 0}
+                                            >
+                                                <i className="fa-solid fa-minus text-sm"></i>
+                                            </button>
+                                            <span className="text-xl font-black text-slate-900 w-6 text-center">{pets}</span>
+                                            <button
+                                                onClick={() => setPets(pets + 1)}
+                                                className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
+                                            >
+                                                <i className="fa-solid fa-plus text-sm"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
