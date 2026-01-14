@@ -70,14 +70,20 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <h2 className="text-2xl font-bold mb-6">Explore the world</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-gray-100 h-64 rounded-xl flex items-center justify-center overflow-hidden group cursor-pointer relative">
+            {[
+              { id: 1, img: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80", title: "Nature & Mountains" },
+              { id: 2, img: "https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=800&q=80", title: "City Trips" },
+              { id: 3, img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80", title: "Beach Vacations" }
+            ].map((item) => (
+              <div key={item.id} className="bg-gray-100 h-64 rounded-xl flex items-center justify-center overflow-hidden group cursor-pointer relative">
                 <img
-                  src={`https://source.unsplash.com/random/800x600?travel&sig=${i}`}
-                  alt="Travel"
+                  src={item.img}
+                  alt={item.title}
                   className="w-full h-full object-cover transition duration-300 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition"></div>
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition flex items-end p-6">
+                  <h3 className="text-white text-xl font-bold">{item.title}</h3>
+                </div>
               </div>
             ))}
           </div>
