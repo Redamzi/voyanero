@@ -10,7 +10,8 @@ interface FlightSearchParams {
     trip_class?: string; // Y or C
 }
 
-const API_BASE_URL = 'http://localhost:8000/api/flights';
+// Use environment variable for API URL, fallback to localhost for local dev
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000') + '/api/flights';
 
 export const FlightService = {
     searchFlights: async (params: FlightSearchParams) => {
