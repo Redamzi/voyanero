@@ -10,7 +10,7 @@ interface FlightSearchParams {
     trip_class?: string; // Y or C
 }
 
-const API_BASE_URL = 'http://localhost:4000/api/flights';
+const API_BASE_URL = 'http://localhost:8000/api/flights';
 
 export const FlightService = {
     searchFlights: async (params: FlightSearchParams) => {
