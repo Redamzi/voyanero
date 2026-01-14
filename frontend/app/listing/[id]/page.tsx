@@ -98,7 +98,7 @@ export default function ListingDetailPage() {
             <div className="min-h-screen bg-white flex items-center justify-center">
                 <div className="text-center">
                     <h1 className="text-2xl font-black text-slate-900 mb-2">Listing not found</h1>
-                    <p className="text-slate-500">This listing doesn't exist.</p>
+                    <p className="text-slate-500">This listing doesn&apos;t exist.</p>
                 </div>
             </div>
         );

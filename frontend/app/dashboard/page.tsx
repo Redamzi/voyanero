@@ -56,7 +56,7 @@ export default function Dashboard() {
                     <div className="space-y-8">
                         <div className="bg-gradient-to-br from-indigo-600 to-violet-700 p-8 rounded-3xl text-white shadow-xl shadow-indigo-200">
                             <h3 className="text-xl font-bold mb-2">Voyanero Rewards</h3>
-                            <p className="text-indigo-100 text-sm mb-6">You're 2 trips away from unlocking Platinum status.</p>
+                            <p className="text-indigo-100 text-sm mb-6">You&apos;re 2 trips away from unlocking Platinum status.</p>
                             <div className="w-full bg-white/20 h-2 rounded-full mb-2 overflow-hidden">
                                 <div className="w-[60%] bg-white h-full"></div>
                             </div>
