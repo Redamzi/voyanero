@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -16,5 +19,5 @@ app.get("/health", (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(\`API running on http://localhost:\${PORT}\`);
+    console.log(`Backend running on http://localhost:${PORT}`);
 });
