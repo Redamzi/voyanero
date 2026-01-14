@@ -5,33 +5,37 @@ import { useRouter } from 'next/navigation';
 
 interface SearchMaskProps {
     variant?: 'hero' | 'compact';
+    initialLocation?: string;
 }
 
 const DESTINATIONS = [
-    { name: "Bali, Indonesia", icon: "fa-umbrella-beach" },
-    { name: "Berlin, Germany", icon: "fa-city" },
-    { name: "Rome, Italy", icon: "fa-monument" },
-    { name: "New York, USA", icon: "fa-building" },
-    { name: "Tokyo, Japan", icon: "fa-torii-gate" }
+    { name: "Bali, Indonesia", icon: "fa-umbrella-beach", label: "Bali" },
+    { name: "Berlin, Germany", icon: "fa-city", label: "Berlin" },
+    { name: "Rome, Italy", icon: "fa-monument", label: "Rome" },
+    { name: "Paris, France", icon: "fa-archway", label: "Paris" },
+    { name: "Tokyo, Japan", icon: "fa-torii-gate", label: "Tokyo" }
 ];
 
-const SearchMask: React.FC<SearchMaskProps> = () => {
+const SearchMask: React.FC<SearchMaskProps> = ({ initialLocation = "" }) => {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState<'stays' | 'concierge'>('stays');
     const [isOpen, setIsOpen] = useState(false);
     const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
-    const [location, setLocation] = useState("");
-    const [checkIn] = useState("");
-    const [checkOut] = useState("");
-    const [guests, setGuests] = useState(1);
+
+    const [location, setLocation] = useState(initialLocation);
+    const [checkIn, setCheckIn] = useState<Date | null>(null);
+    const [checkOut, setCheckOut] = useState<Date | null>(null);
+    const [guests, setGuests] = useState(3);
     const [isLocating, setIsLocating] = useState(false);
+
+    // Filter "bestätigen" visibility
+    const showConfirm = location.length > 0;
 
     const handleSearch = () => {
         setIsOpen(false);
         const params = new URLSearchParams({
             location,
-            checkIn,
-            checkOut,
+            checkIn: checkIn ? checkIn.toISOString() : "",
+            checkOut: checkOut ? checkOut.toISOString() : "",
             guests: guests.toString()
         });
         router.push(`/search?${params.toString()}`);
@@ -40,10 +44,73 @@ const SearchMask: React.FC<SearchMaskProps> = () => {
     const handleLocateMe = () => {
         setIsLocating(true);
         setTimeout(() => {
-            setLocation("In meiner Nähe");
+            setLocation("Mein Standort");
             setIsLocating(false);
-            setCurrentStep(2);
-        }, 1500);
+        }, 1000);
+    };
+
+    // Calendar Logic
+    const [currentMonth, setCurrentMonth] = useState(new Date(2026, 0, 1)); // Jan 2026 as in screenshot
+    const renderCalendar = () => {
+        const year = currentMonth.getFullYear();
+        const month = currentMonth.getMonth();
+        const firstDay = new Date(year, month, 1).getDay(); // Sunday is 0
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const days = [];
+
+        // Adjust for Monday start if needed, but JS getDay() is Sun=0. Screenshot looks like Sun header maybe?
+        // Let's assume standard grid.
+        for (let i = 0; i < firstDay; i++) days.push(<div key={`empty-${i}`} />);
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const date = new Date(year, month, d);
+            const isSelected = (checkIn && date.toDateString() === checkIn.toDateString()) ||
+                (checkOut && date.toDateString() === checkOut.toDateString());
+            const isInRange = checkIn && checkOut && date > checkIn && date < checkOut;
+
+            days.push(
+                <button
+                    key={d}
+                    onClick={() => {
+                        if (!checkIn || (checkIn && checkOut)) {
+                            setCheckIn(date);
+                            setCheckOut(null);
+                        } else if (date > checkIn) {
+                            setCheckOut(date);
+                        }
+                    }}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all
+                        ${isSelected ? 'bg-black text-white' : ''}
+                        ${isInRange ? 'bg-slate-100' : ''}
+                        ${!isSelected && !isInRange ? 'hover:bg-slate-100 text-slate-700' : ''}
+                    `}
+                >
+                    {d}
+                </button>
+            );
+        }
+
+        return (
+            <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 max-w-sm mx-auto">
+                <div className="flex items-center justify-between mb-6">
+                    <button onClick={() => setCurrentMonth(new Date(year, month - 1))} className="w-8 h-8 flex items-center justify-center hover:bg-slate-50 rounded-full">
+                        <i className="fa-solid fa-chevron-left text-slate-400 text-xs"></i>
+                    </button>
+                    <span className="font-black text-slate-900 uppercase tracking-widest text-xs">
+                        {currentMonth.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' })}
+                    </span>
+                    <button onClick={() => setCurrentMonth(new Date(year, month + 1))} className="w-8 h-8 flex items-center justify-center hover:bg-slate-50 rounded-full">
+                        <i className="fa-solid fa-chevron-right text-slate-400 text-xs"></i>
+                    </button>
+                </div>
+                <div className="grid grid-cols-7 gap-y-4 gap-x-2 text-center mb-2">
+                    {['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'].map((d, i) => (
+                        <div key={i} className="text-[9px] font-black text-slate-300 uppercase tracking-widest">{d}</div>
+                    ))}
+                    {days}
+                </div>
+            </div>
+        );
     };
 
     return (
@@ -59,11 +126,13 @@ const SearchMask: React.FC<SearchMaskProps> = () => {
                 </div>
                 <div className="flex flex-col text-left px-8 border-r border-slate-100 hidden md:flex">
                     <span className="text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-rose-500 transition-colors">Wann?</span>
-                    <span className="text-slate-400 font-medium">Beliebige Woche</span>
+                    <span className="text-slate-400 font-medium">
+                        {checkIn ? checkIn.toLocaleDateString('de-DE') : "Beliebige Woche"}
+                    </span>
                 </div>
                 <div className="flex flex-col text-left px-8 hidden md:flex">
                     <span className="text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-rose-500 transition-colors">Wer?</span>
-                    <span className="text-slate-400 font-medium">Gäste hinzufügen</span>
+                    <span className="text-slate-400 font-medium">{guests} Gäste</span>
                 </div>
                 <div className="w-12 h-12 bg-[#FF385C] rounded-full flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
                     <i className="fa-solid fa-magnifying-glass text-lg"></i>
@@ -72,179 +141,201 @@ const SearchMask: React.FC<SearchMaskProps> = () => {
 
             {/* --- OPEN STATE (Overlay Wizard) --- */}
             {isOpen && (
-                <div className="fixed inset-0 z-50 bg-white/50 backdrop-blur-xl flex flex-col animate-in fade-in duration-300">
-                    {/* Wizard Header */}
-                    <div className="flex justify-between items-center px-8 py-6 max-w-7xl mx-auto w-full">
+                <div className="fixed inset-0 z-50 bg-white flex flex-col animate-in fade-in duration-300">
+                    {/* Header */}
+                    <div className="px-8 py-6 flex items-center justify-between">
+                        {/* Logo */}
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-rose-500 rounded-lg flex items-center justify-center text-white">
-                                <i className="fa-solid fa-paper-plane"></i>
+                            <div className="w-8 h-8 bg-[#FF385C] rounded-lg flex items-center justify-center text-white">
+                                <i className="fa-solid fa-paper-plane text-xs"></i>
                             </div>
-                            <span className="text-xl font-bold tracking-tight text-slate-900">VOYANERO</span>
+                            <span className="text-lg font-black tracking-tighter text-slate-900">VOYANERO</span>
                         </div>
 
-                        {/* Tabs */}
-                        <div className="flex bg-slate-100 p-1 rounded-full">
-                            <button
-                                onClick={() => setActiveTab('stays')}
-                                className={`px-6 py-2 rounded-full text-sm font-bold transition-all ${activeTab === 'stays' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
-                            >
-                                Unterkünfte
+                        {/* Step Indicators */}
+                        <div className="flex items-center gap-12">
+                            <button onClick={() => setCurrentStep(1)} className={`flex items-center gap-3 transition-colors ${currentStep === 1 ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 1 ? 'bg-[#FF385C] text-white' : 'bg-slate-100 text-slate-500'}`}>1</div>
+                                <span className="text-xs font-black uppercase tracking-widest text-slate-900">Wohin</span>
                             </button>
-                            <button
-                                onClick={() => setActiveTab('concierge')}
-                                className={`px-6 py-2 rounded-full text-sm font-bold transition-all flex items-center gap-2 ${activeTab === 'concierge' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
-                            >
-                                AI Concierge
-                                <span className="bg-indigo-100 text-indigo-600 text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider">Neu</span>
+                            <div className="w-8 h-px bg-slate-200"></div>
+                            <button onClick={() => setCurrentStep(2)} className={`flex items-center gap-3 transition-colors ${currentStep === 2 ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 2 ? 'bg-[#FF385C] text-white' : 'bg-slate-100 text-slate-500'}`}>2</div>
+                                <span className="text-xs font-black uppercase tracking-widest text-slate-900">Wann</span>
+                            </button>
+                            <div className="w-8 h-px bg-slate-200"></div>
+                            <button onClick={() => setCurrentStep(3)} className={`flex items-center gap-3 transition-colors ${currentStep === 3 ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 3 ? 'bg-[#FF385C] text-white' : 'bg-slate-100 text-slate-500'}`}>3</div>
+                                <span className="text-xs font-black uppercase tracking-widest text-slate-900">Wer</span>
                             </button>
                         </div>
 
+                        {/* Close */}
                         <button
                             onClick={() => setIsOpen(false)}
-                            className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors"
+                            className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-500 transition-colors"
                         >
                             <i className="fa-solid fa-xmark text-lg"></i>
                         </button>
                     </div>
 
-                    {/* Wizard Content */}
-                    <main className="flex-1 flex flex-col items-center justify-center relative overflow-y-auto w-full">
-                        <div className="w-full max-w-5xl px-6 my-auto">
+                    {/* Content */}
+                    <main className="flex-1 flex flex-col items-center pt-24 pb-10 overflow-y-auto">
 
-                            {/* STEP 1: WHERE */}
-                            {currentStep === 1 && (
-                                <div className="animate-in slide-in-from-bottom-8 duration-500 text-center">
-                                    <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter mb-4 leading-tight">Wohin soll die Reise gehen?</h2>
-                                    <p className="text-slate-500 text-lg md:text-xl mb-12 font-medium">Wähle eine Region oder nimm den AI Concierge mit.</p>
+                        {/* STEP 1: WOHIN */}
+                        {currentStep === 1 && (
+                            <div className="w-full max-w-4xl px-4 text-center animate-in slide-in-from-bottom-8 duration-500">
+                                <h2 className="text-6xl font-black text-slate-900 mb-4 tracking-tighter">Wohin soll es gehen?</h2>
+                                <p className="text-slate-500 text-lg mb-12">Entdecke exklusive Ziele weltweit.</p>
 
-                                    <div className="flex flex-wrap justify-center gap-6 md:gap-8">
-                                        <button
-                                            onClick={handleLocateMe}
-                                            className={`group flex flex-col items-center gap-5 p-6 rounded-[2rem] border bg-white transition-all hover:shadow-xl hover:scale-[1.05] ${location === "In meiner Nähe" ? 'border-indigo-500 ring-2 ring-indigo-500/5' : 'border-slate-100'}`}
-                                        >
-                                            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl transition-all ${location === "In meiner Nähe" ? 'bg-indigo-500 text-white shadow-lg' : 'bg-slate-50 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-500'}`}>
-                                                {isLocating ? (
-                                                    <i className="fa-solid fa-circle-notch animate-spin"></i>
-                                                ) : (
-                                                    <i className="fa-solid fa-location-crosshairs"></i>
-                                                )}
-                                            </div>
-                                            <span className="font-black text-slate-900 text-sm whitespace-nowrap">Mein Standort</span>
-                                        </button>
-
-                                        {DESTINATIONS.map(dest => (
-                                            <button
-                                                key={dest.name}
-                                                onClick={() => { setLocation(dest.name); setCurrentStep(2); }}
-                                                className={`group flex flex-col items-center gap-5 p-6 rounded-[2rem] border bg-white transition-all hover:shadow-xl hover:scale-[1.05] ${location === dest.name ? 'border-[#FF385C] ring-2 ring-rose-500/5' : 'border-slate-100'}`}
-                                            >
-                                                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl transition-all ${location === dest.name ? 'bg-rose-500 text-white shadow-lg' : 'bg-slate-50 text-slate-400 group-hover:bg-rose-50 group-hover:text-rose-500'}`}>
-                                                    <i className={`fa-solid ${dest.icon}`}></i>
-                                                </div>
-                                                <span className="font-black text-slate-900 text-sm whitespace-nowrap">{dest.name.split(',')[0]}</span>
-                                            </button>
-                                        ))}
+                                <div className="relative max-w-2xl mx-auto mb-16 group">
+                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400">
+                                        <i className="fa-solid fa-magnifying-glass text-xl"></i>
                                     </div>
+                                    <input
+                                        type="text"
+                                        placeholder="Ort, Region oder Unterkunft suchen..."
+                                        className="w-full h-20 pl-16 pr-6 rounded-full border-2 border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-lg font-bold text-slate-900 focus:outline-none focus:border-slate-900 placeholder:text-slate-300 transition-all font-jakarta"
+                                        value={location}
+                                        onChange={(e) => setLocation(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && setCurrentStep(2)}
+                                        autoFocus
+                                    />
+                                    {showConfirm && (
+                                        <button
+                                            onClick={() => setCurrentStep(2)}
+                                            className="absolute right-3 top-3 h-14 px-8 bg-slate-900 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-black transition-all animate-in fade-in zoom-in"
+                                        >
+                                            Bestätigen
+                                        </button>
+                                    )}
                                 </div>
-                            )}
 
-                            {/* STEP 2: WHEN */}
-                            {currentStep === 2 && (
-                                <div className="animate-in slide-in-from-right-8 duration-500 text-center">
-                                    <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter mb-4 leading-tight">Wann möchtest du reisen?</h2>
-                                    <p className="text-slate-500 text-lg md:text-xl mb-12 font-medium">Wähle einen Zeitraum für deine Auszeit.</p>
+                                <div className="flex flex-wrap justify-center gap-6">
+                                    <button
+                                        onClick={handleLocateMe}
+                                        className="w-40 h-40 bg-white border border-slate-100 rounded-[2rem] flex flex-col items-center justify-center gap-4 hover:border-slate-900 hover:scale-105 transition-all group"
+                                    >
+                                        <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-colors">
+                                            {isLocating ? <i className="fa-solid fa-circle-notch animate-spin"></i> : <i className="fa-solid fa-location-crosshairs"></i>}
+                                        </div>
+                                        <span className="text-xs font-black text-slate-900">Mein Standort</span>
+                                    </button>
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-3xl mx-auto">
-                                        <button onClick={() => setCurrentStep(3)} className="p-12 border border-slate-100 bg-white rounded-[3.5rem] hover:border-[#FF385C] hover:bg-rose-50/10 transition-all group shadow-sm hover:shadow-xl text-left">
-                                            <div className="w-16 h-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:bg-rose-500 group-hover:text-white transition-all">
+                                    {DESTINATIONS.map(dest => (
+                                        <button
+                                            key={dest.name}
+                                            onClick={() => { setLocation(dest.label); setCurrentStep(2); }}
+                                            className="w-40 h-40 bg-white border border-slate-100 rounded-[2rem] flex flex-col items-center justify-center gap-4 hover:border-slate-900 hover:scale-105 transition-all group"
+                                        >
+                                            <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-colors">
+                                                <i className={`fa-solid ${dest.icon}`}></i>
+                                            </div>
+                                            <span className="text-xs font-black text-slate-900">{dest.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* STEP 2: WANN */}
+                        {currentStep === 2 && (
+                            <div className="w-full max-w-5xl px-4 text-center animate-in slide-in-from-right-8 duration-500">
+                                <h2 className="text-6xl font-black text-slate-900 mb-4 tracking-tighter">Wann möchtest du reisen?</h2>
+                                <p className="text-slate-500 text-lg mb-12">Wähle einen Zeitraum oder spezifische Daten.</p>
+
+                                <div className="flex flex-col lg:flex-row gap-12 items-start justify-center">
+                                    {/* Shortcuts */}
+                                    <div className="space-y-6 w-full lg:w-96">
+                                        <button
+                                            onClick={() => setCurrentStep(3)}
+                                            className="w-full p-8 bg-white border border-slate-100 rounded-[2.5rem] flex items-center gap-6 hover:border-[#FF385C] transition-all group text-left shadow-sm"
+                                        >
+                                            <div className="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-colors">
                                                 <i className="fa-solid fa-bolt"></i>
                                             </div>
-                                            <p className="font-black text-3xl text-slate-900 mb-3">Dieses Wochenende</p>
-                                            <p className="text-slate-400 text-lg font-medium">Perfekt für eine spontane Reise</p>
-                                        </button>
-                                        <button onClick={() => setCurrentStep(3)} className="p-12 border border-slate-100 bg-white rounded-[3.5rem] hover:border-[#FF385C] hover:bg-rose-50/10 transition-all group shadow-sm hover:shadow-xl text-left">
-                                            <div className="w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-2xl mb-8 group-hover:bg-blue-500 group-hover:text-white transition-all">
-                                                <i className="fa-solid fa-calendar-check"></i>
+                                            <div>
+                                                <h3 className="font-black text-lg text-slate-900">Dieses Wochenende</h3>
+                                                <p className="text-xs text-slate-500 font-medium">Perfekt für eine spontane Reise</p>
                                             </div>
-                                            <p className="font-black text-3xl text-slate-900 mb-3">Nächsten Monat</p>
-                                            <p className="text-slate-400 text-lg font-medium">Genügend Zeit für die Vorbereitung</p>
                                         </button>
-                                    </div>
-                                </div>
-                            )}
 
-                            {/* STEP 3: WHO */}
-                            {currentStep === 3 && (
-                                <div className="animate-in slide-in-from-right-8 duration-500 text-center">
-                                    <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter mb-4 leading-tight">Wer reist mit?</h2>
-                                    <p className="text-slate-500 text-lg md:text-xl mb-12 font-medium">Anzahl der Gäste für passende Angebote.</p>
-
-                                    <div className="max-w-2xl mx-auto bg-white border border-slate-100 p-16 rounded-[4rem] shadow-2xl">
-                                        <div className="flex items-center justify-between">
-                                            <div className="text-left">
-                                                <p className="font-black text-4xl text-slate-900 mb-2">Gäste</p>
-                                                <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Anzahl der Personen</p>
+                                        <button
+                                            onClick={() => setCurrentStep(3)}
+                                            className="w-full p-8 bg-white border border-slate-100 rounded-[2.5rem] flex items-center gap-6 hover:border-blue-500 transition-all group text-left shadow-sm"
+                                        >
+                                            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                                                <i className="fa-regular fa-calendar-check"></i>
                                             </div>
-                                            <div className="flex items-center gap-12">
-                                                <button
-                                                    onClick={() => setGuests(Math.max(1, guests - 1))}
-                                                    className="w-20 h-20 rounded-full border-2 border-slate-100 flex items-center justify-center text-slate-400 hover:border-[#FF385C] hover:text-[#FF385C] transition-all bg-white shadow-sm"
-                                                >
-                                                    <i className="fa-solid fa-minus text-2xl"></i>
-                                                </button>
-                                                <span className="w-12 text-center font-black text-5xl text-slate-900">{guests}</span>
-                                                <button
-                                                    onClick={() => setGuests(guests + 1)}
-                                                    className="w-20 h-20 rounded-full border-2 border-slate-100 flex items-center justify-center text-slate-400 hover:border-[#FF385C] hover:text-[#FF385C] transition-all bg-white shadow-sm"
-                                                >
-                                                    <i className="fa-solid fa-plus text-2xl"></i>
-                                                </button>
+                                            <div>
+                                                <h3 className="font-black text-lg text-slate-900">Nächsten Monat</h3>
+                                                <p className="text-xs text-slate-500 font-medium">Genügend Zeit für die Vorbereitung</p>
+                                            </div>
+                                        </button>
+
+                                        <div className="bg-[#1a1a1a] p-8 rounded-[2.5rem] text-white text-center">
+                                            <p className="text-[10px] font-bold uppercase tracking-widest text-[#ffffff60] mb-2">Gewählter Zeitraum</p>
+                                            <div className="flex items-center justify-center gap-4 text-xl font-black">
+                                                <span>{checkIn ? checkIn.toLocaleDateString('de-DE') : 'Anreise'}</span>
+                                                <div className="h-0.5 w-4 bg-[#ffffff30]"></div>
+                                                <span>{checkOut ? checkOut.toLocaleDateString('de-DE') : 'Abreise'}</span>
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/* Calendar */}
+                                    <div className="flex-1">
+                                        {renderCalendar()}
+                                    </div>
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        )}
+
+                        {/* STEP 3: WER */}
+                        {currentStep === 3 && (
+                            <div className="w-full max-w-4xl px-4 text-center animate-in slide-in-from-right-8 duration-500">
+                                <h2 className="text-6xl font-black text-slate-900 mb-4 tracking-tighter">Wer reist mit?</h2>
+                                <p className="text-slate-500 text-lg mb-12">Anzahl der Gäste für passende Angebote.</p>
+
+                                <div className="max-w-xl mx-auto bg-white border border-slate-100 p-12 rounded-[3.5rem] shadow-xl flex items-center justify-between">
+                                    <div className="text-left">
+                                        <h3 className="text-3xl font-black text-slate-900 mb-1">Gäste</h3>
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Erwachsene & Kinder</p>
+                                    </div>
+
+                                    <div className="flex items-center gap-8">
+                                        <button
+                                            onClick={() => setGuests(Math.max(1, guests - 1))}
+                                            className="w-16 h-16 rounded-full border-2 border-slate-100 flex items-center justify-center hover:border-slate-900 transition-all"
+                                        >
+                                            <i className="fa-solid fa-minus text-slate-400"></i>
+                                        </button>
+                                        <span className="text-4xl font-black text-slate-900 w-8 text-center">{guests}</span>
+                                        <button
+                                            onClick={() => setGuests(guests + 1)}
+                                            className="w-16 h-16 rounded-full border-2 border-slate-100 flex items-center justify-center hover:border-slate-900 transition-all"
+                                        >
+                                            <i className="fa-solid fa-plus text-slate-400"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                     </main>
 
-                    {/* Wizard Footer Navigation */}
-                    <footer className="px-10 py-10 border-t border-slate-100 bg-white shrink-0 flex items-center justify-center">
-                        <div className="w-full max-w-4xl flex items-center justify-between">
+                    {/* Footer */}
+                    {(currentStep === 2 || currentStep === 3) && (
+                        <div className="p-8 flex justify-end max-w-7xl mx-auto w-full">
                             <button
-                                onClick={() => {
-                                    const prev = Math.max(1, currentStep - 1);
-                                    if (prev === 1 || prev === 2 || prev === 3) setCurrentStep(prev);
-                                }}
-                                className={`flex items-center gap-4 text-sm font-black text-slate-400 uppercase tracking-widest hover:text-slate-900 transition-colors ${currentStep === 1 ? 'opacity-0 pointer-events-none' : ''}`}
+                                onClick={currentStep === 3 ? handleSearch : () => setCurrentStep(3)}
+                                className="bg-[#1a1a1a] text-white px-12 py-5 rounded-full font-black text-xs uppercase tracking-widest hover:bg-black transition-all flex items-center gap-4 shadow-xl"
                             >
-                                <i className="fa-solid fa-arrow-left"></i>
-                                Zurück
+                                {currentStep === 3 ? 'Ergebnisse zeigen' : 'Weiter'}
+                                <i className="fa-solid fa-arrow-right"></i>
                             </button>
-
-                            <div className="flex items-center gap-4">
-                                {currentStep < 3 ? (
-                                    <button
-                                        onClick={() => {
-                                            const next = currentStep + 1;
-                                            if (next === 2 || next === 3) setCurrentStep(next);
-                                        }}
-                                        className="bg-slate-900 text-white px-16 py-6 rounded-[2rem] font-black text-sm uppercase tracking-widest hover:bg-black transition-all shadow-xl flex items-center gap-4"
-                                    >
-                                        Weiter
-                                        <i className="fa-solid fa-arrow-right"></i>
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={handleSearch}
-                                        className="bg-[#FF385C] text-white px-20 py-6 rounded-[2.2rem] font-black text-sm uppercase tracking-widest hover:bg-rose-600 shadow-2xl shadow-rose-200 transition-all flex items-center gap-4 scale-110 active:scale-105"
-                                    >
-                                        <i className="fa-solid fa-magnifying-glass"></i>
-                                        Ergebnisse zeigen
-                                    </button>
-                                )}
-                            </div>
                         </div>
-                    </footer>
+                    )}
                 </div>
             )}
         </>
