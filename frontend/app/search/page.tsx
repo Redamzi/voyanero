@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ListingCard from '@/components/ListingCard';
 import SearchMask from '@/components/SearchMask';
@@ -8,7 +8,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { MOCK_LISTINGS } from '@/constants';
 
-export default function SearchPage() {
+function SearchContent() {
     const searchParams = useSearchParams();
     const locationQuery = searchParams.get('location') || '';
 
@@ -174,5 +174,13 @@ export default function SearchPage() {
 
             <Footer />
         </div>
+    );
+}
+
+export default function SearchPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center">Loading...</div>}>
+            <SearchContent />
+        </Suspense>
     );
 }
