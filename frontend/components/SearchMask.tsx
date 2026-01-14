@@ -15,7 +15,7 @@ const DESTINATIONS = [
     { name: "Tokyo, Japan", icon: "fa-torii-gate" }
 ];
 
-const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'hero' }) => {
+const SearchMask: React.FC<SearchMaskProps> = () => {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<'stays' | 'concierge'>('stays');
     const [isOpen, setIsOpen] = useState(false);
