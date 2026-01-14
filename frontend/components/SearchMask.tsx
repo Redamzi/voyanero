@@ -24,7 +24,15 @@ const SearchMask: React.FC<SearchMaskProps> = ({ initialLocation = "" }) => {
     const [location, setLocation] = useState(initialLocation);
     const [checkIn, setCheckIn] = useState<Date | null>(null);
     const [checkOut, setCheckOut] = useState<Date | null>(null);
-    const [guests, setGuests] = useState(3);
+
+    // Guest State
+    const [adults, setAdults] = useState(1);
+    const [children, setChildren] = useState(0);
+    const [infants, setInfants] = useState(0);
+    const [pets, setPets] = useState(0);
+
+    // Derived total for display (usually Adults + Children)
+    const guests = adults + children;
     const [isLocating, setIsLocating] = useState(false);
 
     // Filter "bestätigen" visibility
