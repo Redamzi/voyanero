@@ -40,11 +40,17 @@ const SearchMask: React.FC<SearchMaskProps> = ({ initialLocation = "" }) => {
 
     const handleSearch = () => {
         setIsOpen(false);
+        // Format date as YYYY-MM-DD for API
+        const formatDate = (d: Date | null) => d ? d.toISOString().split('T')[0] : "";
+
         const params = new URLSearchParams({
             location,
-            checkIn: checkIn ? checkIn.toISOString() : "",
-            checkOut: checkOut ? checkOut.toISOString() : "",
-            guests: guests.toString()
+            checkIn: formatDate(checkIn),
+            checkOut: formatDate(checkOut),
+            adults: adults.toString(),
+            children: children.toString(),
+            infants: infants.toString(),
+            pets: pets.toString()
         });
         router.push(`/search?${params.toString()}`);
     };

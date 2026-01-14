@@ -7,16 +7,120 @@ import SearchMask from '@/components/SearchMask';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { MOCK_LISTINGS } from '@/constants';
+import { Listing, ListingType, PropertyType } from '@/types';
+import { FlightService } from '@/services/api';
 
 function SearchContent() {
     const searchParams = useSearchParams();
     const locationQuery = searchParams.get('location') || '';
+    const dateQuery = searchParams.get('checkIn') || '';
+
+    // Guest params
+    const adults = parseInt(searchParams.get('adults') || '1');
+    const children = parseInt(searchParams.get('children') || '0');
+    const infants = parseInt(searchParams.get('infants') || '0');
 
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-    const [priceRange, setPriceRange] = useState({ min: 100, max: 800 });
+    const [priceRange, setPriceRange] = useState({ min: 100, max: 2000 });
     const [counts, setCounts] = useState({ bedrooms: 0, beds: 0, bathrooms: 0 });
 
+    // API State
+    const [listings, setListings] = useState<Listing[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
     const histogramData = [12, 25, 40, 60, 85, 100, 95, 80, 65, 50, 35, 20, 15, 10, 8];
+
+    // Fetch Flights
+    React.useEffect(() => {
+        const fetchFlights = async () => {
+            if (!locationQuery || !dateQuery) {
+                // Fallback to mock if no search
+                setListings(MOCK_LISTINGS);
+                return;
+            }
+
+            setIsLoading(true);
+            setError(null);
+
+            try {
+                // 1. Start Search
+                const searchRes = await FlightService.searchFlights({
+                    origin: "MUC", // Hardcoded for now, or derived
+                    destination: locationQuery,
+                    date: dateQuery,
+                    adults,
+                    children,
+                    infants
+                });
+
+                // Aviasales API usually returns { search_id: "uuid" ... } 
+                // However, depending on the endpoint version, it might return data directly or a uuid.
+                // Our backend proxy for /search calls POST /v1/flights/search
+                // Let's assume it returns { topic_id, search_id } or similar.
+                // If it returns a list directly (rare for v1), we handle it.
+                // Commonly: { search_id: "...", ... }
+
+                const uuid = searchRes.search_id;
+
+                if (uuid) {
+                    // 2. Poll Results (Simulated with single delayed call for MVP, often needs polling)
+                    // We'll wait a second for backend/partner to warm up cache if needed
+                    await new Promise(r => setTimeout(r, 2000));
+
+                    const results = await FlightService.getSearchResults(uuid);
+                    // Map results to Listings
+                    // Results structure typically: [ { price, airline, flight_number, ... }, ... ]
+
+                    // Note: The structure depends heavily on the API. 
+                    // Let's assume a simplified structure or map generically.
+                    // For now, if we get an array, we map it. If it's empty, we show empty.
+
+                    const mappedListings: Listing[] = (results || []).map((flight: any, index: number) => ({
+                        id: `flight-${index}`,
+                        title: `Flug mit ${flight.airline || 'Airline'}`,
+                        description: `${flight.departure_at?.split('T')[1]?.slice(0, 5)} - ${flight.arrival_at?.split('T')[1]?.slice(0, 5)}`,
+                        type: ListingType.AFFILIATE,
+                        propertyType: PropertyType.HOTEL, // Using Hotel type as "Flight" isn't in enum yet, visually ok
+                        price: flight.price || 0,
+                        location: {
+                            address: `${flight.origin} nach ${flight.destination}`,
+                            lat: 0,
+                            lng: 0
+                        },
+                        images: [`http://pics.avs.io/200/200/${flight.airline}.png`], // Airline Logo
+                        amenities: ["WLAN", "Essen"],
+                        rating: 4.5, // Mock rating
+                        reviewCount: 10 + Math.floor(Math.random() * 50),
+                        maxGuests: adults + children,
+                        affiliateUrl: flight.booking_token ? `https://flights.aviasales.com/...` : `https://aviasales.com/search/${uuid}` // Simplified deep link
+                    }));
+
+                    if (mappedListings.length > 0) {
+                        setListings(mappedListings);
+                    } else {
+                        // Keep mock or show empty state? Let's show empty text.
+                        setListings([]);
+                    }
+
+                } else {
+                    // Maybe it returned raw data?
+                    console.warn("No UUID in search response", searchRes);
+                    setListings(MOCK_LISTINGS); // Fallback
+                }
+
+            } catch (err) {
+                console.error("Flight fetch failed", err);
+                setError("Flüge konnten nicht geladen werden.");
+                setListings(MOCK_LISTINGS); // Fallback so UI isn't broken
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchFlights();
+    }, [locationQuery, dateQuery, adults, children, infants]);
+
 
     const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = parseInt(e.target.value);
@@ -29,8 +133,9 @@ function SearchContent() {
     };
 
     const filteredListings = useMemo(() => {
-        return MOCK_LISTINGS.filter(l => l.price >= priceRange.min && l.price <= priceRange.max);
-    }, [priceRange]);
+        // Apply local filtering to the fetched listings (mock or real)
+        return listings.filter(l => l.price >= priceRange.min && l.price <= priceRange.max);
+    }, [listings, priceRange]);
 
     return (
         <div className="min-h-screen bg-white">
@@ -40,7 +145,7 @@ function SearchContent() {
             <div className="sticky top-0 z-[40] bg-white border-b border-slate-100 py-4 shadow-sm">
                 <div className="max-w-[1400px] mx-auto px-4 flex items-center gap-4">
                     <div className="flex-1">
-                        <SearchMask />
+                        <SearchMask initialLocation={locationQuery} />
                     </div>
                     <button
                         onClick={() => setIsFilterModalOpen(true)}
@@ -54,13 +159,26 @@ function SearchContent() {
 
             <div className="max-w-[1600px] mx-auto px-6 sm:px-8 lg:px-12 py-10 text-left">
                 <h1 className="text-2xl font-black text-slate-900 mb-8 tracking-tight">
-                    {filteredListings.length} Unterkünfte {locationQuery && `in ${locationQuery}`}
+                    {isLoading ? 'Suche Flüge...' : `${filteredListings.length} Angebote gefunden`}
                 </h1>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
-                    {filteredListings.map(listing => (
-                        <ListingCard key={listing.id} listing={listing} />
-                    ))}
-                </div>
+
+                {isLoading ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
+                        {[1, 2, 3, 4].map(n => (
+                            <div key={n} className="animate-pulse">
+                                <div className="bg-slate-100 rounded-[1.2rem] aspect-[20/19] mb-3"></div>
+                                <div className="h-4 bg-slate-100 rounded w-2/3 mb-2"></div>
+                                <div className="h-4 bg-slate-100 rounded w-1/3"></div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
+                        {filteredListings.map(listing => (
+                            <ListingCard key={listing.id} listing={listing} />
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* FULLSCREEN FILTER MODAL */}

@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
-import { Listing } from '../types';
+import { Listing, ListingType } from '../types';
 
 interface ListingCardProps {
     listing: Listing;
@@ -51,20 +51,37 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
                 </div>
             </div>
 
-            <Link href={`/listing/${listing.id}`} className="mt-3 text-left block">
-                <div className="flex justify-between items-start">
-                    <h3 className="font-bold text-[15px] text-slate-900 truncate leading-tight">{listing.location.address}</h3>
-                    <div className="flex items-center gap-1 font-bold text-slate-900 text-[13px]">
-                        <i className="fa-solid fa-star text-[10px]"></i>
-                        {listing.rating}
+            {listing.type === ListingType.AFFILIATE && listing.affiliateUrl ? (
+                <a href={listing.affiliateUrl} target="_blank" rel="noopener noreferrer" className="mt-3 text-left block">
+                    <div className="flex justify-between items-start">
+                        <h3 className="font-bold text-[15px] text-slate-900 truncate leading-tight">{listing.location.address}</h3>
+                        <div className="flex items-center gap-1 font-bold text-slate-900 text-[13px]">
+                            <i className="fa-solid fa-star text-[10px]"></i>
+                            {listing.rating}
+                        </div>
                     </div>
-                </div>
-                <p className="text-slate-500 text-[14px] leading-tight font-medium">Gastgeber: Sarah</p>
-                <div className="pt-2">
-                    <span className="font-bold text-[15px] text-slate-900">€{listing.price}</span>
-                    <span className="text-slate-500 font-medium ml-1 text-sm">Nacht</span>
-                </div>
-            </Link>
+                    <p className="text-slate-500 text-[14px] leading-tight font-medium">Fluggesellschaft: {listing.title}</p>
+                    <div className="pt-2">
+                        <span className="font-bold text-[15px] text-slate-900">€{listing.price}</span>
+                        <span className="text-slate-500 font-medium ml-1 text-sm">pro Person</span>
+                    </div>
+                </a>
+            ) : (
+                <Link href={`/listing/${listing.id}`} className="mt-3 text-left block">
+                    <div className="flex justify-between items-start">
+                        <h3 className="font-bold text-[15px] text-slate-900 truncate leading-tight">{listing.location.address}</h3>
+                        <div className="flex items-center gap-1 font-bold text-slate-900 text-[13px]">
+                            <i className="fa-solid fa-star text-[10px]"></i>
+                            {listing.rating}
+                        </div>
+                    </div>
+                    <p className="text-slate-500 text-[14px] leading-tight font-medium">Gastgeber: Sarah</p>
+                    <div className="pt-2">
+                        <span className="font-bold text-[15px] text-slate-900">€{listing.price}</span>
+                        <span className="text-slate-500 font-medium ml-1 text-sm">Nacht</span>
+                    </div>
+                </Link>
+            )}
         </div>
     );
 };
