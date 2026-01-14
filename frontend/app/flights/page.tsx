@@ -9,7 +9,7 @@ export default function FlightsPage() {
         // Load Travelpayouts widget script
         const script = document.createElement("script");
         script.async = true;
-        script.src = 'https://tpwdg.com/content?trs=353305&shmarker=575179&locale=de&curr=EUR&powered_by=true&border_radius=0&plain=true&color_button=%23000000ff&color_button_text=%23ffffff&color_border=%23000000ff&promo_id=4132&campaign_id=121';
+        script.src = 'https://tpwdg.com/content?trs=353305&shmarker=575179&locale=de&curr=EUR&powered_by=true&border_radius=30&plain=true&color_button=%23000000ff&color_button_text=%23ffffff&color_border=%23000000ff&promo_id=4132&campaign_id=121';
         script.charset = 'utf-8';
         document.body.appendChild(script);
 
