@@ -89,7 +89,7 @@ export const TravelpayoutsService = {
         };
 
         try {
-            const response = await axios.post(`${API_URL}/search`, payload, {
+            const response = await axios.post(`${API_URL}`, payload, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
