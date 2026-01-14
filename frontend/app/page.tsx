@@ -1,94 +1,126 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import api from "@/lib/api";
-import { Search } from "lucide-react";
+import React from 'react';
+import ListingCard from '@/components/ListingCard';
+import SearchMask from '@/components/SearchMask';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import { MOCK_LISTINGS } from '@/constants';
 
 export default function Home() {
-  const [backendStatus, setBackendStatus] = useState<string>("Checking backend...");
-
-  useEffect(() => {
-    // Check backend health on load
-    api.get("/health")
-      .then((res) => setBackendStatus(`Online ✅ (${res.data.status})`))
-      .catch(() => setBackendStatus("Offline ❌ (Connection failed)"));
-  }, []);
-
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="min-h-screen font-sans bg-white text-slate-900">
       <Navbar />
 
-      <main className="flex-grow pt-16">
-        {/* Debug Banner */}
-        <div className={`text-center py-2 text-sm font-medium ${backendStatus.includes("Online") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-          Backend Status: {backendStatus}
-        </div>
+      <div className="space-y-16 md:space-y-24 pb-32 bg-white">
+        {/* 1. HERO & SEARCH */}
+        <section className="w-full relative min-h-[60vh] md:min-h-[75vh] flex flex-col items-center justify-center px-4 pt-10 pb-16 md:py-24">
+          {/* Background Canvas */}
+          <div className="absolute inset-x-4 top-4 bottom-0 bg-[#0F172A] rounded-[2rem] md:rounded-[4rem] overflow-hidden shadow-2xl">
+            <img
+              src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=2000"
+              className="w-full h-full object-cover opacity-60"
+              alt="Hero Background"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/70"></div>
+          </div>
 
-        {/* Hero Section */}
-        <div className="relative bg-rose-500 h-[500px] flex items-center justify-center text-white">
-          <div className="absolute inset-0 bg-black/20 z-0"></div>
-          <div className="relative z-10 text-center px-4">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Find your next adventure
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto">
-              Discover unique homes and authentic experiences around the world.
-            </p>
+          {/* Content Overlay */}
+          <div className="relative text-center space-y-8 md:space-y-14 max-w-6xl px-4 md:px-8 w-full flex flex-col items-center">
+            <div className="space-y-4 md:space-y-6">
+              <span className="inline-flex items-center gap-3 px-4 md:px-6 py-2 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-full text-white text-[9px] md:text-[11px] font-black uppercase tracking-[0.3em] md:tracking-[0.4em]">
+                <i className="fa-solid fa-star text-amber-400"></i>
+                Premium Travel Experience
+              </span>
+              <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-[7.5rem] font-black text-white leading-[0.9] tracking-tighter">
+                Escape the <span className="text-rose-400 italic">Ordinary.</span>
+              </h1>
+              <p className="text-white/80 text-base md:text-2xl font-medium max-w-2xl mx-auto tracking-tight px-4">
+                Entdecke exklusive Unterkünfte weltweit – handverlesen für unvergessliche Momente.
+              </p>
+            </div>
 
-            {/* Search Bar Widget */}
-            <div className="bg-white p-2 rounded-full max-w-4xl mx-auto shadow-2xl flex flex-col md:flex-row items-center text-gray-800">
-              <div className="flex-1 px-6 py-3 border-b md:border-b-0 md:border-r border-gray-200 w-full">
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">Location</label>
-                <input type="text" placeholder="Where are you going?" className="w-full outline-none font-medium" />
-              </div>
-              <div className="flex-1 px-6 py-3 border-b md:border-b-0 md:border-r border-gray-200 w-full">
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">Check in</label>
-                <input type="text" placeholder="Add dates" className="w-full outline-none font-medium" />
-              </div>
-              <div className="flex-1 px-6 py-3 border-b md:border-b-0 md:border-r border-gray-200 w-full">
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">Check out</label>
-                <input type="text" placeholder="Add dates" className="w-full outline-none font-medium" />
-              </div>
-              <div className="flex-1 px-6 py-3 w-full relative">
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500">Guests</label>
-                <input type="text" placeholder="Add guests" className="w-full outline-none font-medium" />
-                <button className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 bg-rose-500 hover:bg-rose-600 text-white p-3 rounded-full transition shadow-lg items-center gap-2">
-                  <Search size={20} />
-                  <span className="md:hidden">Search</span>
-                </button>
-              </div>
-              <button className="md:hidden w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 rounded-full mt-2 transition shadow-lg">
-                Search
+            <div className="w-full max-w-5xl mx-auto">
+              <SearchMask variant="hero" />
+            </div>
+          </div>
+        </section>
+
+        {/* 2. AVAILABLE THIS WEEKEND */}
+        <section className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12 text-left">
+          <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-10 md:mb-16 gap-6">
+            <div className="space-y-2">
+              <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-none">Popular Destinations</h2>
+              <p className="text-slate-500 text-lg font-medium opacity-70">Die beliebtesten Aufenthalte dieses Wochenendes.</p>
+            </div>
+            <div className="flex gap-4">
+              <button className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-all shadow-sm">
+                <i className="fa-solid fa-chevron-left text-xs text-slate-400"></i>
+              </button>
+              <button className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:bg-slate-50 transition-all shadow-sm">
+                <i className="fa-solid fa-chevron-right text-xs text-slate-400"></i>
               </button>
             </div>
           </div>
-        </div>
 
-        {/* Categories / Content Placeholder */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <h2 className="text-2xl font-bold mb-6">Explore the world</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+            {MOCK_LISTINGS.slice(0, 4).map(listing => (
+              <ListingCard key={listing.id} listing={listing} />
+            ))}
+          </div>
+        </section>
+
+        {/* 3. PROMOTION CARD */}
+        <section className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
+          <div className="bg-[#111827] rounded-[2.5rem] md:rounded-[4.5rem] p-8 md:p-24 flex flex-col md:flex-row items-center gap-12 md:gap-20 overflow-hidden relative text-left group">
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-rose-500 skew-x-[-12deg] translate-x-48 opacity-10 md:block hidden group-hover:translate-x-32 transition-transform duration-1000"></div>
+
+            <div className="flex-1 space-y-6 md:space-y-8 relative z-10">
+              <div className="inline-flex items-center gap-3 px-5 py-2 bg-rose-500/10 border border-rose-500/20 rounded-full text-rose-500 text-[10px] font-black uppercase tracking-[0.3em]">
+                Voyanero Membership
+              </div>
+              <h2 className="text-3xl md:text-7xl font-black text-white tracking-tighter leading-none">Spare 15% bei jeder <br /> Direktbuchung.</h2>
+              <p className="text-slate-400 font-medium text-base md:text-xl leading-relaxed max-w-xl">Werde Mitglied und schalte exklusive Raten bei unseren lokalen Gastgebern frei.</p>
+              <button className="bg-rose-500 text-white px-10 md:px-12 py-4 md:py-5 rounded-[1.2rem] md:rounded-[1.5rem] font-black text-[10px] md:text-[11px] uppercase tracking-[0.3em] shadow-2xl shadow-rose-500/30 active:scale-95 transition-all hover:bg-rose-600">
+                Jetzt Mitglied werden
+              </button>
+            </div>
+
+            <div className="w-full md:w-[450px] aspect-square rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden shadow-[0_48px_80px_-16px_rgba(0,0,0,0.5)] relative z-10 border-[8px] border-white/5 transform md:rotate-3 md:hover:rotate-0 transition-all duration-700">
+              <img
+                src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=800"
+                className="w-full h-full object-cover"
+                alt="Promotion"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* 4. WHY VOYANERO? */}
+        <section className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12 text-left pb-10 md:pb-0">
+          <div className="mb-10 md:mb-20">
+            <h2 className="text-3xl md:text-6xl font-black text-slate-900 tracking-tighter mb-4 leading-none text-center md:text-left">Warum Voyanero?</h2>
+            <p className="text-slate-500 text-lg md:text-xl font-medium opacity-60 text-center md:text-left">Lokale Authentizität trifft globale Zuverlässigkeit.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {[
-              { id: 1, img: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80", title: "Nature & Mountains" },
-              { id: 2, img: "https://images.unsplash.com/photo-1488085061387-422e29b40080?auto=format&fit=crop&w=800&q=80", title: "City Trips" },
-              { id: 3, img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80", title: "Beach Vacations" }
-            ].map((item) => (
-              <div key={item.id} className="bg-gray-100 h-64 rounded-xl flex items-center justify-center overflow-hidden group cursor-pointer relative">
-                <img
-                  src={item.img}
-                  alt={item.title}
-                  className="w-full h-full object-cover transition duration-300 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition flex items-end p-6">
-                  <h3 className="text-white text-xl font-bold">{item.title}</h3>
+              { title: "Direktbuchung", desc: "Sichere dir einzigartige Unterkünfte ohne Umwege und spare kräftig.", icon: "fa-key", color: "bg-rose-50 text-rose-600" },
+              { title: "AI Concierge", desc: "Dein persönlicher Reiseplaner, angetrieben von Google Gemini.", icon: "fa-robot", color: "bg-indigo-50 text-indigo-600" },
+              { title: "Portfolio", desc: "Zugriff auf über 2 Millionen Hotels weltweit über unsere Partner.", icon: "fa-globe", color: "bg-blue-50 text-blue-600" },
+              { title: "Bestpreis", desc: "Wir garantieren dir den besten Preis für deine nächste Reise.", icon: "fa-shield-halved", color: "bg-emerald-50 text-emerald-600" }
+            ].map((item, i) => (
+              <div key={i} className="group p-8 md:p-10 bg-slate-50 rounded-[2.5rem] hover:bg-white hover:shadow-2xl transition-all duration-500 border border-transparent hover:border-slate-100">
+                <div className={`w-14 h-14 md:w-16 md:h-16 ${item.color} rounded-2xl flex items-center justify-center mb-8 md:mb-10 shadow-sm group-hover:scale-110 transition-transform`}>
+                  <i className={`fa-solid ${item.icon} text-xl md:text-2xl`}></i>
                 </div>
+                <h3 className="text-xl md:text-2xl font-black text-slate-900 mb-4 md:mb-5 tracking-tight">{item.title}</h3>
+                <p className="text-slate-500 text-sm md:text-base leading-relaxed font-medium opacity-80">{item.desc}</p>
               </div>
             ))}
           </div>
-        </div>
-      </main>
+        </section>
+      </div>
 
       <Footer />
     </div>
