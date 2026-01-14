@@ -76,6 +76,7 @@ function SearchContent() {
                     // Let's assume a simplified structure or map generically.
                     // For now, if we get an array, we map it. If it's empty, we show empty.
 
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const mappedListings: Listing[] = (results || []).map((flight: any, index: number) => ({
                         id: `flight-${index}`,
                         title: `Flug mit ${flight.airline || 'Airline'}`,
@@ -161,6 +162,12 @@ function SearchContent() {
                 <h1 className="text-2xl font-black text-slate-900 mb-8 tracking-tight">
                     {isLoading ? 'Suche Flüge...' : `${filteredListings.length} Angebote gefunden`}
                 </h1>
+
+                {error && (
+                    <div className="mb-8 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 font-bold text-center">
+                        {error}
+                    </div>
+                )}
 
                 {isLoading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
