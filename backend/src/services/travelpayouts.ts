@@ -1,7 +1,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 
-const API_URL = 'http://api.travelpayouts.com/v1/flights';
+const API_URL = 'https://api.travelpayouts.com/v1/flight_search';
 const TOKEN = process.env.TRAVELPAYOUTS_API_TOKEN;
 const MARKER = process.env.TRAVELPAYOUTS_MARKER_ID;
 
