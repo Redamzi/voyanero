@@ -44,9 +44,9 @@ function SearchContent() {
             setError(null);
 
             try {
-                // 1. Start Search
+                // Data Access API returns results immediately
                 const searchRes = await FlightService.searchFlights({
-                    origin: "MUC", // Hardcoded for now, or derived
+                    origin: "MUC", // Hardcoded for now
                     destination: locationQuery,
                     date: dateQuery,
                     adults,
@@ -54,60 +54,34 @@ function SearchContent() {
                     infants
                 });
 
-                // Aviasales API usually returns { search_id: "uuid" ... } 
-                // However, depending on the endpoint version, it might return data directly or a uuid.
-                // Our backend proxy for /search calls POST /v1/flights/search
-                // Let's assume it returns { topic_id, search_id } or similar.
-                // If it returns a list directly (rare for v1), we handle it.
-                // Commonly: { search_id: "...", ... }
-
-                const uuid = searchRes.search_id;
-
-                if (uuid) {
-                    // 2. Poll Results (Simulated with single delayed call for MVP, often needs polling)
-                    // We'll wait a second for backend/partner to warm up cache if needed
-                    await new Promise(r => setTimeout(r, 2000));
-
-                    const results = await FlightService.getSearchResults(uuid);
-                    // Map results to Listings
-                    // Results structure typically: [ { price, airline, flight_number, ... }, ... ]
-
-                    // Note: The structure depends heavily on the API. 
-                    // Let's assume a simplified structure or map generically.
-                    // For now, if we get an array, we map it. If it's empty, we show empty.
-
+                // Data Access API returns: { success: true, flights: [...] }
+                if (searchRes.success && searchRes.flights && searchRes.flights.length > 0) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const mappedListings: Listing[] = (results || []).map((flight: any, index: number) => ({
+                    const mappedListings: Listing[] = searchRes.flights.map((flight: any, index: number) => ({
                         id: `flight-${index}`,
                         title: `Flug mit ${flight.airline || 'Airline'}`,
-                        description: `${flight.departure_at?.split('T')[1]?.slice(0, 5)} - ${flight.arrival_at?.split('T')[1]?.slice(0, 5)}`,
+                        description: `Ab ${new Date(flight.departure_at).toLocaleDateString('de-DE')}`,
                         type: ListingType.AFFILIATE,
-                        propertyType: PropertyType.HOTEL, // Using Hotel type as "Flight" isn't in enum yet, visually ok
+                        propertyType: PropertyType.HOTEL,
                         price: flight.price || 0,
                         location: {
-                            address: `${flight.origin} nach ${flight.destination}`,
+                            address: `${flight.origin || 'MUC'} → ${flight.destination || locationQuery}`,
                             lat: 0,
                             lng: 0
                         },
-                        images: [`http://pics.avs.io/200/200/${flight.airline}.png`], // Airline Logo
-                        amenities: ["WLAN", "Essen"],
-                        rating: 4.5, // Mock rating
+                        images: [`http://pics.avs.io/200/200/${flight.airline}.png`],
+                        amenities: ["Direktflug", "Economy"],
+                        rating: 4.5,
                         reviewCount: 10 + Math.floor(Math.random() * 50),
                         maxGuests: adults + children,
-                        affiliateUrl: flight.booking_token ? `https://flights.aviasales.com/...` : `https://aviasales.com/search/${uuid}` // Simplified deep link
+                        affiliateUrl: `https://www.aviasales.com/search/${flight.origin}${new Date(flight.departure_at).toISOString().split('T')[0]}${flight.destination}1?marker=${flight.marker}`
                     }));
 
-                    if (mappedListings.length > 0) {
-                        setListings(mappedListings);
-                    } else {
-                        // Keep mock or show empty state? Let's show empty text.
-                        setListings([]);
-                    }
-
+                    setListings(mappedListings);
                 } else {
-                    // Maybe it returned raw data?
-                    console.warn("No UUID in search response", searchRes);
-                    setListings(MOCK_LISTINGS); // Fallback
+                    // No results found
+                    setListings([]);
+                    setError("Keine Flüge gefunden. Versuche andere Daten oder Ziele.");
                 }
 
             } catch (err) {

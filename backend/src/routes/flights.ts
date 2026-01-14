@@ -5,19 +5,22 @@ const router = express.Router();
 
 router.post('/search', async (req, res) => {
     try {
-        const searchParams = req.body;
-        // Basic validation could go here
+        const { origin, destination, date, adults, children, infants } = req.body;
 
-        // Add user IP from request if not provided
-        if (!searchParams.user_ip) {
-            searchParams.user_ip = req.ip || '127.0.0.1';
-        }
+        // Data Access API returns results immediately
+        const data = await TravelpayoutsService.search({
+            origin,
+            destination,
+            date,
+            adults,
+            children,
+            infants
+        });
 
-        const data = await TravelpayoutsService.search(searchParams);
         res.json(data);
     } catch (error: any) {
         console.error("Flight Search Route Error:", error.message);
-        res.status(500).json({ error: "Failed to start flight search", details: error.message });
+        res.status(500).json({ error: "Failed to search flights", details: error.message });
     }
 });
 
