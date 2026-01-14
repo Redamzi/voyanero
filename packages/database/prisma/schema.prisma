@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  guest
+  host
+  admin
+}
+
+enum ListingStatus {
+  draft
+  active
+  paused
+  deleted
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  cancelled
+  completed
+}
+
+enum BookingSource {
+  direct
+  affiliate
+}
+
+model User {
+  id               String    @id @default(uuid())
+  email            String    @unique
+  passwordHash     String    @map("password_hash")
+  role             Role      @default(guest)
+  emailVerified    Boolean   @default(false) @map("email_verified")
+  stripeCustomerId String?   @map("stripe_customer_id")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  hostProfile      Host?
+  bookings         Booking[]
+  reviews          Review[]
+
+  @@map("users")
+}
+
+model Host {
+  id                       String   @id @default(uuid())
+  userId                   String   @unique @map("user_id")
+  user                     User     @relation(fields: [userId], references: [id])
+  companyName              String?  @map("company_name")
+  phone                    String?
+  address                  Json?
+  stripeAccountId          String?  @map("stripe_account_id")
+  stripeOnboardingComplete Boolean  @default(false) @map("stripe_onboarding_complete")
+  verified                 Boolean  @default(false)
+  createdAt                DateTime @default(now()) @map("created_at")
+
+  listings                 Listing[]
+
+  @@map("hosts")
+}
+
+model Listing {
+  id           String        @id @default(uuid())
+  hostId       String        @map("host_id")
+  host         Host          @relation(fields: [hostId], references: [id])
+  title        String
+  description  String        @db.Text
+  propertyType String        @map("property_type")
+  location     Json
+  basePrice    Decimal       @map("base_price") @db.Decimal(10, 2)
+  displayPrice Decimal       @map("display_price") @db.Decimal(10, 2) // base * 1.10
+  currency     String        @default("EUR")
+  maxGuests    Int           @map("max_guests")
+  bedrooms     Int           @default(1)
+  bathrooms    Int           @default(1)
+  amenities    Json          @default("[]")
+  images       Json          @default("[]")
+  status       ListingStatus @default(draft)
+  syncActive   Boolean       @default(false) @map("sync_active")
+  externalIds  Json?         @map("external_ids")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  bookings     Booking[]
+  availability Availability[]
+  reviews      Review[]
+
+  @@map("listings")
+}
+
+model Booking {
+  id                    String        @id @default(uuid())
+  listingId             String?       @map("listing_id")
+  listing               Listing?      @relation(fields: [listingId], references: [id])
+  guestId               String        @map("guest_id")
+  guest                 User          @relation(fields: [guestId], references: [id])
+  source                BookingSource
+  affiliateProvider     String?       @map("affiliate_provider")
+  affiliateBookingId    String?       @map("affiliate_booking_id")
+  checkIn               DateTime      @map("check_in") @db.Date
+  checkOut              DateTime      @map("check_out") @db.Date
+  guestsCount           Int           @map("guests_count")
+  totalAmount           Decimal       @map("total_amount") @db.Decimal(10, 2)
+  commission            Decimal       @db.Decimal(10, 2)
+  hostPayout            Decimal       @map("host_payout") @db.Decimal(10, 2)
+  status                BookingStatus @default(pending)
+  stripePaymentIntentId String?       @map("stripe_payment_intent_id")
+  stripeTransferId      String?       @map("stripe_transfer_id")
+  createdAt             DateTime      @default(now()) @map("created_at")
+
+  review                Review?
+
+  @@map("bookings")
+}
+
+model Availability {
+  id            String   @id @default(uuid())
+  listingId     String   @map("listing_id")
+  listing       Listing  @relation(fields: [listingId], references: [id])
+  date          DateTime @db.Date
+  available     Boolean  @default(true)
+  priceOverride Decimal? @map("price_override") @db.Decimal(10, 2)
+  minNights     Int      @default(1) @map("min_nights")
+
+  @@unique([listingId, date])
+  @@map("availability")
+}
+
+model Review {
+  id           String   @id @default(uuid())
+  bookingId    String   @unique @map("booking_id")
+  booking      Booking  @relation(fields: [bookingId], references: [id])
+  listingId    String   @map("listing_id")
+  listing      Listing  @relation(fields: [listingId], references: [id])
+  guestId      String   @map("guest_id")
+  guest        User     @relation(fields: [guestId], references: [id])
+  rating       Int
+  comment      String?  @db.Text
+  hostResponse String?  @map("host_response") @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("reviews")
+}
