@@ -240,7 +240,7 @@ export default function ListingDetailPage() {
                                             Reserve Now
                                         </button>
                                         <p className="text-center text-slate-400 text-[10px] font-bold uppercase tracking-widest">
-                                            You won't be charged yet
+                                            You won&apos;t be charged yet
                                         </p>
                                     </div>
 
