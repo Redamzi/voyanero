@@ -36,19 +36,12 @@ export const FlightService = {
             const destination = iataMap[params.destination] || params.destination;
 
             const payload = {
-                segments: [
-                    {
-                        origin: origin,
-                        destination: destination,
-                        date: params.date
-                    }
-                ],
-                passengers: {
-                    adults: params.adults || 1,
-                    children: params.children || 0,
-                    infants: params.infants || 0
-                },
-                trip_class: params.trip_class || "Y"
+                origin: origin,
+                destination: destination,
+                date: params.date,
+                adults: params.adults || 1,
+                children: params.children || 0,
+                infants: params.infants || 0
             };
 
             const response = await fetch(`${API_BASE_URL}/search`, {
