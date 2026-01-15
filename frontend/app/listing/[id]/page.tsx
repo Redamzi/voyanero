@@ -200,20 +200,59 @@ export default function ListingDetailPage() {
 
                         <div className="border-t border-slate-100 pt-8">
                             <h3 className="text-xl font-bold text-slate-900 mb-6">Was dieses Zuhause bietet</h3>
-                            <div className="grid grid-cols-2 gap-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
                                 {listing.amenities.map((item, i) => (
-                                    <div key={i} className="flex items-center gap-3 text-slate-600 font-medium">
-                                        <i className="fa-solid fa-check text-slate-900 text-sm"></i>
-                                        {item}
+                                    <div key={i} className="flex items-center gap-4 text-slate-600">
+                                        <i className="fa-solid fa-check text-slate-900 text-lg w-6"></i>
+                                        <span className="text-base font-medium">{item}</span>
                                     </div>
                                 ))}
-                                <div className="flex items-center gap-3 text-slate-600 font-medium">
-                                    <i className="fa-solid fa-wifi text-slate-900 text-sm"></i> Highspeed WLAN
+                                <div className="flex items-center gap-4 text-slate-600">
+                                    <i className="fa-solid fa-wifi text-slate-900 text-lg w-6"></i>
+                                    <span className="text-base font-medium">Highspeed WLAN</span>
                                 </div>
-                                <div className="flex items-center gap-3 text-slate-600 font-medium">
-                                    <i className="fa-solid fa-car text-slate-900 text-sm"></i> Kostenloser Parkplatz
+                                <div className="flex items-center gap-4 text-slate-600">
+                                    <i className="fa-solid fa-car text-slate-900 text-lg w-6"></i>
+                                    <span className="text-base font-medium">Kostenloser Parkplatz</span>
+                                </div>
+                                <div className="flex items-center gap-4 text-slate-600">
+                                    <i className="fa-solid fa-temperature-arrow-down text-slate-900 text-lg w-6"></i>
+                                    <span className="text-base font-medium">Klimaanlage</span>
+                                </div>
+                                <div className="flex items-center gap-4 text-slate-600">
+                                    <i className="fa-solid fa-kitchen-set text-slate-900 text-lg w-6"></i>
+                                    <span className="text-base font-medium">Voll ausgestattete Küche</span>
                                 </div>
                             </div>
+                            <button className="mt-8 border border-slate-900 text-slate-900 px-6 py-3 rounded-lg font-bold text-sm hover:bg-slate-50 transition-colors">
+                                Alle 35 Ausstattungsmerkmale anzeigen
+                            </button>
+                        </div>
+
+                        {/* Map Section Placeholder */}
+                        <div className="border-t border-slate-100 pt-8">
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">Wo du sein wirst</h3>
+                            <p className="text-slate-500 mb-6">{listing.location.address}</p>
+                            <div className="w-full h-[400px] bg-slate-100 rounded-2xl relative overflow-hidden group">
+                                <img
+                                    src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=2000"
+                                    className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700"
+                                    alt="Map Placeholder"
+                                />
+                                <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/0 transition-colors"></div>
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded-full shadow-2xl animate-bounce">
+                                    <div className="w-12 h-12 bg-rose-500 rounded-full flex items-center justify-center text-white text-xl shadow-lg ring-4 ring-white">
+                                        <i className="fa-solid fa-house"></i>
+                                    </div>
+                                </div>
+                                <div className="absolute bottom-4 right-4 bg-white px-3 py-1 rounded text-xs font-bold shadow-md text-slate-700">
+                                    Google
+                                </div>
+                            </div>
+                            <p className="mt-4 text-slate-500 text-sm leading-relaxed">
+                                Die genaue Lage wird nach der Buchung mitgeteilt. Wir befinden uns in einer ruhigen Nachbarschaft,
+                                nur wenige Gehminuten von den besten Restaurants und Cafés entfernt.
+                            </p>
                         </div>
                     </div>
 
