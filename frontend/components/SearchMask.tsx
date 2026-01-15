@@ -188,7 +188,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                     <div className="flex items-center w-full h-full">
                         {/* Location */}
                         <div className="flex items-center gap-3 px-4 py-2 flex-1 min-w-0 cursor-pointer hover:bg-slate-50 transition-colors rounded-full">
-                            <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-500 text-xs shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 text-xs shrink-0">
                                 <i className="fa-solid fa-location-dot"></i>
                             </div>
                             <div className="flex flex-col overflow-hidden">
@@ -201,7 +201,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
 
                         {/* Date */}
                         <div className="flex items-center gap-3 px-4 py-2 flex-1 min-w-0 cursor-pointer hover:bg-slate-50 transition-colors rounded-full hidden sm:flex">
-                            <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-500 text-xs shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 text-xs shrink-0">
                                 <i className="fa-solid fa-calendar-days"></i>
                             </div>
                             <div className="flex flex-col overflow-hidden">
@@ -216,7 +216,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
 
                         {/* Guests */}
                         <div className="flex items-center gap-3 px-4 py-2 flex-1 min-w-0 cursor-pointer hover:bg-slate-50 transition-colors rounded-full hidden md:flex">
-                            <div className="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center text-rose-500 text-xs shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 text-xs shrink-0">
                                 <i className="fa-solid fa-user-group"></i>
                             </div>
                             <div className="flex flex-col overflow-hidden">
@@ -225,7 +225,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                             </div>
                         </div>
 
-                        <div className="ml-2 w-10 h-10 bg-[#FF385C] rounded-full flex items-center justify-center text-white shadow-md hover:scale-105 transition-transform shrink-0">
+                        <div className="ml-2 w-10 h-10 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full flex items-center justify-center text-white shadow-md hover:scale-105 transition-transform shrink-0">
                             <i className="fa-solid fa-magnifying-glass text-sm"></i>
                         </div>
                     </div>
@@ -233,35 +233,35 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                     // Full Hero View (Existing)
                     <>
                         <div className="flex items-center gap-4 py-2 pr-8 border-r border-slate-100">
-                            <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
+                            <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
                                 <i className="fa-solid fa-location-dot text-sm"></i>
                             </div>
                             <div className="flex flex-col text-left">
-                                <span className="text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-rose-500 transition-colors">Wohin?</span>
+                                <span className="text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-orange-600 transition-colors">Wohin?</span>
                                 <span className="text-slate-400 font-medium truncate max-w-[120px]">{location || "Ziele suchen"}</span>
                             </div>
                         </div>
                         <div className="flex items-center gap-4 px-8 border-r border-slate-100 hidden md:flex">
-                            <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
+                            <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
                                 <i className="fa-solid fa-calendar-days text-sm"></i>
                             </div>
                             <div className="flex flex-col text-left">
-                                <span className="text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-rose-500 transition-colors">Wann?</span>
+                                <span className="text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-orange-600 transition-colors">Wann?</span>
                                 <span className="text-slate-400 font-medium">
                                     {checkIn ? checkIn.toLocaleDateString('de-DE') : "Beliebige Woche"}
                                 </span>
                             </div>
                         </div>
                         <div className="flex items-center gap-4 px-8 hidden md:flex">
-                            <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
+                            <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
                                 <i className="fa-solid fa-user-group text-sm"></i>
                             </div>
                             <div className="flex flex-col text-left">
-                                <span className="text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-rose-500 transition-colors">Wer?</span>
+                                <span className="text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-orange-600 transition-colors">Wer?</span>
                                 <span className="text-slate-400 font-medium">{guests} Gäste</span>
                             </div>
                         </div>
-                        <div className="w-12 h-12 bg-[#FF385C] rounded-full flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-600 rounded-full flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
                             <i className="fa-solid fa-magnifying-glass text-lg"></i>
                         </div>
                     </>
@@ -293,7 +293,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                 <div className="px-8 py-6 flex items-center justify-between shrink-0">
                                     {/* ... Header Content ... */}
                                     <div className="flex items-center gap-2">
-                                        <div className="w-8 h-8 bg-[#FF385C] rounded-lg flex items-center justify-center text-white">
+                                        <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-orange-600 rounded-lg flex items-center justify-center text-white">
                                             <i className="fa-solid fa-paper-plane text-xs"></i>
                                         </div>
                                         <span className="text-lg font-black tracking-tighter text-slate-900">VOYANERO</span>
@@ -302,17 +302,17 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                     {/* Step Indicators */}
                                     <div className="flex items-center gap-12">
                                         <button onClick={() => setCurrentStep(1)} className={`flex items-center gap-3 transition-colors ${currentStep === 1 ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}>
-                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 1 ? 'bg-[#FF385C] text-white' : 'bg-slate-100 text-slate-500'}`}>1</div>
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 1 ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white' : 'bg-slate-100 text-slate-500'}`}>1</div>
                                             <span className="text-xs font-black uppercase tracking-widest text-slate-900">Wohin</span>
                                         </button>
                                         <div className="w-8 h-px bg-slate-200"></div>
                                         <button onClick={() => setCurrentStep(2)} className={`flex items-center gap-3 transition-colors ${currentStep === 2 ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}>
-                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 2 ? 'bg-[#FF385C] text-white' : 'bg-slate-100 text-slate-500'}`}>2</div>
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 2 ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white' : 'bg-slate-100 text-slate-500'}`}>2</div>
                                             <span className="text-xs font-black uppercase tracking-widest text-slate-900">Wann</span>
                                         </button>
                                         <div className="w-8 h-px bg-slate-200"></div>
                                         <button onClick={() => setCurrentStep(3)} className={`flex items-center gap-3 transition-colors ${currentStep === 3 ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}>
-                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 3 ? 'bg-[#FF385C] text-white' : 'bg-slate-100 text-slate-500'}`}>3</div>
+                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 3 ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white' : 'bg-slate-100 text-slate-500'}`}>3</div>
                                             <span className="text-xs font-black uppercase tracking-widest text-slate-900">Wer</span>
                                         </button>
                                     </div>
@@ -343,7 +343,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                 <input
                                                     type="text"
                                                     placeholder="Ort, Region oder Unterkunft suchen..."
-                                                    className="w-full h-20 pl-16 pr-6 rounded-full border-2 border-rose-100 bg-white shadow-[0_8px_30px_rgb(255,56,92,0.06)] text-lg font-bold text-slate-900 focus:outline-none focus:border-[#FF385C] focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
+                                                    className="w-full h-20 pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
                                                     value={location}
                                                     onChange={(e) => setLocation(e.target.value)}
                                                     onKeyDown={(e) => e.key === 'Enter' && setCurrentStep(2)}
@@ -417,7 +417,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                         onClick={() => setCurrentStep(3)}
                                                         className="w-full p-6 lg:p-8 bg-white border border-slate-100 rounded-[2rem] lg:rounded-[2.5rem] flex items-center gap-6 hover:border-[#FF385C] transition-all group text-left shadow-sm order-2 lg:order-1"
                                                     >
-                                                        <div className="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-colors shrink-0">
+                                                        <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-colors shrink-0">
                                                             <i className="fa-solid fa-bolt"></i>
                                                         </div>
                                                         <div>

@@ -278,7 +278,7 @@ function SearchContent() {
                                             const pos = (i / (histogramData.length - 1)) * 1000;
                                             const active = pos >= priceRange.min && pos <= priceRange.max;
                                             return (
-                                                <div key={i} className={`flex-1 rounded-t-md transition-all duration-500 ${active ? 'bg-[#FF385C]' : 'bg-slate-100'}`} style={{ height: `${h}%` }}></div>
+                                                <div key={i} className={`flex-1 rounded-t-md transition-all duration-500 ${active ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-slate-100'}`} style={{ height: `${h}%` }}></div>
                                             );
                                         })}
                                     </div>
