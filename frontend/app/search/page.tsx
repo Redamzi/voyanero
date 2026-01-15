@@ -24,7 +24,7 @@ const itemVariants = {
     show: {
         opacity: 1,
         y: 0,
-        transition: { type: "spring", damping: 20, stiffness: 100 }
+        transition: { type: "spring" as const, damping: 20, stiffness: 100 }
     }
 };
 
@@ -34,7 +34,7 @@ const checkboxVariants = {
         opacity: 1,
         x: 0,
         scale: 1,
-        transition: { type: "spring", stiffness: 200, damping: 20 }
+        transition: { type: "spring" as const, stiffness: 200, damping: 20 }
     },
     exit: { opacity: 0, x: -20, scale: 0.8 }
 };
@@ -119,6 +119,7 @@ function SearchContent() {
                 });
 
                 if (searchRes.success && searchRes.flights && searchRes.flights.length > 0) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const mappedListings: Listing[] = searchRes.flights.map((flight: any, index: number) => ({
                         id: `flight-${index}`,
                         title: `Flug mit ${flight.airline || 'Airline'}`,
