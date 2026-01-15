@@ -4,8 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { User } from '../types';
 
-import { usePathname } from 'next/navigation';
-
 interface NavbarProps {
     user?: User | null;
     onLogout?: () => void;
