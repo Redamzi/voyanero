@@ -45,8 +45,7 @@ export default function ListingDetailPage() {
         for (let i = 0; i < firstDay; i++) days.push(<div key={`empty-${i}`} />);
         for (let d = 1; d <= daysInMonth; d++) {
             const date = new Date(year, month, d);
-            const isSelected = (checkIn && date.toDateString() === checkIn.toDateString()) ||
-                (checkOut && date.toDateString() === checkOut.toDateString());
+            const isSelected = (checkIn && date.toDateString() === checkIn.toDateString()) || (checkOut && date.toDateString() === checkOut.toDateString());
             const isInRange = checkIn && checkOut && date > checkIn && date < checkOut;
 
             days.push(
@@ -105,161 +104,202 @@ export default function ListingDetailPage() {
     }
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white font-sans">
             <Navbar />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-                {/* Image Gallery */}
-                <div className="grid grid-cols-4 gap-4 mb-10 rounded-3xl overflow-hidden">
-                    <div className="col-span-2 row-span-2 relative aspect-square">
-                        <img src={listing.images[currentImageIndex]} className="w-full h-full object-cover" alt="" />
+            <div className="max-w-[1400px] mx-auto px-6 py-8">
+                {/* Header */}
+                <div className="mb-6">
+                    <h1 className="text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-2">
+                        {listing.title}
+                    </h1>
+                    <div className="flex items-center gap-4 text-slate-600 text-sm font-medium">
+                        <span className="flex items-center gap-1.5">
+                            <i className="fa-solid fa-star text-[11px] text-black"></i>
+                            <span className="text-black font-bold">{listing.rating}</span>
+                            <span className="underline decoration-slate-300">({listing.reviewCount} reviews)</span>
+                        </span>
+                        <span>•</span>
+                        <span className="flex items-center gap-1.5 underline decoration-slate-300">
+                            {listing.location.address}
+                        </span>
                     </div>
-                    {listing.images.slice(1, 5).map((img, i) => (
-                        <div key={i} className="aspect-square relative cursor-pointer hover:opacity-80 transition-opacity" onClick={() => setCurrentImageIndex(i + 1)}>
-                            <img src={img} className="w-full h-full object-cover" alt="" />
-                        </div>
-                    ))}
                 </div>
 
-                <div className="grid lg:grid-cols-12 gap-16">
+                {/* Image Gallery - Masonry Style */}
+                <div className="grid grid-cols-4 grid-rows-2 gap-3 h-[50vh] min-h-[400px] rounded-2xl overflow-hidden mb-12 relative group">
+                    <div className="col-span-2 row-span-2 relative cursor-pointer">
+                        <img src={listing.images[currentImageIndex]} className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" alt="" />
+                        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full shadow-sm text-xs font-bold uppercase tracking-wider">
+                            Gäste-Favorit
+                        </div>
+                    </div>
+                    {listing.images.slice(1, 4).map((img, i) => (
+                        <div key={i} className="relative cursor-pointer overflow-hidden">
+                            <img src={img} className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" alt="" onClick={() => setCurrentImageIndex(i + 1)} />
+                        </div>
+                    ))}
+                    <div className="relative cursor-pointer overflow-hidden bg-slate-900">
+                        {listing.images[4] && (
+                            <img src={listing.images[4]} className="w-full h-full object-cover opacity-70 hover:opacity-100 hover:scale-110 transition-all duration-500" alt="" onClick={() => setCurrentImageIndex(5)} />
+                        )}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <button className="bg-white border text-sm font-bold px-4 py-2 rounded-lg shadow-sm hover:scale-105 transition-transform">
+                                <i className="fa-solid fa-grid mr-2"></i>
+                                Alle Fotos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid lg:grid-cols-12 gap-16 relative">
                     {/* Left Column: Details */}
-                    <div className="lg:col-span-7 space-y-10 text-left">
-                        <div>
-                            <h1 className="text-4xl font-black text-slate-900 mb-4 tracking-tight">{listing.title}</h1>
-                            <p className="text-slate-500 text-lg flex items-center font-medium">
-                                <i className="fa-solid fa-location-dot text-indigo-500 mr-2"></i>
-                                {listing.location.address}
+                    <div className="lg:col-span-8 space-y-12">
+
+                        {/* Host Info */}
+                        <div className="flex items-center justify-between py-6 border-b border-slate-100">
+                            <div>
+                                <h2 className="text-2xl font-bold text-slate-900 mb-1">
+                                    {isAffiliate ? `Flug mit ${listing.title.replace('Flug mit ', '')}` : `Entire villa hosted by Sarah`}
+                                </h2>
+                                <p className="text-slate-500">
+                                    {listing.maxGuests} Gäste • {Math.ceil(listing.maxGuests / 2)} Schlafzimmer • 2 Badezimmer
+                                </p>
+                            </div>
+                            <div className="w-14 h-14 bg-slate-100 rounded-full overflow-hidden">
+                                <img src={`https://i.pravatar.cc/150?u=${listing.id}`} alt="Host" className="w-full h-full object-cover" />
+                            </div>
+                        </div>
+
+                        {/* Feature Highlights */}
+                        <div className="space-y-6">
+                            <div className="flex gap-4 items-start">
+                                <div className="mt-1"><i className="fa-solid fa-medal text-lg text-slate-900"></i></div>
+                                <div>
+                                    <h3 className="font-bold text-slate-900 text-base">Superhost</h3>
+                                    <p className="text-slate-500 text-sm">Superhosts sind erfahrene, hoch bewertete Gastgeber.</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-4 items-start">
+                                <div className="mt-1"><i className="fa-solid fa-location-dot text-lg text-slate-900"></i></div>
+                                <div>
+                                    <h3 className="font-bold text-slate-900 text-base">Großartige Lage</h3>
+                                    <p className="text-slate-500 text-sm">95% der letzten Gäste haben die Lage mit 5 Sternen bewertet.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="border-t border-slate-100 pt-8 space-y-4">
+                            <h3 className="text-xl font-bold text-slate-900">Über diese Unterkunft</h3>
+                            <p className="text-slate-600 leading-relaxed text-base">
+                                {listing.description}
+                                <br /><br />
+                                Genießen Sie einen unvergesslichen Aufenthalt in dieser exklusiven Unterkunft. Perfekt gelegen, um die Umgebung zu erkunden, und ausgestattet mit allem Komfort, den Sie sich wünschen können.
                             </p>
                         </div>
 
-                        <div className="flex items-center gap-12 py-8 border-y border-slate-100">
-                            <div className="space-y-1">
-                                <div className="text-2xl font-black text-slate-900">{listing.rating}</div>
-                                <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Rating</div>
-                            </div>
-                            <div className="space-y-1">
-                                <div className="text-2xl font-black text-slate-900">{listing.reviewCount}</div>
-                                <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Reviews</div>
-                            </div>
-                            <div className="space-y-1">
-                                <div className="text-2xl font-black text-slate-900">{listing.maxGuests}</div>
-                                <div className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Guests</div>
-                            </div>
-                        </div>
-
-                        <div className="space-y-6">
-                            <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase tracking-widest text-sm">About this place</h3>
-                            <p className="text-slate-500 leading-relaxed text-lg font-medium">{listing.description}</p>
-                        </div>
-
-                        <div className="space-y-6">
-                            <h3 className="text-xl font-black text-slate-900 tracking-tight uppercase tracking-widest text-sm">Amenities</h3>
+                        <div className="border-t border-slate-100 pt-8">
+                            <h3 className="text-xl font-bold text-slate-900 mb-6">Was dieses Zuhause bietet</h3>
                             <div className="grid grid-cols-2 gap-y-4">
                                 {listing.amenities.map((item, i) => (
-                                    <div key={i} className="flex items-center gap-3 text-slate-600 font-semibold text-base">
-                                        <div className="w-6 h-6 rounded-full bg-indigo-50 flex items-center justify-center">
-                                            <i className="fa-solid fa-check text-[10px] text-indigo-600"></i>
-                                        </div>
+                                    <div key={i} className="flex items-center gap-3 text-slate-600 font-medium">
+                                        <i className="fa-solid fa-check text-slate-900 text-sm"></i>
                                         {item}
                                     </div>
                                 ))}
+                                <div className="flex items-center gap-3 text-slate-600 font-medium">
+                                    <i className="fa-solid fa-wifi text-slate-900 text-sm"></i> Highspeed WLAN
+                                </div>
+                                <div className="flex items-center gap-3 text-slate-600 font-medium">
+                                    <i className="fa-solid fa-car text-slate-900 text-sm"></i> Kostenloser Parkplatz
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Right Column: Booking Card */}
-                    <div className="lg:col-span-5">
-                        <div className="sticky top-32 bg-white rounded-[2.5rem] border border-slate-100 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] p-10 space-y-8">
-                            <div className="flex items-end justify-between">
-                                <div>
-                                    <span className="text-4xl font-black text-slate-900">€{listing.price}</span>
-                                    <span className="text-slate-400 font-medium ml-1">/ night</span>
-                                </div>
-                                <div className="flex items-center gap-1.5 font-black text-slate-900">
-                                    <i className="fa-solid fa-star text-amber-400"></i>
-                                    {listing.rating}
-                                </div>
-                            </div>
-
-                            {isAffiliate ? (
-                                <div className="space-y-6">
-                                    <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                                        <p className="text-slate-500 text-sm leading-relaxed font-medium">
-                                            This listing is provided by our partner <span className="text-slate-900 font-bold">Booking.com</span>. You will be redirected to their secure platform to complete your reservation.
-                                        </p>
+                    {/* Right Column: Sticky Booking Card */}
+                    <div className="lg:col-span-4 relative">
+                        <div className="sticky top-28">
+                            <div className="bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6 space-y-6">
+                                <div className="flex items-end justify-between mb-2">
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-2xl font-bold text-slate-900">€{listing.price}</span>
+                                        <span className="text-slate-500 text-sm"> Nacht</span>
                                     </div>
-                                    <a
-                                        href={listing.affiliateUrl}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="w-full bg-slate-900 text-white py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10"
-                                    >
-                                        View on Booking.com
-                                        <i className="fa-solid fa-arrow-up-right-from-square text-xs"></i>
-                                    </a>
-                                </div>
-                            ) : (
-                                <div className="space-y-8">
-                                    <div className="relative" ref={calendarRef}>
-                                        <div className="grid grid-cols-2 gap-px bg-slate-200 border border-slate-200 rounded-[1.5rem] overflow-hidden">
-                                            <div
-                                                onClick={() => setShowCalendar(true)}
-                                                className="bg-white p-5 hover:bg-slate-50 transition-colors cursor-pointer group"
-                                            >
-                                                <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Check-in</label>
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-sm font-black text-slate-900">
-                                                        {checkIn ? checkIn.toLocaleDateString('de-DE') : 'Select date'}
-                                                    </span>
-                                                    <i className={`fa-regular fa-calendar ${showCalendar ? 'text-indigo-600' : 'text-slate-300'} group-hover:text-indigo-500 transition-colors`}></i>
-                                                </div>
-                                            </div>
-                                            <div
-                                                onClick={() => setShowCalendar(true)}
-                                                className="bg-white p-5 hover:bg-slate-50 transition-colors cursor-pointer group"
-                                            >
-                                                <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Check-out</label>
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-sm font-black text-slate-900">
-                                                        {checkOut ? checkOut.toLocaleDateString('de-DE') : 'Select date'}
-                                                    </span>
-                                                    <i className={`fa-regular fa-calendar ${showCalendar ? 'text-indigo-600' : 'text-slate-300'} group-hover:text-indigo-500 transition-colors`}></i>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {showCalendar && (
-                                            <div className="absolute top-full left-0 right-0 z-50 mt-4 flex justify-center animate-in fade-in slide-in-from-top-2">
-                                                {renderCalendar()}
-                                            </div>
-                                        )}
+                                    <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 underline decoration-slate-300 cursor-pointer">
+                                        <i className="fa-solid fa-star text-[10px]"></i>
+                                        {listing.rating}
                                     </div>
+                                </div>
 
+                                {isAffiliate ? (
                                     <div className="space-y-4">
-                                        <button className="w-full bg-[#4F46E5] text-white py-5 rounded-[1.5rem] font-black text-sm uppercase tracking-[0.2em] hover:bg-indigo-700 transition-all shadow-2xl shadow-indigo-600/30 active:scale-[0.98]">
-                                            Reserve Now
-                                        </button>
-                                        <p className="text-center text-slate-400 text-[10px] font-bold uppercase tracking-widest">
-                                            You won&apos;t be charged yet
-                                        </p>
+                                        <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                                            <div className="flex gap-3">
+                                                <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center shrink-0">
+                                                    <span className="text-white font-bold text-xs">B.</span>
+                                                </div>
+                                                <p className="text-slate-600 text-xs leading-relaxed">
+                                                    Angebot bereitgestellt von <span className="font-bold text-slate-900">Booking.com</span>. Sichere Buchung & sofortige Bestätigung.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <a
+                                            href={listing.affiliateUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3.5 rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-blue-500/30"
+                                        >
+                                            Verfügbarkeit prüfen
+                                            <i className="fa-solid fa-arrow-right text-xs"></i>
+                                        </a>
+                                        <div className="text-center">
+                                            <span className="text-xs text-slate-400">Sie werden weitergeleitet</span>
+                                        </div>
                                     </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        <div className="border border-slate-300 rounded-xl overflow-hidden relative" ref={calendarRef}>
+                                            <div className="grid grid-cols-2 divide-x divide-slate-300 border-b border-slate-300">
+                                                <div onClick={() => setShowCalendar(true)} className="p-3 cursor-pointer hover:bg-slate-50">
+                                                    <label className="block text-[10px] font-bold uppercase text-slate-800">Check-in</label>
+                                                    <div className="text-sm text-slate-600 truncate">{checkIn ? checkIn.toLocaleDateString() : 'Datum'}</div>
+                                                </div>
+                                                <div onClick={() => setShowCalendar(true)} className="p-3 cursor-pointer hover:bg-slate-50">
+                                                    <label className="block text-[10px] font-bold uppercase text-slate-800">Check-out</label>
+                                                    <div className="text-sm text-slate-600 truncate">{checkOut ? checkOut.toLocaleDateString() : 'Datum'}</div>
+                                                </div>
+                                            </div>
+                                            <div className="p-3 hover:bg-slate-50 cursor-pointer">
+                                                <label className="block text-[10px] font-bold uppercase text-slate-800">Gäste</label>
+                                                <div className="text-sm text-slate-600">1 Gast</div>
+                                            </div>
 
-                                    <div className="pt-6 border-t border-slate-100 space-y-3">
-                                        <div className="flex justify-between text-sm font-medium text-slate-500">
-                                            <span>€{listing.price} x {nights} night{nights !== 1 ? 's' : ''}</span>
-                                            <span className="text-slate-900 font-bold">€{subtotal}</span>
+                                            {showCalendar && (
+                                                <div className="absolute top-0 right-0 z-50 p-2 transform translate-x-4">
+                                                    {/* Simple Calendar Overlay Placeholder - would be full calendar in real app */}
+                                                    <div className="bg-white p-4 shadow-xl rounded-xl border border-slate-200 w-72">
+                                                        {renderCalendar()}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="flex justify-between text-sm font-medium text-slate-500">
-                                            <span>Cleaning fee</span>
-                                            <span className="text-slate-900 font-bold">€{cleaningFee}</span>
+
+                                        <button className="w-full bg-[#E51D53] text-white py-3.5 rounded-xl font-bold text-lg hover:bg-[#D41B4D] transition-all shadow-lg shadow-rose-500/20 active:scale-[0.98]">
+                                            Reservieren
+                                        </button>
+
+                                        <div className="flex justify-between items-center pt-4">
+                                            <span className="text-slate-600 underline">€{listing.price} x 5 Nächte</span>
+                                            <span className="text-slate-900">€{listing.price * 5}</span>
                                         </div>
-                                        <div className="flex justify-between text-lg font-black text-slate-900 pt-3">
-                                            <span>Total</span>
-                                            <span>€{total}</span>
+                                        <div className="flex justify-between items-center pt-2 border-t border-slate-100 font-bold text-base">
+                                            <span>Gesamt</span>
+                                            <span>€{listing.price * 5 + 50}</span>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
