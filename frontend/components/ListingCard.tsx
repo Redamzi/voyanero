@@ -19,9 +19,19 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
         }
     };
 
+    // Helper to determine badge
+    const getBadge = () => {
+        if (listing.rating >= 4.9) return { text: "Gäste-Favorit", color: "bg-rose-500 text-white" };
+        if (listing.price < 150) return { text: "Superpreis", color: "bg-emerald-500 text-white" };
+        return null;
+    };
+
+    const badge = getBadge();
+
     return (
-        <div className="group flex flex-col h-full cursor-pointer">
-            <div className="relative aspect-square md:aspect-[20/19] rounded-[1.2rem] overflow-hidden bg-slate-100 shadow-sm border border-slate-50">
+        <div className="group flex flex-col h-full cursor-pointer relative">
+            {/* Image Carousel */}
+            <div className="relative aspect-[20/19] rounded-[1.5rem] overflow-hidden bg-slate-100 mb-4 shadow-sm group-hover:shadow-md transition-shadow duration-300">
                 <div
                     ref={scrollRef}
                     onScroll={handleScroll}
@@ -32,56 +42,62 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
                     ))}
                 </div>
 
-                <div className="absolute top-3 left-3 pointer-events-none">
-                    {listing.rating >= 4.8 && (
-                        <div className="bg-white px-3 py-1.5 rounded-full shadow-sm">
-                            <span className="text-[12px] font-black text-slate-900 tracking-tight">Gäste-Favorit</span>
+                {/* Badge Overlay */}
+                <div className="absolute top-4 left-4 pointer-events-none z-10">
+                    {badge && (
+                        <div className={`px-3 py-1.5 rounded-full shadow-sm ${badge.color} backdrop-blur-md bg-opacity-95`}>
+                            <span className="text-[11px] font-black uppercase tracking-wider">{badge.text}</span>
                         </div>
                     )}
                 </div>
 
-                <button className="absolute top-3 right-3 p-2 text-white/90 drop-shadow-md hover:scale-110 transition-transform">
-                    <i className="fa-solid fa-heart text-2xl" style={{ WebkitTextStroke: '1px rgba(0,0,0,0.1)' }}></i>
+                {/* Favorite Button */}
+                <button className="absolute top-3 right-3 p-2 text-white/70 hover:text-white hover:scale-110 transition-all active:scale-90 z-10">
+                    <i className="fa-solid fa-heart text-2xl drop-shadow-lg"></i>
                 </button>
 
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 pointer-events-none">
-                    {listing.images.map((_, idx) => (
-                        <div key={idx} className={`w-1.5 h-1.5 rounded-full transition-all ${idx === currentImageIndex ? 'bg-white scale-110' : 'bg-white/50'}`} />
+                {/* Pagination Dots */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 pointer-events-none z-10">
+                    {listing.images.slice(0, 5).map((_, idx) => ( // Limit dots to 5
+                        <div key={idx} className={`w-1.5 h-1.5 rounded-full transition-all shadow-sm ${idx === currentImageIndex ? 'bg-white scale-125' : 'bg-white/60'}`} />
                     ))}
                 </div>
+
+                {/* Gradient Overlay for Text Readability if needed */}
+                <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
             </div>
 
-            {listing.type === ListingType.AFFILIATE && listing.affiliateUrl ? (
-                <a href={listing.affiliateUrl} target="_blank" rel="noopener noreferrer" className="mt-3 text-left block">
-                    <div className="flex justify-between items-start">
-                        <h3 className="font-bold text-[15px] text-slate-900 truncate leading-tight">{listing.location.address}</h3>
-                        <div className="flex items-center gap-1 font-bold text-slate-900 text-[13px]">
-                            <i className="fa-solid fa-star text-[10px]"></i>
-                            {listing.rating}
-                        </div>
+            {/* Content */}
+            <Link href={listing.type === ListingType.AFFILIATE && listing.affiliateUrl ? listing.affiliateUrl : `/listing/${listing.id}`}
+                target={listing.type === ListingType.AFFILIATE ? "_blank" : "_self"}
+                rel={listing.type === ListingType.AFFILIATE ? "noopener noreferrer" : ""}
+                className="flex flex-col gap-1"
+            >
+                <div className="flex justify-between items-start gap-4">
+                    <h3 className="font-bold text-[16px] text-slate-900 truncate leading-snug tracking-tight flex-1">
+                        {listing.location.address}
+                    </h3>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                        <i className="fa-solid fa-star text-[11px] text-slate-900"></i>
+                        <span className="font-medium text-slate-900 text-[14px]">{listing.rating}</span>
                     </div>
-                    <p className="text-slate-500 text-[14px] leading-tight font-medium">Fluggesellschaft: {listing.title}</p>
-                    <div className="pt-2">
-                        <span className="font-bold text-[15px] text-slate-900">€{listing.price}</span>
-                        <span className="text-slate-500 font-medium ml-1 text-sm">pro Person</span>
-                    </div>
-                </a>
-            ) : (
-                <Link href={`/listing/${listing.id}`} className="mt-3 text-left block">
-                    <div className="flex justify-between items-start">
-                        <h3 className="font-bold text-[15px] text-slate-900 truncate leading-tight">{listing.location.address}</h3>
-                        <div className="flex items-center gap-1 font-bold text-slate-900 text-[13px]">
-                            <i className="fa-solid fa-star text-[10px]"></i>
-                            {listing.rating}
-                        </div>
-                    </div>
-                    <p className="text-slate-500 text-[14px] leading-tight font-medium">Gastgeber: Sarah</p>
-                    <div className="pt-2">
-                        <span className="font-bold text-[15px] text-slate-900">€{listing.price}</span>
-                        <span className="text-slate-500 font-medium ml-1 text-sm">Nacht</span>
-                    </div>
-                </Link>
-            )}
+                </div>
+
+                <p className="text-slate-500 text-[15px] font-medium truncate">
+                    {listing.type === ListingType.AFFILIATE ? `Flug mit ${listing.title.replace('Flug mit ', '')}` : `Hosted by ${listing.title}`}
+                </p>
+
+                <p className="text-slate-500 text-[15px] font-medium">
+                    {listing.description.includes('Ab') ? listing.description : 'Flexible Termine'}
+                </p>
+
+                <div className="mt-1.5 flex items-baseline gap-1.5">
+                    <span className="font-bold text-[16px] text-slate-900">€{listing.price}</span>
+                    <span className="text-slate-500 font-normal text-[15px]">
+                        {listing.type === ListingType.AFFILIATE ? 'pro Person' : 'Nacht'}
+                    </span>
+                </div>
+            </Link>
         </div>
     );
 };
