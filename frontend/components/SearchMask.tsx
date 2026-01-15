@@ -224,7 +224,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ initialLocation = "" }) => {
                                     <input
                                         type="text"
                                         placeholder="Ort, Region oder Unterkunft suchen..."
-                                        className="w-full h-20 pl-16 pr-6 rounded-full border-2 border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-lg font-bold text-slate-900 focus:outline-none focus:border-slate-900 placeholder:text-slate-300 transition-all font-jakarta"
+                                        className="w-full h-20 pl-16 pr-6 rounded-full border-2 border-rose-100 bg-white shadow-[0_8px_30px_rgb(255,56,92,0.06)] text-lg font-bold text-slate-900 focus:outline-none focus:border-[#FF385C] focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
                                         value={location}
                                         onChange={(e) => setLocation(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && setCurrentStep(2)}
