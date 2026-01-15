@@ -9,6 +9,7 @@ import Footer from '@/components/Footer';
 import { MOCK_LISTINGS } from '@/constants';
 import { Listing, ListingType, PropertyType } from '@/types';
 import { FlightService } from '@/services/api';
+import { HotelService } from '@/services/hotelService';
 
 // --- ANIMATION VARIANTS ---
 const containerVariants = {
@@ -98,9 +99,10 @@ function SearchContent() {
     const histogramData = [12, 25, 40, 60, 85, 100, 95, 80, 65, 50, 35, 20, 15, 10, 8];
 
     // Fetch Flights
+    // Fetch Data (Flights & Hotels)
     React.useEffect(() => {
-        const fetchFlights = async () => {
-            if (!locationQuery || !dateQuery) {
+        const fetchData = async () => {
+            if (!locationQuery && !dateQuery) {
                 setListings(MOCK_LISTINGS);
                 return;
             }
@@ -109,23 +111,30 @@ function SearchContent() {
             setError(null);
 
             try {
-                const searchRes = await FlightService.searchFlights({
-                    origin: "MUC",
-                    destination: locationQuery,
-                    date: dateQuery,
-                    adults,
-                    children,
-                    infants
-                });
+                // parallel fetch
+                const [flightRes, hotelRes] = await Promise.all([
+                    FlightService.searchFlights({
+                        origin: "MUC",
+                        destination: locationQuery,
+                        date: dateQuery || new Date().toISOString().split('T')[0],
+                        adults,
+                        children,
+                        infants
+                    }),
+                    HotelService.searchHotels(locationQuery)
+                ]);
 
-                if (searchRes.success && searchRes.flights && searchRes.flights.length > 0) {
+                let combinedListings: Listing[] = [];
+
+                // Process Flights
+                if (flightRes.success && flightRes.flights && flightRes.flights.length > 0) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const mappedListings: Listing[] = searchRes.flights.map((flight: any, index: number) => ({
+                    const flightListings: Listing[] = flightRes.flights.map((flight: any, index: number) => ({
                         id: `flight-${index}`,
                         title: `Flug mit ${flight.airline || 'Airline'}`,
                         description: `Ab ${new Date(flight.departure_at).toLocaleDateString('de-DE')}`,
                         type: ListingType.AFFILIATE,
-                        propertyType: PropertyType.HOTEL,
+                        propertyType: PropertyType.HOTEL, // Using Hotel type for now
                         price: flight.price || 0,
                         location: {
                             address: `${flight.origin || 'MUC'} → ${flight.destination || locationQuery}`,
@@ -139,23 +148,50 @@ function SearchContent() {
                         maxGuests: adults + children,
                         affiliateUrl: `https://www.aviasales.com/search/${flight.origin}${new Date(flight.departure_at).toISOString().split('T')[0]}${flight.destination}1?marker=${flight.marker}`
                     }));
+                    combinedListings = [...combinedListings, ...flightListings];
+                }
 
-                    setListings(mappedListings);
+                // Process Hotels
+                if (hotelRes && hotelRes.length > 0) {
+                    const hotelListings: Listing[] = hotelRes.map((hotel) => ({
+                        id: hotel.id,
+                        title: hotel.title,
+                        description: hotel.description,
+                        type: ListingType.AFFILIATE,
+                        propertyType: PropertyType.HOTEL,
+                        price: hotel.price,
+                        location: {
+                            address: hotel.location,
+                            lat: 0,
+                            lng: 0
+                        },
+                        images: [hotel.image],
+                        amenities: hotel.amenities,
+                        rating: hotel.rating,
+                        reviewCount: hotel.reviews,
+                        maxGuests: 2, // Mock default
+                        affiliateUrl: hotel.deepLink
+                    }));
+                    combinedListings = [...combinedListings, ...hotelListings];
+                }
+
+                if (combinedListings.length > 0) {
+                    setListings(combinedListings);
                 } else {
                     setListings([]);
-                    setError("Keine Flüge gefunden. Versuche andere Daten oder Ziele.");
+                    setError("Keine Ergebnisse gefunden. Versuche andere Daten oder Ziele.");
                 }
 
             } catch (err) {
-                console.error("Flight fetch failed", err);
-                setError("Flüge konnten nicht geladen werden.");
+                console.error("Data fetch failed", err);
+                setError("Daten konnten nicht geladen werden.");
                 setListings(MOCK_LISTINGS);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchFlights();
+        fetchData();
     }, [locationQuery, dateQuery, adults, children, infants]);
 
 
