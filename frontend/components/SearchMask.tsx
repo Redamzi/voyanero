@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { createPortal } from 'react-dom';
 
 interface SearchMaskProps {
     variant?: 'hero' | 'default' | 'compact';
@@ -239,7 +240,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
             </div>
 
             {/* --- OPEN STATE (Overlay Wizard) --- */}
-            {isOpen && (
+            {isOpen && (typeof document !== 'undefined') && createPortal(
                 <div className="fixed inset-0 z-[99999] bg-white flex flex-col animate-in fade-in duration-300 h-[100dvh] w-screen overflow-hidden">
                     {/* Header */}
                     <div className="px-8 py-6 flex items-center justify-between">
@@ -409,7 +410,6 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                         )}
 
                         {/* STEP 3: WER */}
-                        {/* STEP 3: WER */}
                         {currentStep === 3 && (
                             <div className="w-full max-w-lg mx-auto px-4 text-center animate-in slide-in-from-right-8 duration-500">
                                 <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-8 tracking-tighter">Wer reist mit?</h2>
@@ -528,7 +528,8 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                             </button>
                         </div>
                     )}
-                </div>
+                </div>,
+                document.body
             )}
         </>
     );
