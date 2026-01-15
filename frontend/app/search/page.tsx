@@ -2,12 +2,78 @@
 
 import React, { useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import ListingCard from '@/components/ListingCard';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { MOCK_LISTINGS } from '@/constants';
 import { Listing, ListingType, PropertyType } from '@/types';
 import { FlightService } from '@/services/api';
+
+// --- ANIMATION VARIANTS ---
+const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: { staggerChildren: 0.1 }
+    }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: {
+        opacity: 1,
+        y: 0,
+        transition: { type: "spring", damping: 20, stiffness: 100 }
+    }
+};
+
+const checkboxVariants = {
+    hidden: { opacity: 0, x: -20, scale: 0.8 },
+    visible: {
+        opacity: 1,
+        x: 0,
+        scale: 1,
+        transition: { type: "spring", stiffness: 200, damping: 20 }
+    },
+    exit: { opacity: 0, x: -20, scale: 0.8 }
+};
+
+const SelectableListing = ({ listing, isSelectionMode }: { listing: Listing, isSelectionMode: boolean }) => {
+    return (
+        <motion.div
+            layout
+            className="relative group"
+            variants={itemVariants}
+        >
+            <div className="flex items-start">
+                <AnimatePresence>
+                    {isSelectionMode && (
+                        <motion.div
+                            variants={checkboxVariants}
+                            initial="hidden"
+                            animate="visible"
+                            exit="exit"
+                            className="mr-4 mt-24 shrink-0"
+                        >
+                            <div className="w-8 h-8 rounded-full border-2 border-slate-300 bg-white flex items-center justify-center cursor-pointer hover:border-rose-500 hover:text-rose-500 transition-colors">
+                                <i className="fa-solid fa-check text-white"></i>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <motion.div
+                    layout
+                    className="flex-1 min-w-0"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                >
+                    <ListingCard listing={listing} />
+                </motion.div>
+            </div>
+        </motion.div>
+    );
+};
 
 function SearchContent() {
     const searchParams = useSearchParams();
@@ -20,6 +86,7 @@ function SearchContent() {
     const infants = parseInt(searchParams.get('infants') || '0');
 
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+    const [isSelectionMode, setIsSelectionMode] = useState(false);
     const [priceRange, setPriceRange] = useState({ min: 100, max: 2000 });
     const [counts, setCounts] = useState({ bedrooms: 0, beds: 0, bathrooms: 0 });
 
@@ -34,7 +101,6 @@ function SearchContent() {
     React.useEffect(() => {
         const fetchFlights = async () => {
             if (!locationQuery || !dateQuery) {
-                // Fallback to mock if no search
                 setListings(MOCK_LISTINGS);
                 return;
             }
@@ -43,9 +109,8 @@ function SearchContent() {
             setError(null);
 
             try {
-                // Data Access API returns results immediately
                 const searchRes = await FlightService.searchFlights({
-                    origin: "MUC", // Hardcoded for now
+                    origin: "MUC",
                     destination: locationQuery,
                     date: dateQuery,
                     adults,
@@ -53,9 +118,7 @@ function SearchContent() {
                     infants
                 });
 
-                // Data Access API returns: { success: true, flights: [...] }
                 if (searchRes.success && searchRes.flights && searchRes.flights.length > 0) {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     const mappedListings: Listing[] = searchRes.flights.map((flight: any, index: number) => ({
                         id: `flight-${index}`,
                         title: `Flug mit ${flight.airline || 'Airline'}`,
@@ -78,7 +141,6 @@ function SearchContent() {
 
                     setListings(mappedListings);
                 } else {
-                    // No results found
                     setListings([]);
                     setError("Keine Flüge gefunden. Versuche andere Daten oder Ziele.");
                 }
@@ -86,7 +148,7 @@ function SearchContent() {
             } catch (err) {
                 console.error("Flight fetch failed", err);
                 setError("Flüge konnten nicht geladen werden.");
-                setListings(MOCK_LISTINGS); // Fallback so UI isn't broken
+                setListings(MOCK_LISTINGS);
             } finally {
                 setIsLoading(false);
             }
@@ -107,16 +169,16 @@ function SearchContent() {
     };
 
     const filteredListings = useMemo(() => {
-        // Apply local filtering to the fetched listings (mock or real)
         return listings.filter(l => l.price >= priceRange.min && l.price <= priceRange.max);
     }, [listings, priceRange]);
 
     return (
         <div className="min-h-screen bg-white">
-            <Navbar onFilterClick={() => setIsFilterModalOpen(true)} />
-
-            {/* Content Area - Sticky Logic moved to Navbar */}
-            {/* Added top padding to account for missing subheader if needed, but standard padding is fine */}
+            <Navbar
+                onFilterClick={() => setIsFilterModalOpen(true)}
+                forceCompact={true}
+                onToggleSelectionMode={() => setIsSelectionMode(!isSelectionMode)}
+            />
 
             <div className="max-w-[1600px] mx-auto px-6 sm:px-8 lg:px-12 py-10 text-left">
                 <h1 className="text-2xl font-black text-slate-900 mb-8 tracking-tight">
@@ -140,11 +202,18 @@ function SearchContent() {
                         ))}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
-                        {filteredListings.map(listing => (
-                            <ListingCard key={listing.id} listing={listing} />
-                        ))}
-                    </div>
+                    <motion.div
+                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10"
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="show"
+                    >
+                        <AnimatePresence mode='popLayout'>
+                            {filteredListings.map(listing => (
+                                <SelectableListing key={listing.id} listing={listing} isSelectionMode={isSelectionMode} />
+                            ))}
+                        </AnimatePresence>
+                    </motion.div>
                 )}
             </div>
 

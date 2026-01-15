@@ -240,7 +240,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
 
             {/* --- OPEN STATE (Overlay Wizard) --- */}
             {isOpen && (
-                <div className="fixed inset-0 z-50 bg-white flex flex-col animate-in fade-in duration-300">
+                <div className="fixed inset-0 z-[99999] bg-white flex flex-col animate-in fade-in duration-300 h-[100dvh] w-screen overflow-hidden">
                     {/* Header */}
                     <div className="px-8 py-6 flex items-center justify-between">
                         {/* Logo */}

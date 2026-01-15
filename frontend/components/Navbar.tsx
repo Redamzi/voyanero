@@ -9,19 +9,26 @@ interface NavbarProps {
     user?: User | null;
     onLogout?: () => void;
     onFilterClick?: () => void;
+    forceCompact?: boolean;
+    onToggleSelectionMode?: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick }) => {
+const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCompact = false, onToggleSelectionMode }) => {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
 
     React.useEffect(() => {
+        if (forceCompact) {
+            setIsScrolled(true);
+            return;
+        }
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 50);
         };
+        handleScroll(); // Check initially
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    }, [forceCompact]);
 
     return (
         <nav className={`border-b border-slate-100 bg-white sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'shadow-sm py-2' : 'py-0'}`}>
@@ -65,6 +72,17 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick }) => {
 
                     {/* Right Section */}
                     <div className="hidden md:flex items-center gap-4 shrink-0 justify-end">
+                        {/* Selection Toggle Button */}
+                        {isScrolled && onToggleSelectionMode && (
+                            <button
+                                onClick={onToggleSelectionMode}
+                                className="h-12 w-12 border border-slate-200 rounded-full flex items-center justify-center text-slate-700 hover:border-slate-900 hover:bg-slate-50 transition-all bg-white animate-in zoom-in spin-in-1"
+                                title="Auswahlmodus"
+                            >
+                                <i className="fa-solid fa-list-check text-sm"></i>
+                            </button>
+                        )}
+
                         {/* Filter Button */}
                         {isScrolled && onFilterClick && (
                             <button
