@@ -1,15 +1,17 @@
 "use client";
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ListingCard from '@/components/ListingCard';
 import { MOCK_USERS, MOCK_LISTINGS } from '@/constants';
-import { UserRole } from '@/types';
+
+type TabId = 'overview' | 'trips' | 'favorites' | 'settings';
 
 export default function Dashboard() {
     const user = MOCK_USERS[1]; // Default to user for demo
-    const [activeTab, setActiveTab] = useState<'overview' | 'trips' | 'favorites' | 'settings'>('overview');
+    const [activeTab, setActiveTab] = useState<TabId>('overview');
 
     // Mock data for dashboard
     const upcomingTrips = MOCK_LISTINGS.slice(0, 2);
@@ -24,8 +26,13 @@ export default function Dashboard() {
                     {/* Sidebar / Navigation */}
                     <div className="lg:w-72 shrink-0 space-y-8">
                         <div className="flex items-center gap-4 p-4 bg-white rounded-[2rem] border border-slate-100 shadow-sm">
-                            <div className="w-14 h-14 bg-slate-100 rounded-full overflow-hidden">
-                                <img src={`https://i.pravatar.cc/150?u=${user.id}`} alt="Profile" className="w-full h-full object-cover" />
+                            <div className="w-14 h-14 bg-slate-100 rounded-full overflow-hidden relative">
+                                <Image
+                                    src={`https://i.pravatar.cc/150?u=${user.id}`}
+                                    alt="Profile"
+                                    fill
+                                    className="object-cover"
+                                />
                             </div>
                             <div>
                                 <h2 className="font-bold text-slate-900">{user.name}</h2>
@@ -42,7 +49,7 @@ export default function Dashboard() {
                             ].map((item) => (
                                 <button
                                     key={item.id}
-                                    onClick={() => setActiveTab(item.id as any)}
+                                    onClick={() => setActiveTab(item.id as TabId)}
                                     className={`w-full flex items-center gap-4 px-6 py-4 rounded-[1.5rem] font-bold text-sm transition-all duration-300
                                     ${activeTab === item.id
                                             ? 'bg-slate-900 text-white shadow-lg shadow-slate-900/10'
