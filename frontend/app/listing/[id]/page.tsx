@@ -290,12 +290,16 @@ export default function ListingDetailPage() {
                                         </button>
 
                                         <div className="flex justify-between items-center pt-4">
-                                            <span className="text-slate-600 underline">€{listing.price} x 5 Nächte</span>
-                                            <span className="text-slate-900">€{listing.price * 5}</span>
+                                            <span className="text-slate-600 underline">€{listing.price} x {nights} Nächte</span>
+                                            <span className="text-slate-900">€{subtotal}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center pt-2">
+                                            <span className="text-slate-600 underline">Reinigungsgebühr</span>
+                                            <span className="text-slate-900">€{cleaningFee}</span>
                                         </div>
                                         <div className="flex justify-between items-center pt-2 border-t border-slate-100 font-bold text-base">
                                             <span>Gesamt</span>
-                                            <span>€{listing.price * 5 + 50}</span>
+                                            <span>€{total}</span>
                                         </div>
                                     </div>
                                 )}
