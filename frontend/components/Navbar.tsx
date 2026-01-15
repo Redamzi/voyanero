@@ -13,7 +13,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout }) => {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
     return (
-        <nav className="border-b border-slate-100 bg-white sticky top-0 z-50">
+        <nav className="border-b border-slate-100 bg-white z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-20 items-center">
                     {/* Logo */}
