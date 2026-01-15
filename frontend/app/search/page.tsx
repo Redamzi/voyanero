@@ -114,23 +114,10 @@ function SearchContent() {
 
     return (
         <div className="min-h-screen bg-white">
-            <Navbar />
+            <Navbar onFilterClick={() => setIsFilterModalOpen(true)} />
 
-            {/* Sticky Filter Header */}
-            <div className="sticky top-20 z-[40] bg-white border-b border-slate-100 py-4 shadow-sm">
-                <div className="max-w-[1400px] mx-auto px-4 flex items-center gap-4">
-                    <div className="flex-1">
-                        <SearchMask initialLocation={locationQuery} />
-                    </div>
-                    <button
-                        onClick={() => setIsFilterModalOpen(true)}
-                        className="h-12 px-6 border border-slate-200 rounded-full flex items-center gap-3 font-bold text-sm text-slate-700 hover:border-slate-900 transition-all bg-white"
-                    >
-                        <i className="fa-solid fa-sliders"></i>
-                        <span className="hidden sm:inline">Filter</span>
-                    </button>
-                </div>
-            </div>
+            {/* Content Area - Sticky Logic moved to Navbar */}
+            {/* Added top padding to account for missing subheader if needed, but standard padding is fine */}
 
             <div className="max-w-[1600px] mx-auto px-6 sm:px-8 lg:px-12 py-10 text-left">
                 <h1 className="text-2xl font-black text-slate-900 mb-8 tracking-tight">
