@@ -40,7 +40,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="w-full max-w-5xl mx-auto">
+            <div className="w-full max-w-5xl mx-auto sticky top-6 z-40">
               <SearchMask variant="hero" />
             </div>
           </div>
