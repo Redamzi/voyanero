@@ -117,7 +117,7 @@ function SearchContent() {
             <Navbar />
 
             {/* Sticky Filter Header */}
-            <div className="sticky top-0 z-[40] bg-white border-b border-slate-100 py-4 shadow-sm">
+            <div className="sticky top-20 z-[40] bg-white border-b border-slate-100 py-4 shadow-sm">
                 <div className="max-w-[1400px] mx-auto px-4 flex items-center gap-4">
                     <div className="flex-1">
                         <SearchMask initialLocation={locationQuery} />

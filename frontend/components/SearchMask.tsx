@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface SearchMaskProps {
-    variant?: 'hero' | 'compact';
+    variant?: 'hero' | 'default' | 'compact';
     initialLocation?: string;
 }
 
@@ -16,7 +16,7 @@ const DESTINATIONS = [
     { name: "Tokyo, Japan", icon: "fa-torii-gate", label: "Tokyo" }
 ];
 
-const SearchMask: React.FC<SearchMaskProps> = ({ initialLocation = "" }) => {
+const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLocation = "" }) => {
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
@@ -127,45 +127,83 @@ const SearchMask: React.FC<SearchMaskProps> = ({ initialLocation = "" }) => {
         );
     };
 
+    const [isSticky, setIsSticky] = useState(false);
+
+    useEffect(() => {
+        if (variant !== 'hero') return;
+
+        const handleScroll = () => {
+            const threshold = 660; // Approximate hero height
+            setIsSticky(window.scrollY > threshold);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [variant]);
+
+    const isCompact = variant === 'compact' || (variant === 'hero' && isSticky);
+
     return (
         <>
             {/* --- CLOSED STATE (Floating Bar) --- */}
             <div
+                className={`transition-all duration-300 ease-in-out ${isCompact
+                    ? 'w-full max-w-2xl mx-auto bg-white rounded-full shadow-md border border-slate-200 p-2 pl-6 flex items-center justify-between cursor-pointer hover:shadow-lg'
+                    : 'bg-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 p-2 pl-8 flex items-center justify-between max-w-3xl w-full mx-auto cursor-pointer hover:shadow-2xl hover:scale-[1.01] group'
+                    }`}
                 onClick={() => setIsOpen(true)}
-                className="bg-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 p-2 pl-8 flex items-center justify-between max-w-3xl w-full mx-auto cursor-pointer hover:shadow-2xl hover:scale-[1.01] transition-all duration-300 group"
             >
-                <div className="flex items-center gap-4 py-2 pr-8 border-r border-slate-100">
-                    <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
-                        <i className="fa-solid fa-location-dot text-sm"></i>
-                    </div>
-                    <div className="flex flex-col text-left">
-                        <span className="text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-rose-500 transition-colors">Wohin?</span>
-                        <span className="text-slate-400 font-medium truncate max-w-[120px]">{location || "Ziele suchen"}</span>
-                    </div>
-                </div>
-                <div className="flex items-center gap-4 px-8 border-r border-slate-100 hidden md:flex">
-                    <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
-                        <i className="fa-solid fa-calendar-days text-sm"></i>
-                    </div>
-                    <div className="flex flex-col text-left">
-                        <span className="text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-rose-500 transition-colors">Wann?</span>
-                        <span className="text-slate-400 font-medium">
-                            {checkIn ? checkIn.toLocaleDateString('de-DE') : "Beliebige Woche"}
-                        </span>
-                    </div>
-                </div>
-                <div className="flex items-center gap-4 px-8 hidden md:flex">
-                    <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
-                        <i className="fa-solid fa-user-group text-sm"></i>
-                    </div>
-                    <div className="flex flex-col text-left">
-                        <span className="text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-rose-500 transition-colors">Wer?</span>
-                        <span className="text-slate-400 font-medium">{guests} Gäste</span>
-                    </div>
-                </div>
-                <div className="w-12 h-12 bg-[#FF385C] rounded-full flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-                    <i className="fa-solid fa-magnifying-glass text-lg"></i>
-                </div>
+                {isCompact ? (
+                    // Compact View
+                    <>
+                        <div className="flex items-center divide-x divide-slate-200 w-full">
+                            <span className="text-sm font-bold text-slate-900 px-4 truncate flex-1 text-center">{location || "Irgendwo"}</span>
+                            <span className="text-sm font-bold text-slate-900 px-4 truncate flex-1 text-center">
+                                {checkIn ? checkIn.toLocaleDateString('de-DE') : "Jederzeit"}
+                            </span>
+                            <span className="text-sm font-medium text-slate-500 px-4 truncate flex-1 text-center">{guests ? `${guests} Gäste` : "Gäste hinzufügen"}</span>
+                        </div>
+                        <div className="w-10 h-10 bg-rose-500 rounded-full flex items-center justify-center text-white shrink-0 ml-2">
+                            <i className="fa-solid fa-magnifying-glass text-xs"></i>
+                        </div>
+                    </>
+                ) : (
+                    // Full Hero View (Existing)
+                    <>
+                        <div className="flex items-center gap-4 py-2 pr-8 border-r border-slate-100">
+                            <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
+                                <i className="fa-solid fa-location-dot text-sm"></i>
+                            </div>
+                            <div className="flex flex-col text-left">
+                                <span className="text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-rose-500 transition-colors">Wohin?</span>
+                                <span className="text-slate-400 font-medium truncate max-w-[120px]">{location || "Ziele suchen"}</span>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4 px-8 border-r border-slate-100 hidden md:flex">
+                            <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
+                                <i className="fa-solid fa-calendar-days text-sm"></i>
+                            </div>
+                            <div className="flex flex-col text-left">
+                                <span className="text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-rose-500 transition-colors">Wann?</span>
+                                <span className="text-slate-400 font-medium">
+                                    {checkIn ? checkIn.toLocaleDateString('de-DE') : "Beliebige Woche"}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-4 px-8 hidden md:flex">
+                            <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
+                                <i className="fa-solid fa-user-group text-sm"></i>
+                            </div>
+                            <div className="flex flex-col text-left">
+                                <span className="text-[11px] font-black uppercase tracking-widest text-slate-800 group-hover:text-rose-500 transition-colors">Wer?</span>
+                                <span className="text-slate-400 font-medium">{guests} Gäste</span>
+                            </div>
+                        </div>
+                        <div className="w-12 h-12 bg-[#FF385C] rounded-full flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                            <i className="fa-solid fa-magnifying-glass text-lg"></i>
+                        </div>
+                    </>
+                )}
             </div>
 
             {/* --- OPEN STATE (Overlay Wizard) --- */}
