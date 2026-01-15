@@ -114,7 +114,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onPreview }) => {
             </div>
 
             {/* Content */}
-            {/* @ts-ignore - dynamic component props issue */}
+            {/* @ts-expect-error - dynamic component props issue */}
             <Wrapper {...wrapperProps}>
                 <div className="flex justify-between items-start gap-4">
                     <h3 className="font-bold text-[16px] text-slate-900 truncate leading-snug tracking-tight flex-1">
