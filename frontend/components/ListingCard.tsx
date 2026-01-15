@@ -28,6 +28,10 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
 
     const badge = getBadge();
 
+    const url = listing.type === ListingType.AFFILIATE && listing.affiliateUrl ? listing.affiliateUrl : `/listing/${listing.id}`;
+    const target = listing.type === ListingType.AFFILIATE ? "_blank" : "_self";
+    const rel = listing.type === ListingType.AFFILIATE ? "noopener noreferrer" : "";
+
     return (
         <div className="group flex flex-col h-full cursor-pointer relative">
             {/* Image Carousel */}
@@ -38,7 +42,20 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
                     className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scrollbar-hide no-scrollbar"
                 >
                     {listing.images.map((img, idx) => (
-                        <img key={idx} src={img} className="w-full h-full object-cover snap-start flex-shrink-0" alt="" />
+                        <Link
+                            key={idx}
+                            href={url}
+                            target={target}
+                            rel={rel}
+                            className="w-full h-full flex-shrink-0 snap-start block"
+                        >
+                            <img
+                                src={img}
+                                className="w-full h-full object-cover"
+                                alt={listing.title}
+                                draggable={false}
+                            />
+                        </Link>
                     ))}
                 </div>
 
@@ -52,7 +69,14 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
                 </div>
 
                 {/* Favorite Button */}
-                <button className="absolute top-3 right-3 p-2 text-white/70 hover:text-white hover:scale-110 transition-all active:scale-90 z-10">
+                <button
+                    className="absolute top-3 right-3 p-2 text-white/70 hover:text-white hover:scale-110 transition-all active:scale-90 z-20"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Add favorite logic here
+                    }}
+                >
                     <i className="fa-solid fa-heart text-2xl drop-shadow-lg"></i>
                 </button>
 
@@ -64,13 +88,13 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
                 </div>
 
                 {/* Gradient Overlay for Text Readability if needed */}
-                <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
+                <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/10 to-transparent pointer-events-none z-10" />
             </div>
 
             {/* Content */}
-            <Link href={listing.type === ListingType.AFFILIATE && listing.affiliateUrl ? listing.affiliateUrl : `/listing/${listing.id}`}
-                target={listing.type === ListingType.AFFILIATE ? "_blank" : "_self"}
-                rel={listing.type === ListingType.AFFILIATE ? "noopener noreferrer" : ""}
+            <Link href={url}
+                target={target}
+                rel={rel}
                 className="flex flex-col gap-1"
             >
                 <div className="flex justify-between items-start gap-4">
