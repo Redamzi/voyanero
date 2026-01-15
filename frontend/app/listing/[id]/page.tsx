@@ -241,7 +241,7 @@ export default function ListingDetailPage() {
                                 />
                                 <div className="absolute inset-0 bg-slate-900/10 group-hover:bg-slate-900/0 transition-colors"></div>
                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded-full shadow-2xl animate-bounce">
-                                    <div className="w-12 h-12 bg-rose-500 rounded-full flex items-center justify-center text-white text-xl shadow-lg ring-4 ring-white">
+                                    <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center text-white text-xl shadow-lg ring-4 ring-white">
                                         <i className="fa-solid fa-house"></i>
                                     </div>
                                 </div>

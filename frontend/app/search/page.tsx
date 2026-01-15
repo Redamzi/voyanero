@@ -57,7 +57,7 @@ const SelectableListing = ({ listing, isSelectionMode }: { listing: Listing, isS
                             exit="exit"
                             className="mr-4 mt-24 shrink-0"
                         >
-                            <div className="w-8 h-8 rounded-full border-2 border-slate-300 bg-white flex items-center justify-center cursor-pointer hover:border-rose-500 hover:text-rose-500 transition-colors">
+                            <div className="w-8 h-8 rounded-full border-2 border-slate-300 bg-white flex items-center justify-center cursor-pointer hover:border-black hover:text-black transition-colors">
                                 <i className="fa-solid fa-check text-white"></i>
                             </div>
                         </motion.div>
@@ -278,7 +278,7 @@ function SearchContent() {
                                             const pos = (i / (histogramData.length - 1)) * 1000;
                                             const active = pos >= priceRange.min && pos <= priceRange.max;
                                             return (
-                                                <div key={i} className={`flex-1 rounded-t-md transition-all duration-500 ${active ? 'bg-[#FF385C]' : 'bg-slate-100'}`} style={{ height: `${h}%` }}></div>
+                                                <div key={i} className={`flex-1 rounded-t-md transition-all duration-500 ${active ? 'bg-[#000000]' : 'bg-slate-100'}`} style={{ height: `${h}%` }}></div>
                                             );
                                         })}
                                     </div>

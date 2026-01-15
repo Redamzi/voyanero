@@ -21,7 +21,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
 
     // Helper to determine badge
     const getBadge = () => {
-        if (listing.rating >= 4.9) return { text: "Gäste-Favorit", color: "bg-rose-500 text-white" };
+        if (listing.rating >= 4.9) return { text: "Gäste-Favorit", color: "bg-black text-white" };
         if (listing.price < 150) return { text: "Superpreis", color: "bg-emerald-500 text-white" };
         return null;
     };
