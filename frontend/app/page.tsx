@@ -73,15 +73,15 @@ export default function Home() {
         {/* 3. PROMOTION CARD */}
         <section className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12">
           <div className="bg-[#111827] rounded-[2.5rem] md:rounded-[4.5rem] p-8 md:p-24 flex flex-col md:flex-row items-center gap-12 md:gap-20 overflow-hidden relative text-left group">
-            <div className="absolute top-0 right-0 w-1/2 h-full bg-black skew-x-[-12deg] translate-x-48 opacity-10 md:block hidden group-hover:translate-x-32 transition-transform duration-1000"></div>
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-rose-500 skew-x-[-12deg] translate-x-48 opacity-10 md:block hidden group-hover:translate-x-32 transition-transform duration-1000"></div>
 
             <div className="flex-1 space-y-6 md:space-y-8 relative z-10">
-              <div className="inline-flex items-center gap-3 px-5 py-2 bg-black/10 border border-black/20 rounded-full text-black text-[10px] font-black uppercase tracking-[0.3em]">
+              <div className="inline-flex items-center gap-3 px-5 py-2 bg-rose-500/10 border border-rose-500/20 rounded-full text-rose-500 text-[10px] font-black uppercase tracking-[0.3em]">
                 Voyanero Membership
               </div>
               <h2 className="text-3xl md:text-7xl font-black text-white tracking-tighter leading-none">Spare 15% bei jeder <br /> Direktbuchung.</h2>
               <p className="text-slate-400 font-medium text-base md:text-xl leading-relaxed max-w-xl">Werde Mitglied und schalte exklusive Raten bei unseren lokalen Gastgebern frei.</p>
-              <button className="bg-black text-white px-10 md:px-12 py-4 md:py-5 rounded-[1.2rem] md:rounded-[1.5rem] font-black text-[10px] md:text-[11px] uppercase tracking-[0.3em] shadow-2xl shadow-black/30 active:scale-95 transition-all hover:bg-rose-600">
+              <button className="bg-rose-500 text-white px-10 md:px-12 py-4 md:py-5 rounded-[1.2rem] md:rounded-[1.5rem] font-black text-[10px] md:text-[11px] uppercase tracking-[0.3em] shadow-2xl shadow-rose-500/30 active:scale-95 transition-all hover:bg-rose-600">
                 Jetzt Mitglied werden
               </button>
             </div>

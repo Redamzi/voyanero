@@ -61,7 +61,7 @@ export default function Dashboard() {
                             ))}
                         </nav>
 
-                        <div className="bg-gradient-to-br from-[#000000] to-[#E31C5F] p-6 rounded-[2rem] text-white shadow-xl shadow-black/20">
+                        <div className="bg-gradient-to-br from-[#FF385C] to-[#E31C5F] p-6 rounded-[2rem] text-white shadow-xl shadow-rose-500/20">
                             <i className="fa-solid fa-crown text-3xl mb-4 opacity-80"></i>
                             <h3 className="font-bold text-lg mb-1">Voyanero Plus</h3>
                             <p className="text-xs text-white/80 mb-4 leading-relaxed">Upgrade to unlock exclusive deals and 24/7 concierge support.</p>

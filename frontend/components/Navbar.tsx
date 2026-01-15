@@ -37,10 +37,10 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                     {/* Logo */}
                     <div className="flex items-center gap-2 shrink-0">
                         <Link href="/" className="flex items-center gap-2 group">
-                            <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white shadow-lg shadow-rose-200 group-hover:scale-110 transition-transform duration-300">
+                            <div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-rose-200 group-hover:scale-110 transition-transform duration-300">
                                 <i className="fa-solid fa-paper-plane text-lg"></i>
                             </div>
-                            <span className="hidden lg:block text-xl font-black tracking-tighter text-slate-900 group-hover:text-black transition-colors">VOYANERO</span>
+                            <span className="hidden lg:block text-xl font-black tracking-tighter text-slate-900 group-hover:text-rose-500 transition-colors">VOYANERO</span>
                         </Link>
                     </div>
 
@@ -134,7 +134,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                                                     Merkliste
                                                 </Link>
                                                 <div className="h-px bg-slate-100 my-2 mx-6"></div>
-                                                <button onClick={onLogout} className="block w-full text-left px-6 py-3 text-sm font-medium text-black hover:bg-rose-50 transition-colors">
+                                                <button onClick={onLogout} className="block w-full text-left px-6 py-3 text-sm font-medium text-rose-500 hover:bg-rose-50 transition-colors">
                                                     Ausloggen
                                                 </button>
                                             </div>
