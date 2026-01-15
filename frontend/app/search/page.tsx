@@ -3,7 +3,6 @@
 import React, { useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import ListingCard from '@/components/ListingCard';
-import SearchMask from '@/components/SearchMask';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { MOCK_LISTINGS } from '@/constants';
