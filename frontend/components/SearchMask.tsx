@@ -236,18 +236,36 @@ const SearchMask: React.FC<SearchMaskProps> = ({ initialLocation = "" }) => {
                                         <span className="text-xs font-black text-slate-900">Mein Standort</span>
                                     </button>
 
-                                    {DESTINATIONS.map(dest => (
-                                        <button
-                                            key={dest.name}
-                                            onClick={() => { setLocation(dest.label); setCurrentStep(2); }}
-                                            className="w-40 h-40 bg-white border border-slate-100 rounded-[2rem] flex flex-col items-center justify-center gap-4 hover:border-slate-900 hover:scale-105 transition-all group"
-                                        >
-                                            <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-colors">
-                                                <i className={`fa-solid ${dest.icon}`}></i>
-                                            </div>
-                                            <span className="text-xs font-black text-slate-900">{dest.label}</span>
-                                        </button>
-                                    ))}
+                                    {DESTINATIONS.map(dest => {
+                                        const isActive = location === dest.label;
+                                        return (
+                                            <button
+                                                key={dest.name}
+                                                onClick={() => { setLocation(dest.label); setCurrentStep(2); }}
+                                                className={`w-40 h-40 bg-white rounded-[2rem] flex flex-col items-center justify-center gap-4 transition-all duration-300 group relative overflow-hidden
+                                                    ${isActive
+                                                        ? 'border-[3px] border-slate-900 shadow-xl scale-105'
+                                                        : 'border border-slate-100 hover:border-slate-300 hover:shadow-lg hover:scale-105'
+                                                    }`}
+                                            >
+                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-300
+                                                    ${isActive
+                                                        ? 'bg-slate-900 text-white'
+                                                        : 'bg-slate-50 text-slate-400 group-hover:bg-slate-900 group-hover:text-white'
+                                                    }`}>
+                                                    <i className={`fa-solid ${dest.icon}`}></i>
+                                                </div>
+                                                <span className={`text-xs font-black transition-colors duration-300 ${isActive ? 'text-slate-900' : 'text-slate-900'}`}>{dest.label}</span>
+
+                                                {/* Active Indicator Checkmark (Optional but premium) */}
+                                                {isActive && (
+                                                    <div className="absolute top-3 right-3 w-6 h-6 bg-slate-900 rounded-full flex items-center justify-center animate-in zoom-in">
+                                                        <i className="fa-solid fa-check text-white text-[10px]"></i>
+                                                    </div>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
