@@ -207,12 +207,12 @@ function SearchContent() {
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-8 max-w-2xl mx-auto">
-                                    <div className="p-10 border-2 border-slate-100 rounded-[2.5rem] bg-white text-center shadow-xl shadow-slate-900/5">
-                                        <p className="text-[11px] font-black text-slate-300 uppercase tracking-[0.3em] mb-3">Minimum</p>
+                                    <div className="p-10 border-2 border-slate-100 rounded-[2.5rem] bg-white text-center shadow-sm hover:border-slate-900 hover:shadow-xl transition-all duration-300 group cursor-default">
+                                        <p className="text-[11px] font-black text-slate-300 uppercase tracking-[0.3em] mb-3 group-hover:text-slate-900 transition-colors">Minimum</p>
                                         <p className="text-4xl font-black text-slate-900">€{priceRange.min}</p>
                                     </div>
-                                    <div className="p-10 border-2 border-slate-100 rounded-[2.5rem] bg-white text-center shadow-xl shadow-slate-900/5">
-                                        <p className="text-[11px] font-black text-slate-300 uppercase tracking-[0.3em] mb-3">Maximum</p>
+                                    <div className="p-10 border-2 border-slate-100 rounded-[2.5rem] bg-white text-center shadow-sm hover:border-slate-900 hover:shadow-xl transition-all duration-300 group cursor-default">
+                                        <p className="text-[11px] font-black text-slate-300 uppercase tracking-[0.3em] mb-3 group-hover:text-slate-900 transition-colors">Maximum</p>
                                         <p className="text-4xl font-black text-slate-900">€{priceRange.max}+</p>
                                     </div>
                                 </div>
