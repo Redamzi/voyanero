@@ -6,9 +6,10 @@ import { Listing, ListingType } from '../types';
 
 interface ListingCardProps {
     listing: Listing;
+    onPreview?: (listing: Listing) => void;
 }
 
-const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
+const ListingCard: React.FC<ListingCardProps> = ({ listing, onPreview }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -32,8 +33,19 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
     const target = listing.type === ListingType.AFFILIATE ? "_blank" : "_self";
     const rel = listing.type === ListingType.AFFILIATE ? "noopener noreferrer" : "";
 
+    const handleCardClick = (e: React.MouseEvent) => {
+        if (onPreview) {
+            e.preventDefault();
+            onPreview(listing);
+        }
+    };
+
+    // Use a Div if preview is enabled, otherwise Link
+    const Wrapper = onPreview ? 'div' : Link;
+    const wrapperProps = onPreview ? { onClick: handleCardClick, className: "flex flex-col gap-1" } : { href: url, target, rel, className: "flex flex-col gap-1" };
+
     return (
-        <div className="group flex flex-col h-full cursor-pointer relative">
+        <div className="group flex flex-col h-full cursor-pointer relative" onClick={onPreview ? handleCardClick : undefined}>
             {/* Image Carousel */}
             <div className="relative aspect-[20/19] rounded-[1.5rem] overflow-hidden bg-slate-100 mb-4 shadow-sm group-hover:shadow-md transition-shadow duration-300">
                 <div
@@ -41,22 +53,32 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
                     onScroll={handleScroll}
                     className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scrollbar-hide no-scrollbar"
                 >
-                    {listing.images.map((img, idx) => (
-                        <Link
-                            key={idx}
-                            href={url}
-                            target={target}
-                            rel={rel}
-                            className="w-full h-full flex-shrink-0 snap-start block"
-                        >
+                    {listing.images.map((img, idx) => {
+                        const ImageContent = (
                             <img
                                 src={img}
                                 className="w-full h-full object-cover"
                                 alt={listing.title}
                                 draggable={false}
                             />
-                        </Link>
-                    ))}
+                        );
+
+                        return onPreview ? (
+                            <div key={idx} className="w-full h-full flex-shrink-0 snap-start block">
+                                {ImageContent}
+                            </div>
+                        ) : (
+                            <Link
+                                key={idx}
+                                href={url}
+                                target={target}
+                                rel={rel}
+                                className="w-full h-full flex-shrink-0 snap-start block"
+                            >
+                                {ImageContent}
+                            </Link>
+                        );
+                    })}
                 </div>
 
                 {/* Badge Overlay */}
@@ -92,11 +114,8 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
             </div>
 
             {/* Content */}
-            <Link href={url}
-                target={target}
-                rel={rel}
-                className="flex flex-col gap-1"
-            >
+            {/* @ts-ignore - dynamic component props issue */}
+            <Wrapper {...wrapperProps}>
                 <div className="flex justify-between items-start gap-4">
                     <h3 className="font-bold text-[16px] text-slate-900 truncate leading-snug tracking-tight flex-1">
                         {listing.location.address}
@@ -121,7 +140,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing }) => {
                         {listing.type === ListingType.AFFILIATE ? 'pro Person' : 'Nacht'}
                     </span>
                 </div>
-            </Link>
+            </Wrapper>
         </div>
     );
 };
