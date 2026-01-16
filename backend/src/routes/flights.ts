@@ -29,4 +29,27 @@ router.post('/search', async (req, res) => {
     }
 });
 
+router.post('/dates', async (req, res) => {
+    try {
+        const { origin, destination, oneWay } = req.body;
+        console.log(`Searching flight dates (Amadeus): ${origin} -> ${destination}`);
+
+        if (!origin || !destination) {
+            res.status(400).json({ error: "Origin and Destination are required" });
+            return;
+        }
+
+        const data = await AmadeusService.searchFlightDates({
+            origin,
+            destination,
+            oneWay: oneWay ?? true
+        });
+
+        res.json({ success: true, data });
+    } catch (error: any) {
+        console.error("Amadeus Flight Dates Error:", error);
+        res.status(500).json({ error: "Failed to search flight dates", details: error.message || error });
+    }
+});
+
 export default router;

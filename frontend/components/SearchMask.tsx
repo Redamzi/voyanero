@@ -596,7 +596,27 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                     return (
                                                         <button
                                                             key={dest.name}
-                                                            onClick={() => { setLocation(dest.label); setCurrentStep(2); }}
+                                                            onClick={() => {
+                                                                if (searchType === 'fluege') {
+                                                                    setFlightDestination(dest.label);
+                                                                    if (flightOrigin) {
+                                                                        setCurrentStep(2);
+                                                                    } else {
+                                                                        // Focus Origin input if empty
+                                                                        document.querySelector<HTMLInputElement>('input[placeholder^="Von:"]')?.focus();
+                                                                    }
+                                                                } else if (searchType === 'transfer') {
+                                                                    setTransferDestination(dest.label);
+                                                                    if (transferOrigin) {
+                                                                        setCurrentStep(2);
+                                                                    } else {
+                                                                        document.querySelector<HTMLInputElement>('input[placeholder^="Abholung"]')?.focus();
+                                                                    }
+                                                                } else {
+                                                                    setLocation(dest.label);
+                                                                    setCurrentStep(2);
+                                                                }
+                                                            }}
                                                             className={`w-40 h-40 bg-white rounded-[2rem] flex flex-col items-center justify-center gap-4 transition-all duration-300 group relative overflow-hidden
                                                             ${isActive
                                                                     ? 'border-[3px] border-slate-900 shadow-xl scale-105'
@@ -640,6 +660,8 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                             setCheckOut(end);
                                                         }}
                                                         onClose={() => setCurrentStep(3)}
+                                                        origin={flightOrigin}
+                                                        destination={flightDestination}
                                                     />
                                                 </div>
                                             ) : (

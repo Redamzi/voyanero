@@ -106,6 +106,22 @@ export const FlightService = {
         }
     },
 
+    getFlightDates: async (params: { origin: string, destination: string }) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/dates`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(params),
+            });
+            if (!response.ok) return []; // Silent fail for prices
+            const result = await response.json();
+            return result.data || [];
+        } catch (error) {
+            console.error("Flight Dates Fetch Error:", error);
+            return [];
+        }
+    },
+
     getSearchResults: async (uuid: string) => {
         try {
             const response = await fetch(`${API_BASE_URL}/results/${uuid}`);

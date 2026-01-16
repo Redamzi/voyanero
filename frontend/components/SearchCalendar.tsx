@@ -1,24 +1,58 @@
 import React, { useState } from 'react';
+import { FlightService } from '../services/api';
 
 interface SearchCalendarProps {
     checkIn: Date | null;
     checkOut: Date | null;
     onChange: (checkIn: Date | null, checkOut: Date | null) => void;
     onClose: () => void;
+    origin?: string;
+    destination?: string;
 }
 
 const WEEKDAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 
-export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOut, onChange }) => {
+export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOut, onChange, origin, destination }) => {
     // Start showing from current month
     const [viewDate, setViewDate] = useState(new Date());
+    const [activeInput, setActiveInput] = useState<'start' | 'end'>('start');
+    const [prices, setPrices] = useState<{ [key: string]: number }>({});
 
-    // Mock prices for visual parity with screenshot
-    const getPriceForDay = (day: number, month: number) => {
-        // Deterministic pseudo-random price
-        const seed = day * 100 + month;
-        const price = 40 + (seed % 200);
-        return price > 180 ? null : price; // Only show some prices
+    // Fetch prices when origin/destination change
+    React.useEffect(() => {
+        const fetchPrices = async () => {
+            if (origin && destination) {
+                // Remove generic terms like "nach" if present (just in case)
+                const cleanOrigin = origin.split(':')[0].trim(); // "Von: MUC" -> "Von" (no, inputs are plain text usually)
+                // Actually SearchMask inputs are just strings.
+
+                try {
+                    const dates = await FlightService.getFlightDates({
+                        origin,
+                        destination
+                    });
+
+                    // Transform array to map: "2026-01-16" -> 120
+                    const priceMap: { [key: string]: number } = {};
+                    dates.forEach((d: any) => {
+                        if (d.price && d.departureDate) {
+                            priceMap[d.departureDate] = parseFloat(d.price.total);
+                        }
+                    });
+                    setPrices(priceMap);
+                } catch (e) {
+                    console.error("Failed to load calendar prices", e);
+                }
+            }
+        };
+
+        const timeout = setTimeout(fetchPrices, 500); // Debounce
+        return () => clearTimeout(timeout);
+    }, [origin, destination]);
+
+    const getPriceForDay = (day: number, month: number, year: number) => {
+        const dateStr = new Date(year, month, day, 12).toISOString().split('T')[0];
+        return prices[dateStr] || null;
     };
 
     const handlePrevMonth = () => {
@@ -57,8 +91,8 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
             const isInRange = checkIn && checkOut && date > checkIn && date < checkOut;
             const isSelected = isSelectedCheckIn || isSelectedCheckOut;
 
-            // Mock Price
-            const price = getPriceForDay(d, month);
+            // Mock Price (Now Real Price Lookup)
+            const price = getPriceForDay(d, month, year);
             const isGreen = price && price < 80;
 
             days.push(
@@ -67,17 +101,23 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
                     disabled={isPast}
                     onClick={() => {
                         if (isPast) return;
-                        const clickedTime = date.getTime();
-                        if (!checkIn || (checkIn && checkOut)) {
-                            // Start new selection
-                            onChange(date, null);
-                        } else {
-                            if (clickedTime > checkIn.getTime()) {
-                                // Close range
-                                onChange(checkIn, date);
-                            } else {
-                                // Reset start
+
+                        // Smart Selection Logic based on Active Input
+                        if (activeInput === 'start') {
+                            // Setting Start Date
+                            if (checkOut && date > checkOut) {
                                 onChange(date, null);
+                            } else {
+                                onChange(date, checkOut);
+                            }
+                            setActiveInput('end'); // Auto-switch to end selection
+                        } else {
+                            // Setting End Date
+                            if (date < checkIn!) {
+                                onChange(date, null);
+                                setActiveInput('end');
+                            } else {
+                                onChange(checkIn, date);
                             }
                         }
                     }}
@@ -117,23 +157,22 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
     nextMonthDate.setMonth(viewDate.getMonth() + 1);
 
     return (
-        <div className="w-full bg-white rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-sm border border-slate-100">
+        <div className="w-full bg-white rounded-2xl md:rounded-3xl p-4 md:p-6">
             {/* Header Options */}
             <div className="flex flex-col lg:flex-row gap-6 mb-8">
                 {/* Hinreise Input */}
-                <div className="flex-1">
-                    <label className="block text-xs font-bold text-slate-900 mb-2">Hinreise</label>
-
+                <div className="flex-1 cursor-pointer" onClick={() => setActiveInput('start')}>
+                    <label className={`block text-xs font-bold mb-2 transition-colors ${activeInput === 'start' ? 'text-orange-600' : 'text-slate-900'}`}>Hinreise</label>
 
                     <div className="relative group">
-                        <div className="flex items-center gap-3 w-full p-4 border-2 border-orange-500 rounded-xl bg-white shadow-sm">
-                            <i className="fa-regular fa-calendar text-orange-500"></i>
+                        <div className={`flex items-center gap-3 w-full p-4 border-2 rounded-xl bg-white transition-all ${activeInput === 'start' ? 'border-orange-500 shadow-md ring-4 ring-orange-500/10' : 'border-slate-100 hover:border-slate-300'}`}>
+                            <i className={`fa-regular fa-calendar ${activeInput === 'start' ? 'text-orange-500' : 'text-slate-400'}`}></i>
                             <span className="font-bold text-slate-900">
                                 {checkIn ? checkIn.toLocaleDateString('de-DE') : 'Datum auswählen'}
                             </span>
                         </div>
                         {/* Flexibility Pills */}
-                        <div className="flex gap-2 mt-3">
+                        <div className="flex gap-2 mt-3 opacity-50 pointer-events-none grayscale">
                             <button className="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-xs font-bold text-slate-600 transition-colors">± 1 Tag</button>
                             <button className="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-xs font-bold text-slate-600 transition-colors">± 3 Tage</button>
                             <button className="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-xs font-bold text-slate-600 transition-colors">± 5 Tage</button>
@@ -142,20 +181,20 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
                 </div>
 
                 {/* Rückreise Input */}
-                <div className="flex-1">
+                <div className="flex-1 cursor-pointer" onClick={() => setActiveInput('end')}>
                     <div className="flex justify-between items-center mb-2">
-                        <label className="block text-xs font-bold text-slate-900">Rückreise</label>
+                        <label className={`block text-xs font-bold transition-colors ${activeInput === 'end' ? 'text-orange-600' : 'text-slate-900'}`}>Rückreise</label>
                         <span className="text-xs font-bold text-slate-400">Aufenthaltsdauer</span>
                     </div>
                     <div className="relative group">
-                        <div className={`flex items-center gap-3 w-full p-4 border-2 ${checkOut ? 'border-slate-900' : 'border-slate-200'} rounded-xl bg-white shadow-sm`}>
-                            <i className="fa-regular fa-calendar text-slate-400"></i>
+                        <div className={`flex items-center gap-3 w-full p-4 border-2 rounded-xl bg-white transition-all ${activeInput === 'end' ? 'border-orange-500 shadow-md ring-4 ring-orange-500/10' : 'border-slate-100 hover:border-slate-300'}`}>
+                            <i className={`fa-regular fa-calendar ${activeInput === 'end' ? 'text-orange-500' : 'text-slate-400'}`}></i>
                             <span className={`font-bold ${checkOut ? 'text-slate-900' : 'text-slate-400'}`}>
                                 {checkOut ? checkOut.toLocaleDateString('de-DE') : 'Irgendwann'}
                             </span>
                         </div>
                         {/* Flexibility Pills for Return */}
-                        <div className="flex gap-2 mt-3">
+                        <div className="flex gap-2 mt-3 opacity-50 pointer-events-none grayscale">
                             <button className="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-xs font-bold text-slate-600 transition-colors">± 1 Tag</button>
                             <button className="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-xs font-bold text-slate-600 transition-colors">± 3 Tage</button>
                             <button className="px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-xs font-bold text-slate-600 transition-colors">± 5 Tage</button>
@@ -172,7 +211,7 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
 
                 {renderMonth(viewDate)}
                 <div className="hidden md:block w-px bg-slate-100 self-stretch mx-4"></div>
-                <div className="hidden md:block">
+                <div className="hidden md:block flex-1">
                     {renderMonth(nextMonthDate)}
                 </div>
 

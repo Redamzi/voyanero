@@ -61,5 +61,23 @@ export const AmadeusService = {
             console.error('Amadeus Transfer Search Error:', error);
             throw error;
         }
+    },
+
+    // Flight Dates (Cheapest Date Search)
+    searchFlightDates: async (params: any) => {
+        try {
+            // This endpoint finds the cheapest flight dates for a specific route
+            const response = await amadeus.shopping.flightDates.get({
+                origin: params.origin,
+                destination: params.destination,
+                // departureDate: params.departureDate, // Optional range
+                oneWay: params.oneWay || true
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Amadeus Flight Dates Error:', error);
+            // Return empty array instead of throwing to prevent UI crash
+            return [];
+        }
     }
 };

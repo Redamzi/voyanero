@@ -182,9 +182,22 @@ function SearchContent() {
 
                 } else if (searchType === 'fluege') {
                     // Flight Redesign Logic
+
+                    // Smart destination resolution
+                    let targetDestination = destinationQuery;
+                    if (!targetDestination && locationQuery) {
+                        // Avoid using the cosmetic "Origin nach Dest" string as a destination code
+                        if (!locationQuery.includes(' nach ')) {
+                            targetDestination = locationQuery;
+                        }
+                    }
+
+                    // Final fallback to avoid API 400/500 errors if destination is missing
+                    const finalDest = targetDestination?.trim() || "BCN";
+
                     const flightRes = await FlightService.searchFlights({
                         origin: originQuery || "MUC",
-                        destination: destinationQuery || locationQuery,
+                        destination: finalDest,
                         date: dateQuery || new Date().toISOString().split('T')[0],
                         return_date: returnDateQuery,
                         adults, children, infants
