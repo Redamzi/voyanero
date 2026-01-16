@@ -9,6 +9,7 @@ interface SearchMaskProps {
     variant?: 'hero' | 'default' | 'compact';
     initialLocation?: string;
     onClose?: () => void;
+    isOpen?: boolean;
 }
 
 const DESTINATIONS = [
@@ -19,7 +20,7 @@ const DESTINATIONS = [
     { name: "Tokyo, Japan", icon: "fa-torii-gate", label: "Tokyo" }
 ];
 
-const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLocation = "", onClose }) => {
+const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLocation = "", onClose, isOpen: isOpenProp }) => {
     const router = useRouter();
 
     // Animation Variants
@@ -49,7 +50,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
             } as const
         }
     };
-    const [isOpen, setIsOpen] = useState(variant === 'compact');
+    const [isOpen, setIsOpen] = useState(isOpenProp ?? false);
     const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
 
     const [location, setLocation] = useState(initialLocation);
