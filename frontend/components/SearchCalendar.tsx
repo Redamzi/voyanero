@@ -83,9 +83,9 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
                     }}
                     className={`
                         relative h-10 md:h-14 w-full flex flex-col items-center justify-center rounded-lg transition-all
-                        ${isPast ? 'opacity-20 cursor-not-allowed' : 'hover:bg-slate-50 text-slate-700'}
+                        ${isPast ? 'opacity-20 cursor-not-allowed' : 'hover:bg-orange-50 text-slate-700'}
                         ${isSelected ? 'bg-slate-900 text-white z-10 !opacity-100 !cursor-pointer' : ''}
-                        ${isInRange ? 'bg-slate-100' : ''}
+                        ${isInRange ? 'bg-orange-50' : ''}
                     `}
                 >
                     <span className={`text-sm font-bold ${isSelected ? 'text-white' : 'text-slate-900'}`}>{d}</span>
@@ -123,9 +123,11 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
                 {/* Hinreise Input */}
                 <div className="flex-1">
                     <label className="block text-xs font-bold text-slate-900 mb-2">Hinreise</label>
+
+
                     <div className="relative group">
-                        <div className="flex items-center gap-3 w-full p-4 border-2 border-blue-500 rounded-xl bg-white shadow-sm">
-                            <i className="fa-regular fa-calendar text-blue-500"></i>
+                        <div className="flex items-center gap-3 w-full p-4 border-2 border-orange-500 rounded-xl bg-white shadow-sm">
+                            <i className="fa-regular fa-calendar text-orange-500"></i>
                             <span className="font-bold text-slate-900">
                                 {checkIn ? checkIn.toLocaleDateString('de-DE') : 'Datum auswählen'}
                             </span>
