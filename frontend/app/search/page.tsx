@@ -7,7 +7,6 @@ import ListingCard from '@/components/ListingCard';
 import ListingPreviewModal from '@/components/ListingPreviewModal';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { MOCK_LISTINGS } from '@/constants';
 import { Listing, ListingType, PropertyType } from '@/types';
 import { FlightService } from '@/services/api';
 import { HotelService } from '@/services/hotelService';
