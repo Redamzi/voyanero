@@ -122,7 +122,9 @@ function SearchContent() {
                                 lat: 0,
                                 lng: 0
                             },
-                            images: [`http://pics.avs.io/200/200/${flight.airline}.png`],
+                            images: flight.airline
+                                ? [`http://pics.avs.io/200/200/${flight.airline}.png`]
+                                : ['https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'], // Fallback: plane image
                             amenities: ["Direktflug", "Economy"],
                             rating: 4.5,
                             reviewCount: 10 + Math.floor(Math.random() * 50),
@@ -198,7 +200,9 @@ function SearchContent() {
                                 lat: 0,
                                 lng: 0
                             },
-                            images: [`http://pics.avs.io/200/200/${flight.airline}.png`],
+                            images: flight.airline
+                                ? [`http://pics.avs.io/200/200/${flight.airline}.png`]
+                                : ['https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'], // Fallback: plane image
                             amenities: ["Direktflug", "Economy"],
                             rating: 4.5,
                             reviewCount: 10 + Math.floor(Math.random() * 50),
