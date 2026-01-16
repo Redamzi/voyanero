@@ -304,7 +304,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                 onClick={() => { setIsOpen(false); onClose?.(); }}
                             />
                             <motion.div
-                                className="fixed inset-0 z-[99999] bg-white h-[100dvh] w-screen overflow-hidden flex flex-col"
+                                className="fixed inset-0 z-[99999] bg-white min-h-screen h-full w-screen overflow-hidden flex flex-col"
                                 variants={modalVariants}
                                 initial="hidden"
                                 animate="visible"
@@ -358,24 +358,24 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                             <p className="text-slate-500 text-lg mb-8">Entdecke exklusive Ziele weltweit.</p>
 
                                             {/* Filter Toggles */}
-                                            <div className="flex items-center justify-center gap-4 mb-8">
-                                                <button onClick={() => setSearchType('reisen')} className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-full transition-all ${searchType === 'reisen' ? 'text-slate-900' : 'text-slate-400'}`}>
-                                                    <div className={`w-12 h-7 rounded-full transition-all ${searchType === 'reisen' ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-slate-300'}`}>
-                                                        <div className={`w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200 mt-1 ${searchType === 'reisen' ? 'translate-x-6' : 'translate-x-1'}`} />
+                                            <div className="flex items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-8 scale-75 sm:scale-100">
+                                                <button onClick={() => setSearchType('reisen')} className={`relative inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all ${searchType === 'reisen' ? 'text-slate-900' : 'text-slate-400'}`}>
+                                                    <div className={`w-10 sm:w-12 h-6 sm:h-7 rounded-full transition-all ${searchType === 'reisen' ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-slate-300'}`}>
+                                                        <div className={`w-4 sm:w-5 h-4 sm:h-5 bg-white rounded-full shadow-md transition-transform duration-200 mt-1 ${searchType === 'reisen' ? 'translate-x-5 sm:translate-x-6' : 'translate-x-1'}`} />
                                                     </div>
-                                                    <span className="font-semibold text-sm">Reisen</span>
+                                                    <span className="font-semibold text-xs sm:text-sm">Reisen</span>
                                                 </button>
-                                                <button onClick={() => setSearchType('fluege')} className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-full transition-all ${searchType === 'fluege' ? 'text-slate-900' : 'text-slate-400'}`}>
-                                                    <div className={`w-12 h-7 rounded-full transition-all ${searchType === 'fluege' ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-slate-300'}`}>
-                                                        <div className={`w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200 mt-1 ${searchType === 'fluege' ? 'translate-x-6' : 'translate-x-1'}`} />
+                                                <button onClick={() => setSearchType('fluege')} className={`relative inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all ${searchType === 'fluege' ? 'text-slate-900' : 'text-slate-400'}`}>
+                                                    <div className={`w-10 sm:w-12 h-6 sm:h-7 rounded-full transition-all ${searchType === 'fluege' ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-slate-300'}`}>
+                                                        <div className={`w-4 sm:w-5 h-4 sm:h-5 bg-white rounded-full shadow-md transition-transform duration-200 mt-1 ${searchType === 'fluege' ? 'translate-x-5 sm:translate-x-6' : 'translate-x-1'}`} />
                                                     </div>
-                                                    <span className="font-semibold text-sm">Flüge</span>
+                                                    <span className="font-semibold text-xs sm:text-sm">Flüge</span>
                                                 </button>
-                                                <button onClick={() => setSearchType('unterkunft')} className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-full transition-all ${searchType === 'unterkunft' ? 'text-slate-900' : 'text-slate-400'}`}>
-                                                    <div className={`w-12 h-7 rounded-full transition-all ${searchType === 'unterkunft' ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-slate-300'}`}>
-                                                        <div className={`w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200 mt-1 ${searchType === 'unterkunft' ? 'translate-x-6' : 'translate-x-1'}`} />
+                                                <button onClick={() => setSearchType('unterkunft')} className={`relative inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all ${searchType === 'unterkunft' ? 'text-slate-900' : 'text-slate-400'}`}>
+                                                    <div className={`w-10 sm:w-12 h-6 sm:h-7 rounded-full transition-all ${searchType === 'unterkunft' ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-slate-300'}`}>
+                                                        <div className={`w-4 sm:w-5 h-4 sm:h-5 bg-white rounded-full shadow-md transition-transform duration-200 mt-1 ${searchType === 'unterkunft' ? 'translate-x-5 sm:translate-x-6' : 'translate-x-1'}`} />
                                                     </div>
-                                                    <span className="font-semibold text-sm">Unterkünfte</span>
+                                                    <span className="font-semibold text-xs sm:text-sm">Unterkünfte</span>
                                                 </button>
                                             </div>
 
