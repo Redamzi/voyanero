@@ -62,11 +62,66 @@ export const AwinService = {
     searchHotels: async (query: string) => {
         // 1. If no feed URL, return Mock Data (for MVP/Testing/Fallback)
         if (!AWIN_FEED_URL) {
-            console.log(`[AwinService] No Feed URL configured. Returning ${MOCK_HOTELS.length} mock hotels for query: ${query}`);
-            // Filter mocks roughly by query if needed, or just return all for showcase
+            console.log(`[AwinService] No Feed URL configured. Returning mock hotels for query: ${query}`);
+
+            // Generate location-specific mock hotels
+            const locationMocks: { [key: string]: any[] } = {
+                'Bangkok': [
+                    {
+                        id: 'bangkok-1',
+                        name: 'Mandarin Oriental Bangkok',
+                        description: 'Legendäres Luxushotel am Chao Phraya Fluss mit erstklassigem Service.',
+                        price: '320',
+                        currency: 'EUR',
+                        deepLink: 'https://www.booking.com/searchresults.html?ss=Bangkok',
+                        image: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&auto=format&fit=crop',
+                        rating: 4.9,
+                        location: 'Bangkok, Thailand'
+                    },
+                    {
+                        id: 'bangkok-2',
+                        name: 'The Peninsula Bangkok',
+                        description: 'Elegantes Riverside-Hotel mit atemberaubendem Blick auf die Skyline.',
+                        price: '280',
+                        currency: 'EUR',
+                        deepLink: 'https://www.booking.com/searchresults.html?ss=Bangkok',
+                        image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&auto=format&fit=crop',
+                        rating: 4.8,
+                        location: 'Bangkok, Thailand'
+                    }
+                ],
+                'Istanbul': [
+                    {
+                        id: 'istanbul-1',
+                        name: 'Four Seasons Sultanahmet',
+                        description: 'Historisches Hotel im Herzen der Altstadt, nahe der Blauen Moschee.',
+                        price: '380',
+                        currency: 'EUR',
+                        deepLink: 'https://www.booking.com/searchresults.html?ss=Istanbul',
+                        image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&auto=format&fit=crop',
+                        rating: 4.9,
+                        location: 'Istanbul, Turkey'
+                    },
+                    {
+                        id: 'istanbul-2',
+                        name: 'Ciragan Palace Kempinski',
+                        description: 'Ehemaliger Sultanspalast am Bosporus - purer Luxus und Geschichte.',
+                        price: '520',
+                        currency: 'EUR',
+                        deepLink: 'https://www.booking.com/searchresults.html?ss=Istanbul',
+                        image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&auto=format&fit=crop',
+                        rating: 5.0,
+                        location: 'Istanbul, Turkey'
+                    }
+                ]
+            };
+
+            // Get location-specific mocks or fallback to Bali
+            const hotels = locationMocks[query] || MOCK_HOTELS;
+
             return {
                 success: true,
-                hotels: MOCK_HOTELS.map(h => ({
+                hotels: hotels.map(h => ({
                     ...h,
                     source: 'awin-mock'
                 }))
