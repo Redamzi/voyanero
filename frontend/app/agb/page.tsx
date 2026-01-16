@@ -19,7 +19,7 @@ export default function AGBPage() {
                         <h2 className="text-2xl font-bold text-slate-900 mb-4">§ 1 Geltungsbereich</h2>
                         <p className="text-slate-700 leading-relaxed">
                             Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für die Nutzung der Website Voyanero.com
-                            (nachfolgend "Plattform") durch den Nutzer. Voyanero.com ist ein Reise-Vergleichsportal, das
+                            (nachfolgend &quot;Plattform&quot;) durch den Nutzer. Voyanero.com ist ein Reise-Vergleichsportal, das
                             Angebote verschiedener Reiseanbieter aggregiert und dem Nutzer zur Verfügung stellt.
                         </p>
                     </section>
