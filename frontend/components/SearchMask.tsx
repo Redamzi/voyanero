@@ -17,7 +17,9 @@ const DESTINATIONS = [
     { name: "Berlin, Germany", icon: "fa-city", label: "Berlin" },
     { name: "Rome, Italy", icon: "fa-monument", label: "Rome" },
     { name: "Paris, France", icon: "fa-archway", label: "Paris" },
-    { name: "Tokyo, Japan", icon: "fa-torii-gate", label: "Tokyo" }
+    { name: "Tokyo, Japan", icon: "fa-torii-gate", label: "Tokyo" },
+    { name: "Bangkok, Thailand", icon: "fa-temple-buddhist", label: "Bangkok" },
+    { name: "Istanbul, Turkey", icon: "fa-mosque", label: "Istanbul" }
 ];
 
 const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLocation = "", onClose, isOpen: isOpenProp }) => {
