@@ -171,6 +171,18 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
         return () => window.removeEventListener('scroll', handleScroll);
     }, [variant]);
 
+    // Lock body scroll when modal is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isOpen]);
+
     const isCompact = variant === 'compact' || (variant === 'hero' && isSticky);
 
     return (
