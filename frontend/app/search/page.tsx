@@ -147,7 +147,7 @@ function SearchContent() {
                         propertyType: PropertyType.HOTEL,
                         price: hotel.price,
                         location: {
-                            address: hotel.location,
+                            address: typeof hotel.location === 'string' ? hotel.location : (hotel.location?.address || 'Unknown Location'),
                             lat: 0,
                             lng: 0
                         },
