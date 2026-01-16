@@ -206,6 +206,16 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
 
     const isCompact = variant === 'compact' || (variant === 'hero' && isSticky);
 
+    const getDateLabels = () => {
+        switch (searchType) {
+            case 'fluege': return { start: 'Hinflug', end: 'Rückflug', label: 'Reisedaten' };
+            case 'unterkunft': return { start: 'Check-in', end: 'Check-out', label: 'Aufenthalt' };
+            case 'transfer': return { start: 'Abholung', end: 'Rückfahrt', label: 'Datum' };
+            default: return { start: 'Anreise', end: 'Abreise', label: 'Reisezeitraum' };
+        }
+    };
+    const dateLabels = getDateLabels();
+
     return (
         <>
             {/* --- CLOSED STATE (Floating Bar) --- */}
@@ -418,8 +428,8 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                         key={type.id}
                                                                         onClick={() => setFlightType(type.id)}
                                                                         className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full text-[10px] sm:text-xs font-bold transition-all ${flightType === type.id
-                                                                                ? 'bg-white shadow-sm text-slate-900'
-                                                                                : 'text-slate-500 hover:text-slate-700'
+                                                                            ? 'bg-white shadow-sm text-slate-900'
+                                                                            : 'text-slate-500 hover:text-slate-700'
                                                                             }`}
                                                                     >
                                                                         <i className={`fa-solid ${type.icon}`}></i>
@@ -571,12 +581,22 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                         </div>
                                                     </button>
 
-                                                    <div className="bg-[#1a1a1a] p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] text-white text-center order-1 lg:order-3">
-                                                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#ffffff60] mb-2">Gewählter Zeitraum</p>
-                                                        <div className="flex items-center justify-center gap-4 text-xl font-black">
-                                                            <span>{checkIn ? checkIn.toLocaleDateString('de-DE') : 'Anreise'}</span>
-                                                            <div className="h-0.5 w-4 bg-[#ffffff30]"></div>
-                                                            <span>{checkOut ? checkOut.toLocaleDateString('de-DE') : 'Abreise'}</span>
+                                                    <div className="bg-[#1a1a1a] p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] text-white text-center order-1 lg:order-3 min-w-[280px]">
+                                                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#ffffff60] mb-4">{dateLabels.label}</p>
+                                                        <div className="flex items-center justify-center gap-6">
+                                                            <div className="flex flex-col items-center gap-1">
+                                                                <span className="text-[9px] text-[#ffffff60] font-bold uppercase tracking-wider">{dateLabels.start}</span>
+                                                                <span className={`text-xl font-black ${checkIn ? 'text-white' : 'text-[#ffffff40]'}`}>
+                                                                    {checkIn ? checkIn.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-'}
+                                                                </span>
+                                                            </div>
+                                                            <div className="h-8 w-px bg-[#ffffff20]"></div>
+                                                            <div className="flex flex-col items-center gap-1">
+                                                                <span className="text-[9px] text-[#ffffff60] font-bold uppercase tracking-wider">{dateLabels.end}</span>
+                                                                <span className={`text-xl font-black ${checkOut ? 'text-white' : 'text-[#ffffff40]'}`}>
+                                                                    {checkOut ? checkOut.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-'}
+                                                                </span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
