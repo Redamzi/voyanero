@@ -188,39 +188,39 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                             <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Was suchst du?</h3>
                             <div className="grid grid-cols-3 gap-4">
                                 {/* Reisen Card */}
-                                <button className="group relative bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-orange-500 hover:shadow-lg transition-all text-left">
-                                    <div className="flex items-start justify-between mb-3">
-                                        <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <i className="fa-solid fa-suitcase-rolling text-orange-600 text-xl"></i>
+                                <button className="group relative bg-white border-2 border-slate-200 rounded-2xl p-4 hover:border-orange-500 hover:shadow-lg transition-all text-left">
+                                    <div className="flex items-start justify-between mb-2">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-orange-100 to-orange-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <i className="fa-solid fa-suitcase-rolling text-orange-600 text-lg"></i>
                                         </div>
-                                        <div className="w-6 h-6 border-2 border-slate-300 rounded-full group-hover:border-orange-500 transition-colors"></div>
+                                        <div className="w-5 h-5 border-2 border-slate-300 rounded-full group-hover:border-orange-500 transition-colors"></div>
                                     </div>
-                                    <h4 className="text-lg font-black text-slate-900 mb-1">Reisen</h4>
-                                    <p className="text-sm text-slate-500">Komplette Reisepakete</p>
+                                    <h4 className="text-base font-black text-slate-900 mb-0.5">Reisen</h4>
+                                    <p className="text-xs text-slate-500">Komplette Reisepakete</p>
                                 </button>
 
                                 {/* Flüge Card */}
-                                <button className="group relative bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-blue-500 hover:shadow-lg transition-all text-left">
-                                    <div className="flex items-start justify-between mb-3">
-                                        <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <i className="fa-solid fa-plane-departure text-blue-600 text-xl"></i>
+                                <button className="group relative bg-white border-2 border-slate-200 rounded-2xl p-4 hover:border-blue-500 hover:shadow-lg transition-all text-left">
+                                    <div className="flex items-start justify-between mb-2">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <i className="fa-solid fa-plane-departure text-blue-600 text-lg"></i>
                                         </div>
-                                        <div className="w-6 h-6 border-2 border-slate-300 rounded-full group-hover:border-blue-500 transition-colors"></div>
+                                        <div className="w-5 h-5 border-2 border-slate-300 rounded-full group-hover:border-blue-500 transition-colors"></div>
                                     </div>
-                                    <h4 className="text-lg font-black text-slate-900 mb-1">Flüge</h4>
-                                    <p className="text-sm text-slate-500">Nur Flugtickets</p>
+                                    <h4 className="text-base font-black text-slate-900 mb-0.5">Flüge</h4>
+                                    <p className="text-xs text-slate-500">Nur Flugtickets</p>
                                 </button>
 
                                 {/* Hotels Card */}
-                                <button className="group relative bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-emerald-500 hover:shadow-lg transition-all text-left">
-                                    <div className="flex items-start justify-between mb-3">
-                                        <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <i className="fa-solid fa-hotel text-emerald-600 text-xl"></i>
+                                <button className="group relative bg-white border-2 border-slate-200 rounded-2xl p-4 hover:border-emerald-500 hover:shadow-lg transition-all text-left">
+                                    <div className="flex items-start justify-between mb-2">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <i className="fa-solid fa-hotel text-emerald-600 text-lg"></i>
                                         </div>
-                                        <div className="w-6 h-6 border-2 border-slate-300 rounded-full group-hover:border-emerald-500 transition-colors"></div>
+                                        <div className="w-5 h-5 border-2 border-slate-300 rounded-full group-hover:border-emerald-500 transition-colors"></div>
                                     </div>
-                                    <h4 className="text-lg font-black text-slate-900 mb-1">Hotels</h4>
-                                    <p className="text-sm text-slate-500">Nur Unterkünfte</p>
+                                    <h4 className="text-base font-black text-slate-900 mb-0.5">Hotels</h4>
+                                    <p className="text-xs text-slate-500">Nur Unterkünfte</p>
                                 </button>
                             </div>
                         </div>
