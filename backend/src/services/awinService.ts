@@ -19,7 +19,7 @@ const MOCK_HOTELS = [
         price: '245',
         currency: 'EUR',
         deepLink: 'https://www.booking.com/searchresults.html?ss=Grand+Hyatt+Bali',
-        image: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/48962638.jpg?k=287711204680879685088',
+        image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800&auto=format&fit=crop',
         rating: 4.8,
         location: 'Nusa Dua, Bali'
     },
@@ -30,7 +30,7 @@ const MOCK_HOTELS = [
         price: '450',
         currency: 'EUR',
         deepLink: 'https://www.booking.com/searchresults.html?ss=Hanging+Gardens+Ubud',
-        image: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/38600465.jpg?k=3f456',
+        image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=800&auto=format&fit=crop',
         rating: 4.9,
         location: 'Ubud, Bali'
     },
@@ -41,7 +41,7 @@ const MOCK_HOTELS = [
         price: '120',
         currency: 'EUR',
         deepLink: 'https://www.booking.com/searchresults.html?ss=Hard+Rock+Hotel+Bali',
-        image: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/19328224.jpg?k=123',
+        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&auto=format&fit=crop',
         rating: 4.5,
         location: 'Kuta, Bali'
     },
@@ -52,7 +52,7 @@ const MOCK_HOTELS = [
         price: '680',
         currency: 'EUR',
         deepLink: 'https://www.booking.com/searchresults.html?ss=The+St+Regis+Bali+Resort',
-        image: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/31206158.jpg?k=456',
+        image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800&auto=format&fit=crop',
         rating: 5.0,
         location: 'Nusa Dua, Bali'
     }
