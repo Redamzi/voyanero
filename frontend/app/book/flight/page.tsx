@@ -41,13 +41,6 @@ const BookingContent = () => {
     const firstSegment = segments[0];
     const lastSegment = segments[segments.length - 1];
 
-    const [isValidating, setIsValidating] = React.useState(true);
-    const [verificationError, setVerificationError] = React.useState<string | null>(null);
-    const [confirmedPrice, setConfirmedPrice] = React.useState<any>(null); // Store update price if needed
-
-    // API Service Import (ensure this is imported at top of file, see next tool call)
-    // For now, assuming FlightService is available or I will add import in next chunk
-
     React.useEffect(() => {
         const verifyFlight = async () => {
             if (!flightData) return;
