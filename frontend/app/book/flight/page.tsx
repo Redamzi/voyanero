@@ -9,6 +9,11 @@ const BookingContent = () => {
     const searchParams = useSearchParams();
     const contextParam = searchParams.get('context');
 
+    // All hooks MUST be declared before any conditional returns
+    const [isValidating, setIsValidating] = React.useState(true);
+    const [verificationError, setVerificationError] = React.useState<string | null>(null);
+    const [confirmedPrice, setConfirmedPrice] = React.useState<unknown>(null);
+
     let flightData = null;
     try {
         if (contextParam) {
