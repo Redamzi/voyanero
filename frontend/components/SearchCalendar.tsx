@@ -82,7 +82,7 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
                         }
                     }}
                     className={`
-                        relative h-14 w-full flex flex-col items-center justify-center rounded-lg transition-all
+                        relative h-10 md:h-14 w-full flex flex-col items-center justify-center rounded-lg transition-all
                         ${isPast ? 'opacity-20 cursor-not-allowed' : 'hover:bg-slate-50 text-slate-700'}
                         ${isSelected ? 'bg-slate-900 text-white z-10 !opacity-100 !cursor-pointer' : ''}
                         ${isInRange ? 'bg-slate-100' : ''}
@@ -117,7 +117,7 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
     nextMonthDate.setMonth(viewDate.getMonth() + 1);
 
     return (
-        <div className="w-full bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+        <div className="w-full bg-white rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-sm border border-slate-100">
             {/* Header Options */}
             <div className="flex flex-col lg:flex-row gap-6 mb-8">
                 {/* Hinreise Input */}
@@ -163,9 +163,9 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
             </div>
 
             {/* Navigation & Calendar Grid */}
-            <div className="relative flex gap-8 items-start">
-                <button onClick={handlePrevMonth} className="absolute left-0 top-16 -ml-4 w-10 h-10 bg-white rounded-full shadow-md border border-slate-100 flex items-center justify-center hover:bg-slate-50 z-20">
-                    <i className="fa-solid fa-chevron-left text-sm text-slate-600"></i>
+            <div className="relative flex gap-8 items-start justify-center">
+                <button onClick={handlePrevMonth} className="absolute left-0 top-6 -ml-2 md:-ml-4 w-8 h-8 md:w-10 md:h-10 bg-white rounded-full shadow-md border border-slate-100 flex items-center justify-center hover:bg-slate-50 z-20">
+                    <i className="fa-solid fa-chevron-left text-xs md:text-sm text-slate-600"></i>
                 </button>
 
                 {renderMonth(viewDate)}
@@ -174,25 +174,13 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
                     {renderMonth(nextMonthDate)}
                 </div>
 
-                <button onClick={handleNextMonth} className="absolute right-0 top-16 -mr-4 w-10 h-10 bg-white rounded-full shadow-md border border-slate-100 flex items-center justify-center hover:bg-slate-50 z-20">
-                    <i className="fa-solid fa-chevron-right text-sm text-slate-600"></i>
+                <button onClick={handleNextMonth} className="absolute right-0 top-6 -mr-2 md:-mr-4 w-8 h-8 md:w-10 md:h-10 bg-white rounded-full shadow-md border border-slate-100 flex items-center justify-center hover:bg-slate-50 z-20">
+                    <i className="fa-solid fa-chevron-right text-xs md:text-sm text-slate-600"></i>
                 </button>
             </div>
 
             {/* Footer Actions */}
-            <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-100">
-                <p className="text-sm text-slate-500">
-                    Zeige Preise an für <span className="font-bold text-slate-900">Economy</span>
-                </p>
-                <div className="flex gap-4">
-                    <button onClick={onClose} className="px-6 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition-colors">
-                        Abbrechen
-                    </button>
-                    <button onClick={onClose} className="px-8 py-3 rounded-xl bg-[#00A698] text-white font-bold hover:bg-[#008f82] transition-colors shadow-lg shadow-teal-500/20">
-                        Daten festlegen
-                    </button>
-                </div>
-            </div>
+
         </div>
     );
 };
