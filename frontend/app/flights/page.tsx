@@ -1,37 +1,10 @@
 "use client";
 
-import React, { useEffect } from 'react';
-import Script from 'next/script';
+import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
-// Extend Window interface for Travelpayouts
-declare global {
-    interface Window {
-        TPWidgetLoader?: {
-            init: () => void;
-        };
-    }
-}
-
 export default function FlightsPage() {
-    useEffect(() => {
-        // Initialize widget after script loads
-        const initWidget = () => {
-            if (typeof window !== 'undefined' && window.TPWidgetLoader) {
-                window.TPWidgetLoader.init();
-            }
-        };
-
-        // Try to init if script already loaded
-        initWidget();
-
-        // Set up interval to check if script loaded
-        const interval = setInterval(initWidget, 500);
-
-        return () => clearInterval(interval);
-    }, []);
-
     return (
         <div className="min-h-screen bg-white">
             <Navbar />
@@ -44,31 +17,19 @@ export default function FlightsPage() {
                     Finde die besten Flüge zu deinem Traumziel
                 </p>
 
-                {/* Travelpayouts Widget Container */}
-                <div className="w-full min-h-[600px] bg-white rounded-2xl shadow-lg p-6">
-                    <div
-                        data-tpwdgt-widget="search_form"
-                        data-tpwdgt-marker="575179"
-                        data-tpwdgt-locale="de"
-                        data-tpwdgt-currency="EUR"
-                        data-tpwdgt-powered-by="true"
-                        data-tpwdgt-border-radius="30"
-                        data-tpwdgt-color-button="#000000"
-                        data-tpwdgt-color-button-text="#ffffff"
+                {/* Travelpayouts Search Form */}
+                <div className="w-full bg-white rounded-2xl shadow-lg overflow-hidden" style={{ minHeight: '600px' }}>
+                    <iframe
+                        src="https://www.travelpayouts.com/widgets/353305.html?marker=575179&locale=de&currency=eur&powered_by=true"
+                        width="100%"
+                        height="600"
+                        frameBorder="0"
+                        scrolling="no"
+                        style={{ border: 'none', display: 'block' }}
+                        title="Flugsuche"
                     />
                 </div>
             </div>
-
-            {/* Load Travelpayouts Widget Script */}
-            <Script
-                src="https://tpwdg.com/widget-init.js"
-                strategy="afterInteractive"
-                onLoad={() => {
-                    if (typeof window !== 'undefined' && window.TPWidgetLoader) {
-                        window.TPWidgetLoader.init();
-                    }
-                }}
-            />
 
             <Footer />
         </div>
