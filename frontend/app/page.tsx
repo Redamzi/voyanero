@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import ListingCard from '@/components/ListingCard';
 import SearchMask from '@/components/SearchMask';
 import Navbar from '@/components/Navbar';
@@ -91,10 +92,11 @@ export default function Home() {
             </div>
 
             <div className="w-full md:w-[450px] aspect-square rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden shadow-[0_48px_80px_-16px_rgba(0,0,0,0.5)] relative z-10 border-[8px] border-white/5 transform md:rotate-3 md:hover:rotate-0 transition-all duration-700">
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=800"
-                className="w-full h-full object-cover"
                 alt="Travel Comparison"
+                fill
+                className="object-cover"
               />
             </div>
           </div>
