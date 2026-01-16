@@ -127,7 +127,7 @@ function SearchContent() {
                             rating: 4.5,
                             reviewCount: 10 + Math.floor(Math.random() * 50),
                             maxGuests: adults + children,
-                            affiliateUrl: `https://www.aviasales.com/search/${flight.origin}${new Date(flight.departure_at).toISOString().split('T')[0]}${flight.destination}1?marker=${flight.marker}`
+                            affiliateUrl: `https://www.aviasales.com/search/${flight.origin}${new Date(flight.departure_at).toISOString().split('T')[0].replace(/-/g, '')}${flight.destination}1?marker=${flight.marker || '575179'}`
                         }));
                         combinedListings = [...combinedListings, ...flightListings];
                     }
@@ -198,7 +198,7 @@ function SearchContent() {
                             rating: 4.5,
                             reviewCount: 10 + Math.floor(Math.random() * 50),
                             maxGuests: adults + children,
-                            affiliateUrl: `https://www.aviasales.com/search/${flight.origin}${new Date(flight.departure_at).toISOString().split('T')[0]}${flight.destination}1?marker=${flight.marker}`
+                            affiliateUrl: `https://www.aviasales.com/search/${flight.origin}${new Date(flight.departure_at).toISOString().split('T')[0].replace(/-/g, '')}${flight.destination}1?marker=${flight.marker || '575179'}`
                         }));
                         combinedListings = [...combinedListings, ...flightListings];
                     }
