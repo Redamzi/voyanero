@@ -292,7 +292,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                 {/* Header */}
                                 <div className="px-8 py-6 flex items-center justify-between shrink-0">
                                     {/* ... Header Content ... */}
-                                    <div className="flex items-center gap-2">
+                                    <div className="hidden sm:flex items-center gap-2">
                                         <div className="w-8 h-8 bg-gradient-to-r from-amber-500 to-orange-600 rounded-lg flex items-center justify-center text-white">
                                             <i className="fa-solid fa-paper-plane text-xs"></i>
                                         </div>
