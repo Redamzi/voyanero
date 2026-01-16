@@ -34,16 +34,18 @@ export const FlightService = {
                 "Mein Standort": "FRA" // Default to FRA for testing locate me
             };
 
-            const origin = "MUC"; // Default origin Munich for now
+            const origin = iataMap[params.origin] || params.origin || "MUC";
             const destination = iataMap[params.destination] || params.destination;
 
             const payload = {
                 origin: origin,
                 destination: destination,
                 date: params.date,
+                returnDate: params.return_date,
                 adults: params.adults || 1,
                 children: params.children || 0,
-                infants: params.infants || 0
+                infants: params.infants || 0,
+                travelClass: params.trip_class
             };
 
             const response = await fetch(`${API_BASE_URL}/search`, {
@@ -59,7 +61,8 @@ export const FlightService = {
                 throw new Error(`API Error: ${response.status} - ${errorText}`);
             }
 
-            return await response.json();
+            const result = await response.json();
+            return result.data; // Backend returns { success: true, data: [...] }
         } catch (error) {
             console.error("Flight Search Error:", error);
             throw error;
@@ -75,6 +78,36 @@ export const FlightService = {
             return await response.json();
         } catch (error) {
             console.error("Flight Results Error:", error);
+            throw error;
+        }
+    }
+};
+
+export const TransferService = {
+    searchTransfers: async (params: {
+        startLocationCode: string;
+        endLocationCode: string;
+        startDateTime: string;
+        passengers: number
+    }) => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/transfers/search`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(params),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`API Error: ${response.status} - ${errorText}`);
+            }
+
+            const result = await response.json();
+            return result.data;
+        } catch (error) {
+            console.error("Transfer Search Error:", error);
             throw error;
         }
     }

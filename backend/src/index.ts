@@ -5,6 +5,7 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import flightRoutes from "./routes/flights";
 import hotelRoutes from "./routes/hotels";
+import transferRoutes from "./routes/transfers";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use("/api/flights", flightRoutes);
 app.use("/api/hotels", hotelRoutes);
+app.use("/api/transfers", transferRoutes);
 
 app.get("/health", (req, res) => {
     res.status(200).json({ status: "ok" });

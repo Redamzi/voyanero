@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getStepsForFilter } from '../utils/searchSteps';
+import { SearchCalendar } from './SearchCalendar';
 
 interface SearchMaskProps {
     variant?: 'hero' | 'default' | 'compact';
@@ -78,11 +79,10 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
     const [flightDestination, setFlightDestination] = useState('');
     const [flightType, setFlightType] = useState<'roundtrip' | 'oneway' | 'multicity'>('roundtrip');
 
-    // Transfer-specific states (TODO: Implement in Phase 2)
-    // const [transferType, setTransferType] = useState<'oneway' | 'roundtrip'>('oneway');
-    // const [origin, setOrigin] = useState('');
-    // const [pickupTime, setPickupTime] = useState('');
-    // const [returnTime, setReturnTime] = useState('');
+    // Transfer-specific states
+    const [transferType, setTransferType] = useState<'oneway' | 'roundtrip'>('oneway');
+    const [transferOrigin, setTransferOrigin] = useState('');
+    const [transferDestination, setTransferDestination] = useState('');
 
     // Filter "bestätigen" visibility
     const showConfirm = location.length > 0;
@@ -93,9 +93,28 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
         // Format date as YYYY-MM-DD for API
         const formatDate = (d: Date | null) => d ? d.toISOString().split('T')[0] : "";
 
+        // Determine location/origin/destination based on searchType
+        let finalLocation = location;
+        let finalOrigin = "";
+        let finalDestination = "";
+
+        if (searchType === 'fluege') {
+            finalOrigin = flightOrigin;
+            finalDestination = flightDestination;
+            finalLocation = `${flightOrigin} nach ${flightDestination}`; // Fallback content for generic display
+        } else if (searchType === 'transfer') {
+            finalOrigin = transferOrigin;
+            finalDestination = transferDestination;
+            finalLocation = `${transferOrigin} nach ${transferDestination}`;
+        }
+
         const params = new URLSearchParams({
             type: searchType,
-            location,
+            location: finalLocation,
+            origin: finalOrigin,
+            destination: finalDestination,
+            flightType,
+            transferType,
             checkIn: formatDate(checkIn),
             checkOut: formatDate(checkOut),
             adults: adults.toString(),
@@ -474,8 +493,68 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                             </button>
                                                         )}
                                                     </div>
+                                                ) : searchType === 'transfer' ? (
+                                                    // Transfer-specific: Pickup/Dropoff fields
+                                                    <div className="space-y-4">
+                                                        {/* Transfer Type Toggle */}
+                                                        <div className="flex justify-center mb-2">
+                                                            <div className="bg-slate-100 p-1 rounded-full flex items-center">
+                                                                {([
+                                                                    { id: 'oneway', label: 'Einfache Fahrt', icon: 'fa-arrow-right-long' },
+                                                                    { id: 'roundtrip', label: 'Hin- & Rückfahrt', icon: 'fa-repeat' },
+                                                                ] as const).map(type => (
+                                                                    <button
+                                                                        key={type.id}
+                                                                        onClick={() => setTransferType(type.id)}
+                                                                        className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full text-[10px] sm:text-xs font-bold transition-all ${transferType === type.id
+                                                                            ? 'bg-white shadow-sm text-slate-900'
+                                                                            : 'text-slate-500 hover:text-slate-700'
+                                                                            }`}
+                                                                    >
+                                                                        <i className={`fa-solid ${type.icon}`}></i>
+                                                                        <span>{type.label}</span>
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="relative group">
+                                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400">
+                                                                <i className="fa-solid fa-car text-xl"></i>
+                                                            </div>
+                                                            <input
+                                                                type="text"
+                                                                placeholder="Abholung (Flughafen/Ort)"
+                                                                className="w-full h-20 pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
+                                                                value={transferOrigin}
+                                                                onChange={(e) => setTransferOrigin(e.target.value)}
+                                                                autoFocus
+                                                            />
+                                                        </div>
+                                                        <div className="relative group">
+                                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400">
+                                                                <i className="fa-solid fa-location-dot text-xl"></i>
+                                                            </div>
+                                                            <input
+                                                                type="text"
+                                                                placeholder="Zielort (Hotel/Adresse)"
+                                                                className="w-full h-20 pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
+                                                                value={transferDestination}
+                                                                onChange={(e) => setTransferDestination(e.target.value)}
+                                                                onKeyDown={(e) => e.key === 'Enter' && transferDestination.length > 0 && setCurrentStep(2)}
+                                                            />
+                                                        </div>
+                                                        {transferOrigin.length > 0 && transferDestination.length > 0 && (
+                                                            <button
+                                                                onClick={() => setCurrentStep(2)}
+                                                                className="w-full h-14 px-8 bg-slate-900 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-black transition-all animate-in fade-in zoom-in"
+                                                            >
+                                                                Bestätigen
+                                                            </button>
+                                                        )}
+                                                    </div>
                                                 ) : (
-                                                    // Default: Single destination field for Reisen/Unterkünfte/Transfer
+                                                    // Default: Single destination field per Reisen/Unterkünfte
                                                     <div className="relative group">
                                                         <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400">
                                                             <i className="fa-solid fa-magnifying-glass text-xl"></i>
@@ -547,65 +626,65 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
 
                                     {/* STEP 2: WANN */}
                                     {currentStep === 2 && (
-                                        <div className="w-full max-w-5xl px-4 text-center animate-in slide-in-from-right-8 duration-500">
-                                            {/* ... Step 2 Content ... */}
-                                            <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-4 tracking-tighter">Wann möchtest du reisen?</h2>
-                                            <p className="text-slate-500 text-lg md:text-xl mb-12 font-medium">Wähle einen Zeitraum oder spezifische Daten.</p>
+                                        <div className="w-full max-w-7xl px-4 text-center animate-in slide-in-from-right-8 duration-500">
+                                            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tighter">Wann möchtest du reisen?</h2>
+                                            <p className="text-slate-500 text-lg md:text-xl mb-12 font-medium">Finde die besten Flugpreise.</p>
 
-                                            <div className="flex flex-col-reverse lg:flex-row gap-8 lg:gap-12 items-start justify-center">
-                                                {/* Shortcuts */}
-                                                <div className="flex flex-col gap-4 lg:gap-6 w-full lg:w-96">
-                                                    <button
-                                                        onClick={() => setCurrentStep(3)}
-                                                        className="w-full p-6 lg:p-8 bg-white border border-slate-100 rounded-[2rem] lg:rounded-[2.5rem] flex items-center gap-6 hover:border-[#FF385C] transition-all group text-left shadow-sm order-2 lg:order-1"
-                                                    >
-                                                        <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-colors shrink-0">
-                                                            <i className="fa-solid fa-bolt"></i>
-                                                        </div>
-                                                        <div>
-                                                            <h3 className="font-black text-lg text-slate-900">Dieses Wochenende</h3>
-                                                            <p className="text-xs text-slate-500 font-medium">Perfekt für eine spontane Reise</p>
-                                                        </div>
-                                                    </button>
-
-                                                    <button
-                                                        onClick={() => setCurrentStep(3)}
-                                                        className="w-full p-6 lg:p-8 bg-white border border-slate-100 rounded-[2.5rem] flex items-center gap-6 hover:border-blue-500 transition-all group text-left shadow-sm hidden lg:flex order-3 lg:order-2"
-                                                    >
-                                                        <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors shrink-0">
-                                                            <i className="fa-regular fa-calendar-check"></i>
-                                                        </div>
-                                                        <div>
-                                                            <h3 className="font-black text-lg text-slate-900">Nächsten Monat</h3>
-                                                            <p className="text-xs text-slate-500 font-medium">Genügend Zeit für die Vorbereitung</p>
-                                                        </div>
-                                                    </button>
-
-                                                    <div className="bg-[#1a1a1a] p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] text-white text-center order-1 lg:order-3 min-w-[280px]">
-                                                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#ffffff60] mb-4">{dateLabels.label}</p>
-                                                        <div className="flex items-center justify-center gap-6">
-                                                            <div className="flex flex-col items-center gap-1">
-                                                                <span className="text-[9px] text-[#ffffff60] font-bold uppercase tracking-wider">{dateLabels.start}</span>
-                                                                <span className={`text-xl font-black ${checkIn ? 'text-white' : 'text-[#ffffff40]'}`}>
-                                                                    {checkIn ? checkIn.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-'}
-                                                                </span>
+                                            {searchType === 'fluege' ? (
+                                                <div className="flex justify-center">
+                                                    <SearchCalendar
+                                                        checkIn={checkIn}
+                                                        checkOut={checkOut}
+                                                        onChange={(start, end) => {
+                                                            setCheckIn(start);
+                                                            setCheckOut(end);
+                                                        }}
+                                                        onClose={() => setCurrentStep(3)}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <div className="flex flex-col-reverse lg:flex-row gap-8 lg:gap-12 items-start justify-center">
+                                                    {/* Shortcuts */}
+                                                    <div className="flex flex-col gap-4 lg:gap-6 w-full lg:w-96">
+                                                        <button
+                                                            onClick={() => setCurrentStep(3)}
+                                                            className="w-full p-6 lg:p-8 bg-white border border-slate-100 rounded-[2rem] lg:rounded-[2.5rem] flex items-center gap-6 hover:border-[#FF385C] transition-all group text-left shadow-sm order-2 lg:order-1"
+                                                        >
+                                                            <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-colors shrink-0">
+                                                                <i className="fa-solid fa-bolt"></i>
                                                             </div>
-                                                            <div className="h-8 w-px bg-[#ffffff20]"></div>
-                                                            <div className="flex flex-col items-center gap-1">
-                                                                <span className="text-[9px] text-[#ffffff60] font-bold uppercase tracking-wider">{dateLabels.end}</span>
-                                                                <span className={`text-xl font-black ${checkOut ? 'text-white' : 'text-[#ffffff40]'}`}>
-                                                                    {checkOut ? checkOut.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-'}
-                                                                </span>
+                                                            <div>
+                                                                <h3 className="font-black text-lg text-slate-900">Dieses Wochenende</h3>
+                                                                <p className="text-xs text-slate-500 font-medium">Perfekt für eine spontane Reise</p>
+                                                            </div>
+                                                        </button>
+
+                                                        <div className="bg-[#1a1a1a] p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] text-white text-center order-1 lg:order-3 min-w-[280px]">
+                                                            <p className="text-[10px] font-bold uppercase tracking-widest text-[#ffffff60] mb-4">{dateLabels.label}</p>
+                                                            <div className="flex items-center justify-center gap-6">
+                                                                <div className="flex flex-col items-center gap-1">
+                                                                    <span className="text-[9px] text-[#ffffff60] font-bold uppercase tracking-wider">{dateLabels.start}</span>
+                                                                    <span className={`text-xl font-black ${checkIn ? 'text-white' : 'text-[#ffffff40]'}`}>
+                                                                        {checkIn ? checkIn.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-'}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="h-8 w-px bg-[#ffffff20]"></div>
+                                                                <div className="flex flex-col items-center gap-1">
+                                                                    <span className="text-[9px] text-[#ffffff60] font-bold uppercase tracking-wider">{dateLabels.end}</span>
+                                                                    <span className={`text-xl font-black ${checkOut ? 'text-white' : 'text-[#ffffff40]'}`}>
+                                                                        {checkOut ? checkOut.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-'}
+                                                                    </span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
 
-                                                {/* Calendar */}
-                                                <div className="flex-1 w-full">
-                                                    {renderCalendar()}
+                                                    {/* Calendar */}
+                                                    <div className="flex-1 w-full">
+                                                        {renderCalendar()}
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            )}
                                         </div>
                                     )}
 

@@ -8,7 +8,7 @@ import ListingPreviewModal from '@/components/ListingPreviewModal';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Listing, ListingType, PropertyType } from '@/types';
-import { FlightService } from '@/services/api';
+import { FlightService, TransferService } from '@/services/api';
 import { HotelService } from '@/services/hotelService';
 
 // --- ANIMATION VARIANTS ---
@@ -56,7 +56,10 @@ function SearchContent() {
     const searchParams = useSearchParams();
     const searchType = searchParams.get('type') || 'reisen';
     const locationQuery = searchParams.get('location') || '';
+    const originQuery = searchParams.get('origin') || '';
+    const destinationQuery = searchParams.get('destination') || '';
     const dateQuery = searchParams.get('checkIn') || '';
+    const returnDateQuery = searchParams.get('checkOut') || undefined;
 
     // Guest params
     const adults = parseInt(searchParams.get('adults') || '1');
@@ -107,35 +110,41 @@ function SearchContent() {
                         HotelService.searchHotels(locationQuery),
                     ]);
 
-                    // Process Flights
-                    if (flightRes.success && flightRes.flights && flightRes.flights.length > 0) {
+                    // Process Flights (Amadeus Structure)
+                    if (flightRes && Array.isArray(flightRes) && flightRes.length > 0) {
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const flightListings: Listing[] = flightRes.flights.map((flight: any, index: number) => ({
-                            id: `flight-${index}`,
-                            title: `Flug mit ${flight.airline || 'Airline'}`,
-                            description: `Ab ${new Date(flight.departure_at).toLocaleDateString('de-DE')}`,
-                            type: ListingType.AFFILIATE,
-                            propertyType: PropertyType.HOTEL,
-                            price: flight.price || 0,
-                            location: {
-                                address: `${flight.origin || 'MUC'} → ${flight.destination || locationQuery}`,
-                                lat: 0,
-                                lng: 0
-                            },
-                            images: flight.airline
-                                ? [`http://pics.avs.io/200/200/${flight.airline}.png`]
-                                : ['https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'], // Fallback: plane image
-                            amenities: ["Direktflug", "Economy"],
-                            rating: 4.5,
-                            reviewCount: 10 + Math.floor(Math.random() * 50),
-                            maxGuests: adults + children,
-                            affiliateUrl: (() => {
-                                const departDate = new Date(flight.departure_at);
-                                const shortDate = `${String(departDate.getDate()).padStart(2, '0')}${String(departDate.getMonth() + 1).padStart(2, '0')}`;
-                                const fullDate = departDate.toISOString().split('T')[0];
-                                return `https://www.aviasales.com/search/${flight.origin}${shortDate}${flight.destination}1?origin=${flight.origin}&destination=${flight.destination}&depart_date=${fullDate}&adults=${adults}&marker=${flight.marker || '575179'}`;
-                            })()
-                        }));
+                        const flightListings: Listing[] = flightRes.map((flight: any, index: number) => {
+                            const itinerary = flight.itineraries?.[0];
+                            const firstSegment = itinerary?.segments?.[0];
+                            const lastSegment = itinerary?.segments?.[itinerary.segments.length - 1];
+                            const airlineCode = flight.validatingAirlineCodes?.[0];
+                            const startTime = firstSegment?.departure?.at;
+
+                            return {
+                                id: flight.id, // Amadeus offer ID
+                                title: `Flug mit ${airlineCode || 'Airline'}`,
+                                description: startTime ? `Ab ${new Date(startTime).toLocaleDateString('de-DE', { hour: '2-digit', minute: '2-digit' })}` : 'Flugdaten',
+                                type: ListingType.AFFILIATE, // Using Affiliate type for generic card, but it's internal booking
+                                propertyType: PropertyType.HOTEL, // Reuse existing type for card styling
+                                price: parseFloat(flight.price?.total || '0'),
+                                location: {
+                                    address: `${firstSegment?.departure?.iataCode || 'Start'} → ${lastSegment?.arrival?.iataCode || 'Ziel'}`,
+                                    lat: 0,
+                                    lng: 0
+                                },
+                                images: airlineCode
+                                    ? [`http://pics.avs.io/200/200/${airlineCode}.png`]
+                                    : ['https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'],
+                                amenities: [
+                                    index === 0 ? "Günstigster" : "Economy",
+                                    flight.oneWay ? "One Way" : "Return"
+                                ].filter(Boolean),
+                                rating: 4.5, // Placeholder
+                                reviewCount: 20,
+                                maxGuests: adults + children,
+                                affiliateUrl: `/book/flight?offerId=${flight.id}&context=${encodeURIComponent(JSON.stringify(flight))}` // Internal booking link logic
+                            };
+                        });
                         combinedListings = [...combinedListings, ...flightListings];
                     }
 
@@ -178,43 +187,79 @@ function SearchContent() {
                 } else if (searchType === 'fluege') {
                     // Fetch only flights
                     const flightRes = await FlightService.searchFlights({
-                        origin: "MUC",
-                        destination: locationQuery,
+                        origin: originQuery || "MUC",
+                        destination: destinationQuery || locationQuery,
                         date: dateQuery || new Date().toISOString().split('T')[0],
+                        return_date: returnDateQuery,
                         adults,
                         children,
                         infants
                     });
 
-                    if (flightRes.success && flightRes.flights && flightRes.flights.length > 0) {
+                    if (flightRes && Array.isArray(flightRes) && flightRes.length > 0) {
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const flightListings: Listing[] = flightRes.flights.map((flight: any, index: number) => ({
-                            id: `flight-${index}`,
-                            title: `Flug mit ${flight.airline || 'Airline'}`,
-                            description: `Ab ${new Date(flight.departure_at).toLocaleDateString('de-DE')}`,
+                        const flightListings: Listing[] = flightRes.map((flight: any, index: number) => {
+                            const itinerary = flight.itineraries?.[0];
+                            const firstSegment = itinerary?.segments?.[0];
+                            const lastSegment = itinerary?.segments?.[itinerary.segments.length - 1];
+                            const airlineCode = flight.validatingAirlineCodes?.[0];
+                            const startTime = firstSegment?.departure?.at;
+
+                            return {
+                                id: flight.id,
+                                title: `Flug mit ${airlineCode || 'Airline'}`,
+                                description: startTime ? `Ab ${new Date(startTime).toLocaleDateString('de-DE', { hour: '2-digit', minute: '2-digit' })}` : 'Flugdaten',
+                                type: ListingType.AFFILIATE,
+                                propertyType: PropertyType.HOTEL,
+                                price: parseFloat(flight.price?.total || '0'),
+                                location: {
+                                    address: `${firstSegment?.departure?.iataCode || 'Start'} → ${lastSegment?.arrival?.iataCode || 'Ziel'}`,
+                                    lat: 0,
+                                    lng: 0
+                                },
+                                images: airlineCode
+                                    ? [`http://pics.avs.io/200/200/${airlineCode}.png`]
+                                    : ['https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'],
+                                amenities: ["Economy"],
+                                rating: 4.5,
+                                reviewCount: 15,
+                                maxGuests: adults + children,
+                                affiliateUrl: `/book/flight?offerId=${flight.id}&context=${encodeURIComponent(JSON.stringify(flight))}`
+                            };
+                        });
+                        combinedListings = [...combinedListings, ...flightListings];
+                    }
+                } else if (searchType === 'transfer') {
+                    // Fetch transfers
+                    const transferRes = await TransferService.searchTransfers({
+                        startLocationCode: originQuery || 'LHR',
+                        endLocationCode: destinationQuery || 'CDG',
+                        startDateTime: dateQuery ? new Date(dateQuery).toISOString() : new Date().toISOString(),
+                        passengers: adults + children || 1
+                    });
+
+                    if (transferRes && Array.isArray(transferRes)) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const transferListings: Listing[] = transferRes.map((offer: any, index: number) => ({
+                            id: offer.id || `transfer-${index}`,
+                            title: `Transfer (${offer.transferType})`,
+                            description: `Fahrzeug: ${offer.vehicle?.category || 'Standard'} - ${offer.vehicle?.code || ''}`,
                             type: ListingType.AFFILIATE,
-                            propertyType: PropertyType.HOTEL,
-                            price: flight.price || 0,
+                            propertyType: PropertyType.HOTEL, // Reuse for card styling
+                            price: parseFloat(offer.price?.total || '0'),
                             location: {
-                                address: `${flight.origin || 'MUC'} → ${flight.destination || locationQuery}`,
+                                address: `${offer.start?.locationCode || originQuery} → ${offer.end?.locationCode || destinationQuery}`,
                                 lat: 0,
                                 lng: 0
                             },
-                            images: flight.airline
-                                ? [`http://pics.avs.io/200/200/${flight.airline}.png`]
-                                : ['https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'], // Fallback: plane image
-                            amenities: ["Direktflug", "Economy"],
-                            rating: 4.5,
-                            reviewCount: 10 + Math.floor(Math.random() * 50),
-                            maxGuests: adults + children,
-                            affiliateUrl: (() => {
-                                const departDate = new Date(flight.departure_at);
-                                const shortDate = `${String(departDate.getDate()).padStart(2, '0')}${String(departDate.getMonth() + 1).padStart(2, '0')}`;
-                                const fullDate = departDate.toISOString().split('T')[0];
-                                return `https://www.aviasales.com/search/${flight.origin}${shortDate}${flight.destination}1?origin=${flight.origin}&destination=${flight.destination}&depart_date=${fullDate}&adults=${adults}&marker=${flight.marker || '575179'}`;
-                            })()
+                            images: ['https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=800&q=80'], // Car/Taxi image
+                            amenities: [offer.vehicle?.category, `${offer.passengers || 1} Passagiere`, "Meet & Greet"].filter(Boolean),
+                            rating: 4.8,
+                            reviewCount: 50,
+                            maxGuests: offer.vehicle?.passengerCapacity || 4,
+                            affiliateUrl: '#' // TODO: Deep link if available
                         }));
-                        combinedListings = [...combinedListings, ...flightListings];
+                        combinedListings = [...combinedListings, ...transferListings];
                     }
                 } else if (searchType === 'unterkunft') {
                     // Fetch only hotels
