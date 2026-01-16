@@ -190,12 +190,12 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                             <div className="grid grid-cols-3 gap-4">
                                 {/* Reisen Card */}
                                 <motion.button
-                                    initial={{ x: -100, opacity: 0, scale: 0.8 }}
-                                    animate={{ x: 0, opacity: 1, scale: 1 }}
+                                    initial={{ y: -50, opacity: 0, scale: 0.5 }}
+                                    animate={{ y: 0, opacity: 1, scale: 1 }}
                                     transition={{
                                         type: "spring",
-                                        stiffness: 300,
-                                        damping: 12,
+                                        stiffness: 200,
+                                        damping: 15,
                                         delay: 0.1
                                     }}
                                     className="group relative bg-white border-2 border-slate-200 rounded-2xl p-4 hover:border-orange-500 hover:shadow-lg transition-all text-left"
@@ -212,12 +212,12 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
 
                                 {/* Flüge Card */}
                                 <motion.button
-                                    initial={{ x: -100, opacity: 0, scale: 0.8 }}
-                                    animate={{ x: 0, opacity: 1, scale: 1 }}
+                                    initial={{ y: -50, opacity: 0, scale: 0.5 }}
+                                    animate={{ y: 0, opacity: 1, scale: 1 }}
                                     transition={{
                                         type: "spring",
-                                        stiffness: 300,
-                                        damping: 12,
+                                        stiffness: 200,
+                                        damping: 15,
                                         delay: 0.2
                                     }}
                                     className="group relative bg-white border-2 border-slate-200 rounded-2xl p-4 hover:border-blue-500 hover:shadow-lg transition-all text-left"
@@ -234,12 +234,12 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
 
                                 {/* Hotels Card */}
                                 <motion.button
-                                    initial={{ x: -100, opacity: 0, scale: 0.8 }}
-                                    animate={{ x: 0, opacity: 1, scale: 1 }}
+                                    initial={{ y: -50, opacity: 0, scale: 0.5 }}
+                                    animate={{ y: 0, opacity: 1, scale: 1 }}
                                     transition={{
                                         type: "spring",
-                                        stiffness: 300,
-                                        damping: 12,
+                                        stiffness: 200,
+                                        damping: 15,
                                         delay: 0.3
                                     }}
                                     className="group relative bg-white border-2 border-slate-200 rounded-2xl p-4 hover:border-emerald-500 hover:shadow-lg transition-all text-left"
