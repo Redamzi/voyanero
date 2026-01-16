@@ -55,6 +55,7 @@ const SelectableListing = ({ listing, isSelectionMode, onPreview }: { listing: L
 
 function SearchContent() {
     const searchParams = useSearchParams();
+    const searchType = searchParams.get('type') || 'reisen';
     const locationQuery = searchParams.get('location') || '';
     const dateQuery = searchParams.get('checkIn') || '';
 
@@ -97,80 +98,139 @@ function SearchContent() {
             setError(null);
 
             try {
-                // parallel fetch
-                const [flightRes, hotelRes] = await Promise.all([
-                    FlightService.searchFlights({
-                        origin: "MUC", // Default origin for now, maybe customizable later
+                let combinedListings: Listing[] = [];
+
+                // Fetch based on search type
+                if (searchType === 'reisen') {
+                    // Fetch both flights and hotels
+                    const [flightRes, hotelRes] = await Promise.all([
+                        FlightService.searchFlights({
+                            origin: "MUC",
+                            destination: locationQuery,
+                            date: dateQuery || new Date().toISOString().split('T')[0],
+                            adults,
+                            children,
+                            infants
+                        }),
+                        HotelService.searchHotels(locationQuery),
+                    ]);
+
+                    // Process Flights
+                    if (flightRes.success && flightRes.flights && flightRes.flights.length > 0) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const flightListings: Listing[] = flightRes.flights.map((flight: any, index: number) => ({
+                            id: `flight-${index}`,
+                            title: `Flug mit ${flight.airline || 'Airline'}`,
+                            description: `Ab ${new Date(flight.departure_at).toLocaleDateString('de-DE')}`,
+                            type: ListingType.AFFILIATE,
+                            propertyType: PropertyType.HOTEL,
+                            price: flight.price || 0,
+                            location: {
+                                address: `${flight.origin || 'MUC'} → ${flight.destination || locationQuery}`,
+                                lat: 0,
+                                lng: 0
+                            },
+                            images: [`http://pics.avs.io/200/200/${flight.airline}.png`],
+                            amenities: ["Direktflug", "Economy"],
+                            rating: 4.5,
+                            reviewCount: 10 + Math.floor(Math.random() * 50),
+                            maxGuests: adults + children,
+                            affiliateUrl: `https://www.aviasales.com/search/${flight.origin}${new Date(flight.departure_at).toISOString().split('T')[0]}${flight.destination}1?marker=${flight.marker}`
+                        }));
+                        combinedListings = [...combinedListings, ...flightListings];
+                    }
+
+                    // Process Hotels
+                    if (hotelRes && hotelRes.length > 0) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const hotelListings: Listing[] = hotelRes.map((hotel: any) => ({
+                            id: hotel.id,
+                            title: hotel.title,
+                            description: hotel.description || 'Schönes Hotel in top Lage',
+                            type: ListingType.AFFILIATE,
+                            propertyType: PropertyType.HOTEL,
+                            price: hotel.price,
+                            location: {
+                                address: typeof hotel.location === 'string' ? hotel.location : (hotel.location?.address || 'Unknown Location'),
+                                lat: 0,
+                                lng: 0
+                            },
+                            images: hotel.image ? [hotel.image] : ['https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'],
+                            amenities: hotel.amenities || ['WiFi', 'AC'],
+                            rating: hotel.rating,
+                            reviewCount: hotel.reviews,
+                            maxGuests: 2, // Mock default
+                            affiliateUrl: hotel.deepLink
+                        }));
+                        combinedListings = [...combinedListings, ...hotelListings];
+                    }
+                } else if (searchType === 'fluege') {
+                    // Fetch only flights
+                    const flightRes = await FlightService.searchFlights({
+                        origin: "MUC",
                         destination: locationQuery,
                         date: dateQuery || new Date().toISOString().split('T')[0],
                         adults,
                         children,
                         infants
-                    }),
-                    HotelService.searchHotels(locationQuery),
-                ]);
+                    });
 
-                let combinedListings: Listing[] = [];
+                    if (flightRes.success && flightRes.flights && flightRes.flights.length > 0) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const flightListings: Listing[] = flightRes.flights.map((flight: any, index: number) => ({
+                            id: `flight-${index}`,
+                            title: `Flug mit ${flight.airline || 'Airline'}`,
+                            description: `Ab ${new Date(flight.departure_at).toLocaleDateString('de-DE')}`,
+                            type: ListingType.AFFILIATE,
+                            propertyType: PropertyType.HOTEL,
+                            price: flight.price || 0,
+                            location: {
+                                address: `${flight.origin || 'MUC'} → ${flight.destination || locationQuery}`,
+                                lat: 0,
+                                lng: 0
+                            },
+                            images: [`http://pics.avs.io/200/200/${flight.airline}.png`],
+                            amenities: ["Direktflug", "Economy"],
+                            rating: 4.5,
+                            reviewCount: 10 + Math.floor(Math.random() * 50),
+                            maxGuests: adults + children,
+                            affiliateUrl: `https://www.aviasales.com/search/${flight.origin}${new Date(flight.departure_at).toISOString().split('T')[0]}${flight.destination}1?marker=${flight.marker}`
+                        }));
+                        combinedListings = [...combinedListings, ...flightListings];
+                    }
+                } else if (searchType === 'unterkunft') {
+                    // Fetch only hotels
+                    const hotelRes = await HotelService.searchHotels(locationQuery);
 
-                // Process Flights
-                if (flightRes.success && flightRes.flights && flightRes.flights.length > 0) {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const flightListings: Listing[] = flightRes.flights.map((flight: any, index: number) => ({
-                        id: `flight-${index}`,
-                        title: `Flug mit ${flight.airline || 'Airline'}`,
-                        description: `Ab ${new Date(flight.departure_at).toLocaleDateString('de-DE')}`,
-                        type: ListingType.AFFILIATE,
-                        // Using HOTEL as fallback type for icon logic, or add FLIGHT type to enum if strictly needed
-                        propertyType: PropertyType.HOTEL,
-                        price: flight.price || 0,
-                        location: {
-                            address: `${flight.origin || 'MUC'} → ${flight.destination || locationQuery}`,
-                            lat: 0,
-                            lng: 0
-                        },
-                        // Use airline logo or generic image
-                        images: [`http://pics.avs.io/200/200/${flight.airline}.png`],
-                        amenities: ["Direktflug", "Economy"],
-                        rating: 4.5,
-                        reviewCount: 10 + Math.floor(Math.random() * 50),
-                        maxGuests: adults + children,
-                        affiliateUrl: `https://www.aviasales.com/search/${flight.origin}${new Date(flight.departure_at).toISOString().split('T')[0]}${flight.destination}1?marker=${flight.marker}`
-                    }));
-                    combinedListings = [...combinedListings, ...flightListings];
+                    if (hotelRes && hotelRes.length > 0) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const hotelListings: Listing[] = hotelRes.map((hotel: any) => ({
+                            id: hotel.id,
+                            title: hotel.title,
+                            description: hotel.description || 'Schönes Hotel in top Lage',
+                            type: ListingType.AFFILIATE,
+                            propertyType: PropertyType.HOTEL,
+                            price: hotel.price,
+                            location: {
+                                address: typeof hotel.location === 'string' ? hotel.location : (hotel.location?.address || 'Unknown Location'),
+                                lat: 0,
+                                lng: 0
+                            },
+                            images: hotel.image ? [hotel.image] : ['https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'],
+                            amenities: hotel.amenities || ['WiFi', 'AC'],
+                            rating: hotel.rating,
+                            reviewCount: hotel.reviews,
+                            maxGuests: 2,
+                            affiliateUrl: hotel.deepLink
+                        }));
+                        combinedListings = [...combinedListings, ...hotelListings];
+                    }
                 }
-
-                // Process Hotels
-                if (hotelRes && hotelRes.length > 0) {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const hotelListings: Listing[] = hotelRes.map((hotel: any) => ({
-                        id: hotel.id,
-                        title: hotel.title,
-                        description: hotel.description || 'Schönes Hotel in top Lage',
-                        type: ListingType.AFFILIATE,
-                        propertyType: PropertyType.HOTEL,
-                        price: hotel.price,
-                        location: {
-                            address: typeof hotel.location === 'string' ? hotel.location : (hotel.location?.address || 'Unknown Location'),
-                            lat: 0,
-                            lng: 0
-                        },
-                        images: hotel.image ? [hotel.image] : ['https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'],
-                        amenities: hotel.amenities || ['WiFi', 'AC'],
-                        rating: hotel.rating,
-                        reviewCount: hotel.reviews,
-                        maxGuests: 2, // Mock default
-                        affiliateUrl: hotel.deepLink
-                    }));
-                    combinedListings = [...combinedListings, ...hotelListings];
-                }
-
 
                 if (combinedListings.length > 0) {
                     setListings(combinedListings);
                 } else {
                     setListings([]);
-                    // Optional: keep MOCK_LISTINGS just for demo if real API returns nothing?
-                    // User said "nein mach real daten nicht moc". So we show empty or error.
                     setError("Keine Ergebnisse gefunden. Versuche andere Daten oder Ziele.");
                 }
 
@@ -185,7 +245,7 @@ function SearchContent() {
         };
 
         fetchData();
-    }, [locationQuery, dateQuery, adults, children, infants]);
+    }, [locationQuery, dateQuery, adults, children, infants, searchType]);
 
 
     const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {

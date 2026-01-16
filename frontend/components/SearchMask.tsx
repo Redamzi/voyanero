@@ -80,6 +80,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
         const formatDate = (d: Date | null) => d ? d.toISOString().split('T')[0] : "";
 
         const params = new URLSearchParams({
+            type: searchType,
             location,
             checkIn: formatDate(checkIn),
             checkOut: formatDate(checkOut),
