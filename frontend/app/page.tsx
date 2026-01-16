@@ -81,7 +81,9 @@ export default function Home() {
               </div>
               <h2 className="text-3xl md:text-7xl font-black text-white tracking-tighter leading-none">Vergleiche & spare <br /> bei jeder Buchung.</h2>
               <p className="text-slate-400 font-medium text-base md:text-xl leading-relaxed max-w-xl">Finde die besten Angebote für Hotels, Flüge und Reisepakete – alles an einem Ort.</p>
-              <button className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-10 md:px-12 py-4 md:py-5 rounded-[1.2rem] md:rounded-[1.5rem] font-black text-[10px] md:text-[11px] uppercase tracking-[0.3em] shadow-2xl shadow-amber-500/30 active:scale-95 transition-all hover:shadow-amber-500/50">
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-10 md:px-12 py-4 md:py-5 rounded-[1.2rem] md:rounded-[1.5rem] font-black text-[10px] md:text-[11px] uppercase tracking-[0.3em] shadow-2xl shadow-amber-500/30 active:scale-95 transition-all hover:shadow-amber-500/50 cursor-pointer">
                 Jetzt Angebote vergleichen
               </button>
             </div>
