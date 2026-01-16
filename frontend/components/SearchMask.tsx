@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getStepsForFilter } from '../utils/searchSteps';
 
 interface SearchMaskProps {
     variant?: 'hero' | 'default' | 'compact';
@@ -75,6 +76,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
     // Flight-specific states
     const [flightOrigin, setFlightOrigin] = useState('');
     const [flightDestination, setFlightDestination] = useState('');
+    const [flightType, setFlightType] = useState<'roundtrip' | 'oneway' | 'multicity'>('roundtrip');
 
     // Transfer-specific states (TODO: Implement in Phase 2)
     // const [transferType, setTransferType] = useState<'oneway' | 'roundtrip'>('oneway');
@@ -331,21 +333,26 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                     </div>
 
                                     {/* Step Indicators */}
-                                    <div className="flex items-center gap-2 sm:gap-12">
-                                        <button onClick={() => setCurrentStep(1)} className={`flex items-center gap-3 transition-colors ${currentStep === 1 ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}>
-                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 1 ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white' : 'bg-slate-100 text-slate-500'}`}>1</div>
-                                            <span className="hidden sm:inline text-xs font-black uppercase tracking-widest text-slate-900">Wohin</span>
-                                        </button>
-                                        <div className="w-2 sm:w-8 h-px bg-slate-200"></div>
-                                        <button onClick={() => setCurrentStep(2)} className={`flex items-center gap-3 transition-colors ${currentStep === 2 ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}>
-                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 2 ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white' : 'bg-slate-100 text-slate-500'}`}>2</div>
-                                            <span className="hidden sm:inline text-xs font-black uppercase tracking-widest text-slate-900">Wann</span>
-                                        </button>
-                                        <div className="w-2 sm:w-8 h-px bg-slate-200"></div>
-                                        <button onClick={() => setCurrentStep(3)} className={`flex items-center gap-3 transition-colors ${currentStep === 3 ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}>
-                                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 3 ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white' : 'bg-slate-100 text-slate-500'}`}>3</div>
-                                            <span className="hidden sm:inline text-xs font-black uppercase tracking-widest text-slate-900">Wer</span>
-                                        </button>
+                                    <div className="flex items-center gap-2 sm:gap-6">
+                                        {getStepsForFilter(searchType).map((step, index) => (
+                                            <React.Fragment key={step.number}>
+                                                <button
+                                                    onClick={() => setCurrentStep(step.number as 1 | 2 | 3)}
+                                                    className={`flex items-center gap-2 sm:gap-3 transition-colors ${currentStep === step.number ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}
+                                                >
+                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${currentStep === step.number ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
+                                                        {step.number}
+                                                    </div>
+                                                    <div className="hidden sm:flex flex-col text-left">
+                                                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-900 leading-none mb-0.5">{step.title}</span>
+                                                        <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 leading-none">{step.subtitle}</span>
+                                                    </div>
+                                                </button>
+                                                {index < getStepsForFilter(searchType).length - 1 && (
+                                                    <div className="w-2 sm:w-6 h-px bg-slate-200"></div>
+                                                )}
+                                            </React.Fragment>
+                                        ))}
                                     </div>
 
                                     {/* Close */}
@@ -399,6 +406,29 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                 {searchType === 'fluege' ? (
                                                     // Flight-specific: Von/Nach fields
                                                     <div className="space-y-4">
+                                                        {/* Flight Type Toggle */}
+                                                        <div className="flex justify-center mb-2">
+                                                            <div className="bg-slate-100 p-1 rounded-full flex items-center">
+                                                                {([
+                                                                    { id: 'roundtrip', label: 'Hin- & Rückflug', icon: 'fa-repeat' },
+                                                                    { id: 'oneway', label: 'Nur Hinflug', icon: 'fa-arrow-right-long' },
+                                                                    { id: 'multicity', label: 'Gabelflug', icon: 'fa-share-nodes' }
+                                                                ] as const).map(type => (
+                                                                    <button
+                                                                        key={type.id}
+                                                                        onClick={() => setFlightType(type.id)}
+                                                                        className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full text-[10px] sm:text-xs font-bold transition-all ${flightType === type.id
+                                                                                ? 'bg-white shadow-sm text-slate-900'
+                                                                                : 'text-slate-500 hover:text-slate-700'
+                                                                            }`}
+                                                                    >
+                                                                        <i className={`fa-solid ${type.icon}`}></i>
+                                                                        <span>{type.label}</span>
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+
                                                         <div className="relative group">
                                                             <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400">
                                                                 <i className="fa-solid fa-plane-departure text-xl"></i>
