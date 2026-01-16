@@ -1,26 +1,10 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export default function FlightsPage() {
-    useEffect(() => {
-        // Load Travelpayouts widget script
-        const script = document.createElement("script");
-        script.async = true;
-        script.src = 'https://tpwdg.com/content?trs=353305&shmarker=575179&locale=de&curr=EUR&powered_by=true&border_radius=30&plain=true&color_button=%23000000ff&color_button_text=%23ffffff&color_border=%23000000ff&promo_id=4132&campaign_id=121';
-        script.charset = 'utf-8';
-        document.body.appendChild(script);
-
-        return () => {
-            // Cleanup script on unmount
-            if (script.parentNode) {
-                script.parentNode.removeChild(script);
-            }
-        };
-    }, []);
-
     return (
         <div className="min-h-screen bg-white">
             <Navbar />
@@ -33,9 +17,16 @@ export default function FlightsPage() {
                     Finde die besten Flüge zu deinem Traumziel
                 </p>
 
-                {/* Widget container */}
-                <div id="travelpayouts-widget" className="w-full min-h-[600px] bg-white rounded-2xl shadow-lg p-6">
-                    {/* Widget will be injected here by the script */}
+                {/* Travelpayouts Widget (iframe embed) */}
+                <div className="w-full min-h-[600px] bg-white rounded-2xl shadow-lg overflow-hidden">
+                    <iframe
+                        src="https://tpwdg.com/content?trs=353305&shmarker=575179&locale=de&curr=EUR&powered_by=true&border_radius=30&plain=true&color_button=%23000000ff&color_button_text=%23ffffff&color_border=%23000000ff&promo_id=4132&campaign_id=121"
+                        width="100%"
+                        height="600"
+                        frameBorder="0"
+                        style={{ border: 'none', minHeight: '600px' }}
+                        title="Flugsuche"
+                    />
                 </div>
             </div>
 
