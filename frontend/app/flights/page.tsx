@@ -5,12 +5,21 @@ import Script from 'next/script';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
+// Extend Window interface for Travelpayouts
+declare global {
+    interface Window {
+        TPWidgetLoader?: {
+            init: () => void;
+        };
+    }
+}
+
 export default function FlightsPage() {
     useEffect(() => {
         // Initialize widget after script loads
         const initWidget = () => {
-            if (typeof window !== 'undefined' && (window as any).TPWidgetLoader) {
-                (window as any).TPWidgetLoader.init();
+            if (typeof window !== 'undefined' && window.TPWidgetLoader) {
+                window.TPWidgetLoader.init();
             }
         };
 
@@ -55,8 +64,8 @@ export default function FlightsPage() {
                 src="https://tpwdg.com/widget-init.js"
                 strategy="afterInteractive"
                 onLoad={() => {
-                    if (typeof window !== 'undefined' && (window as any).TPWidgetLoader) {
-                        (window as any).TPWidgetLoader.init();
+                    if (typeof window !== 'undefined' && window.TPWidgetLoader) {
+                        window.TPWidgetLoader.init();
                     }
                 }}
             />
