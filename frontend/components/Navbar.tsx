@@ -16,6 +16,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCompact = false, onToggleSelectionMode }) => {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
     React.useEffect(() => {
         if (forceCompact) {
@@ -49,12 +50,12 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                         {/* Default Links */}
                         <div className={`transition-all duration-300 absolute inset-0 flex items-center justify-center ${isScrolled ? 'opacity-0 pointer-events-none scale-95' : 'opacity-100 scale-100'}`}>
                             <div className="hidden md:flex items-center gap-1 p-1 bg-slate-50/50 rounded-full border border-slate-100">
-                                <Link href="/" className="px-5 py-2.5 rounded-full text-sm font-bold text-slate-900 bg-white shadow-sm ring-1 ring-black/5">
+                                <Link href="/search" className="px-5 py-2.5 rounded-full text-sm font-bold text-slate-900 bg-white shadow-sm ring-1 ring-black/5">
                                     Entdecken
                                 </Link>
-                                <Link href="/search" className="px-5 py-2.5 rounded-full text-sm font-bold text-slate-500 hover:text-slate-900 hover:bg-white/50 transition-all">
+                                <button onClick={() => setIsSearchModalOpen(true)} className="px-5 py-2.5 rounded-full text-sm font-bold text-slate-500 hover:text-slate-900 hover:bg-white/50 transition-all">
                                     Suchen
-                                </Link>
+                                </button>
                                 <Link href="/ai-concierge" className="px-5 py-2.5 rounded-full text-sm font-bold text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex items-center gap-2">
                                     <i className="fa-solid fa-wand-magic-sparkles"></i>
                                     AI Concierge
@@ -168,6 +169,26 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                     </div>
                 </div>
             </div>
+
+            {/* Fullscreen Search Modal */}
+            {isSearchModalOpen && (
+                <div className="fixed inset-0 z-[9999] bg-white flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300">
+                    <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between">
+                        <h2 className="text-lg font-black text-slate-900 uppercase tracking-widest">Suche starten</h2>
+                        <button
+                            onClick={() => setIsSearchModalOpen(false)}
+                            className="w-12 h-12 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-all"
+                        >
+                            <i className="fa-solid fa-xmark text-xl"></i>
+                        </button>
+                    </div>
+                    <div className="flex-1 overflow-y-auto flex items-center justify-center p-8">
+                        <div className="w-full max-w-4xl">
+                            <SearchMask variant="full" onSearch={() => setIsSearchModalOpen(false)} />
+                        </div>
+                    </div>
+                </div>
+            )}
         </nav>
     );
 };
