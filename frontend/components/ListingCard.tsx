@@ -56,7 +56,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onPreview }) => {
                     {listing.images.map((img, idx) => {
                         const ImageContent = (
                             <img
-                                src={img}
+                                src={img.replace('http:', 'https:')}
                                 className="w-full h-full object-cover"
                                 alt={listing.title}
                                 draggable={false}
