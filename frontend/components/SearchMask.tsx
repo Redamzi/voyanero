@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface SearchMaskProps {
     variant?: 'hero' | 'default' | 'compact';
     initialLocation?: string;
+    onClose?: () => void;
 }
 
 const DESTINATIONS = [
@@ -18,7 +19,7 @@ const DESTINATIONS = [
     { name: "Tokyo, Japan", icon: "fa-torii-gate", label: "Tokyo" }
 ];
 
-const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLocation = "" }) => {
+const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLocation = "", onClose }) => {
     const router = useRouter();
 
     // Animation Variants
@@ -48,7 +49,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
             } as const
         }
     };
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(variant === 'compact');
     const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
 
     const [location, setLocation] = useState(initialLocation);
@@ -70,6 +71,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
 
     const handleSearch = () => {
         setIsOpen(false);
+        onClose?.();
         // Format date as YYYY-MM-DD for API
         const formatDate = (d: Date | null) => d ? d.toISOString().split('T')[0] : "";
 
@@ -292,7 +294,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                 initial="hidden"
                                 animate="visible"
                                 exit="exit"
-                                onClick={() => setIsOpen(false)}
+                                onClick={() => { setIsOpen(false); onClose?.(); }}
                             />
                             <motion.div
                                 className="fixed inset-0 z-[99999] bg-white h-[100dvh] w-screen overflow-hidden flex flex-col"
@@ -331,7 +333,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
 
                                     {/* Close */}
                                     <button
-                                        onClick={() => setIsOpen(false)}
+                                        onClick={() => { setIsOpen(false); onClose?.(); }}
                                         className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-500 transition-colors"
                                     >
                                         <i className="fa-solid fa-xmark text-lg"></i>
