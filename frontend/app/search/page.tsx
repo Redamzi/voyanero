@@ -81,16 +81,9 @@ function SearchContent() {
     React.useEffect(() => {
         const fetchData = async () => {
             if (!locationQuery && !dateQuery) {
-                // If no search params, show some mock data or empty state? 
-                // Let's show mock data as "Featured" if nothing searched, or keep empty.
-                // Resetting to mock data for initial view might be desired by user or empty.
-                // User said "real data", so let's try to fetch trending or similar if possible, 
-                // but our services might need params. For now fallback to mock is UX friendly 
-                // if no search is performed, BUT user said "don't use mock".
-                // Let's assume on load with no params we wait for user input or show nothing.
-                // However, usually "landing" on search page implies a search.
-                // Let's default to MOCK only if absolutely nothing to fetch, OR fetch generic.
-                setListings(MOCK_LISTINGS);
+                // No search params - show empty state or featured listings
+                setListings([]);
+                setError("Bitte gib ein Reiseziel ein, um Angebote zu finden.");
                 return;
             }
 
