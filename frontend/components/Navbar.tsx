@@ -182,7 +182,50 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                             <i className="fa-solid fa-xmark text-xl"></i>
                         </button>
                     </div>
-                    <div className="flex-1 overflow-y-auto flex items-center justify-center p-8">
+                    <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center p-8">
+                        {/* Category Filter Cards */}
+                        <div className="w-full max-w-4xl mb-8">
+                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Was suchst du?</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {/* Reisen Card */}
+                                <button className="group relative bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-orange-500 hover:shadow-lg transition-all text-left">
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <i className="fa-solid fa-suitcase-rolling text-orange-600 text-xl"></i>
+                                        </div>
+                                        <div className="w-6 h-6 border-2 border-slate-300 rounded-md group-hover:border-orange-500 transition-colors"></div>
+                                    </div>
+                                    <h4 className="text-lg font-black text-slate-900 mb-1">Reisen</h4>
+                                    <p className="text-sm text-slate-500">Komplette Reisepakete</p>
+                                </button>
+
+                                {/* Flüge Card */}
+                                <button className="group relative bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-blue-500 hover:shadow-lg transition-all text-left">
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <i className="fa-solid fa-plane-departure text-blue-600 text-xl"></i>
+                                        </div>
+                                        <div className="w-6 h-6 border-2 border-slate-300 rounded-md group-hover:border-blue-500 transition-colors"></div>
+                                    </div>
+                                    <h4 className="text-lg font-black text-slate-900 mb-1">Flüge</h4>
+                                    <p className="text-sm text-slate-500">Nur Flugtickets</p>
+                                </button>
+
+                                {/* Hotels Card */}
+                                <button className="group relative bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-emerald-500 hover:shadow-lg transition-all text-left">
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <i className="fa-solid fa-hotel text-emerald-600 text-xl"></i>
+                                        </div>
+                                        <div className="w-6 h-6 border-2 border-slate-300 rounded-md group-hover:border-emerald-500 transition-colors"></div>
+                                    </div>
+                                    <h4 className="text-lg font-black text-slate-900 mb-1">Hotels</h4>
+                                    <p className="text-sm text-slate-500">Nur Unterkünfte</p>
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Search Form */}
                         <div className="w-full max-w-4xl">
                             <SearchMask variant="hero" />
                         </div>
