@@ -127,7 +127,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
                                 }}
                             />
                             <div className="flex items-center gap-2">
-                                <img src={`http://pics.avs.io/60/60/${airline}.png`} alt={airline} className="w-5 h-5 object-contain" />
+                                <img src={`https://pics.avs.io/60/60/${airline}.png`} alt={airline} className="w-5 h-5 object-contain" />
                                 <span className="text-slate-700 text-sm">{airline}</span>
                             </div>
                         </label>

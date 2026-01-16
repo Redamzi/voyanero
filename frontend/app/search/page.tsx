@@ -149,7 +149,7 @@ function SearchContent() {
                                 propertyType: PropertyType.HOTEL,
                                 price: parseFloat(flight.price?.total || '0'),
                                 location: { address: 'Flight', lat: 0, lng: 0 },
-                                images: airlineCode ? [`http://pics.avs.io/200/200/${airlineCode}.png`] : [],
+                                images: airlineCode ? [`https://pics.avs.io/200/200/${airlineCode}.png`] : [],
                                 amenities: [],
                                 rating: 4.5,
                                 reviewCount: 20,

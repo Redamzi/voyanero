@@ -70,7 +70,7 @@ const FlightResultCard: React.FC<FlightResultCardProps> = ({ offer, cheapest, fa
                 {/* Airline Logo & Date */}
                 <div className="flex items-center gap-4 w-1/4">
                     <img
-                        src={`http://pics.avs.io/60/60/${airlineCode}.png`}
+                        src={`https://pics.avs.io/60/60/${airlineCode}.png`}
                         alt={airlineCode}
                         className="w-8 h-8 object-contain"
                         onError={(e) => {

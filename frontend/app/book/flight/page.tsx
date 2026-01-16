@@ -113,7 +113,7 @@ const BookingContent = () => {
                                 <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden">
                                     {airlineCode ? (
                                         <img
-                                            src={`http://pics.avs.io/200/200/${airlineCode}.png`}
+                                            src={`https://pics.avs.io/200/200/${airlineCode}.png`}
                                             alt={airlineCode}
                                             className="w-full h-full object-cover"
                                         />
