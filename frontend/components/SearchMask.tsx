@@ -32,13 +32,14 @@ const LocationAutocomplete = ({ value, onChange, placeholder, icon, autoFocus, o
         const fetchSuggestions = async () => {
             if (value.length > 1) {
                 setIsLoading(true);
+                // Debounce is handled by setTimeout wrapper
                 const results = await FlightService.searchLocations(value);
                 setSuggestions(results);
                 setIsLoading(false);
                 setShowSuggestions(true);
             } else {
-                setSuggestions([]);
-                setShowSuggestions(false);
+                // Default functionality for empty input - Suggest Current Location
+                setSuggestions([{ isCurrentLocation: true, iataCode: '📍', name: 'Mein Standort' }]);
             }
         };
         const timeoutId = setTimeout(fetchSuggestions, 300);
@@ -56,7 +57,7 @@ const LocationAutocomplete = ({ value, onChange, placeholder, icon, autoFocus, o
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
                 className="w-full h-16 sm:h-20 pl-14 sm:pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-base sm:text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
-                onFocus={() => value.length > 1 && setShowSuggestions(true)}
+                onFocus={() => setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                 autoFocus={autoFocus}
                 onKeyDown={(e) => e.key === 'Enter' && onEnter && onEnter()}
@@ -68,21 +69,23 @@ const LocationAutocomplete = ({ value, onChange, placeholder, icon, autoFocus, o
             )}
             {showSuggestions && suggestions.length > 0 && (
                 <div className="absolute top-full left-0 right-0 bg-white shadow-xl rounded-[2rem] mt-2 z-50 max-h-60 overflow-y-auto border border-slate-100 p-2 animate-in fade-in slide-in-from-top-2">
-                    {suggestions.map((loc) => (
+                    {suggestions.map((loc, index) => (
                         <div
-                            key={loc.id}
+                            key={loc.id || index}
                             className="p-3 hover:bg-slate-50 rounded-xl cursor-pointer flex items-center gap-3 transition-colors"
                             onClick={() => {
-                                onChange(loc.iataCode);
+                                // If it's Mein Standort, we set the text to "Mein Standort" which the backend handles (maps to FRA/MUC or nearest)
+                                // Or ideally we would use Geolocation API here, but for MVP keeping it simple as per previous logic
+                                onChange(loc.name);
                                 setShowSuggestions(false);
                             }}
                         >
-                            <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 font-black text-xs shrink-0">
-                                {loc.iataCode}
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-xs shrink-0 ${loc.isCurrentLocation ? 'bg-slate-100 text-slate-900' : 'bg-orange-50 text-orange-600'}`}>
+                                {loc.isCurrentLocation ? <i className="fa-solid fa-location-crosshairs"></i> : loc.iataCode}
                             </div>
                             <div className="flex flex-col text-left">
                                 <span className="font-bold text-slate-900 text-sm">{loc.address?.cityName || loc.name}</span>
-                                <span className="text-xs text-slate-500 truncate max-w-[200px]">{loc.name}</span>
+                                {loc.subType && <span className="text-xs text-slate-500 truncate max-w-[200px]">{loc.name}</span>}
                             </div>
                         </div>
                     ))}
