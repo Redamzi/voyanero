@@ -1,34 +1,39 @@
 
-export interface HotelListing {
-    id: string;
-    title: string;
-    description: string;
-    price: number;
-    currency: string;
-    location: string;
-    rating: number;
-    reviews: number;
-    image: string;
-    deepLink: string;
-    amenities: string[];
-}
+import { Listing, ListingType, PropertyType } from '../types';
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000') + '/api/hotels';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export const HotelService = {
-    searchHotels: async (location: string): Promise<HotelListing[]> => {
+    searchHotels: async (query: string): Promise<Listing[]> => {
         try {
-            const params = new URLSearchParams({ location });
-            const response = await fetch(`${API_BASE_URL}/search?${params.toString()}`);
+            const response = await fetch(`${API_BASE_URL}/hotels/search?location=${encodeURIComponent(query)}`);
+            if (!response.ok) throw new Error('Failed to fetch hotels');
 
-            if (!response.ok) {
-                throw new Error(`Hotel API Error: ${response.status}`);
+            const data = await response.json();
+            if (data.success && data.hotels) {
+                return data.hotels.map((hotel: any) => ({
+                    id: hotel.id,
+                    title: hotel.name,
+                    description: hotel.description,
+                    type: ListingType.AFFILIATE,
+                    propertyType: PropertyType.HOTEL,
+                    price: parseInt(hotel.price),
+                    location: {
+                        address: hotel.location,
+                        lat: 0,
+                        lng: 0
+                    },
+                    images: [hotel.image],
+                    amenities: ["Hotel", "Awin Partner"],
+                    rating: hotel.rating,
+                    reviewCount: 100,
+                    maxGuests: 2,
+                    affiliateUrl: hotel.deepLink
+                }));
             }
-
-            return await response.json();
+            return [];
         } catch (error) {
             console.error("Hotel Search Error:", error);
-            // Fallback to empty array so UI doesn't crash
             return [];
         }
     }
