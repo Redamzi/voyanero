@@ -9,7 +9,7 @@ interface SearchCalendarProps {
 
 const WEEKDAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 
-export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOut, onChange, onClose }) => {
+export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOut, onChange }) => {
     // Start showing from current month
     const [viewDate, setViewDate] = useState(new Date());
 
