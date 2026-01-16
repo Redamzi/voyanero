@@ -15,25 +15,27 @@ interface GoogleSearchItem {
 
 export const GoogleSearchService = {
     async search(query: string): Promise<Listing[]> {
-        if (!GOOGLE_API_KEY || !GOOGLE_CX) {
-            console.warn("Google Search API credentials missing. Check your .env setup.");
+        // SSR Guard: Return empty if running on server
+        if (typeof window === 'undefined') {
             return [];
         }
-        console.log(`Executing Google Search for: ${query} (CX: ${GOOGLE_CX})`);
+
+        if (!GOOGLE_API_KEY || !GOOGLE_CX) {
+            console.error("Google Search API credentials missing.");
+            return [];
+        }
 
         // 1. Check Daily Limit (Client-side implementation)
-        const today = new Date().toISOString().split('T')[0]; // "2024-01-16"
+        const today = new Date().toISOString().split('T')[0];
         const storageKey = `google_search_count_${today}`;
         const currentCount = parseInt(localStorage.getItem(storageKey) || '0', 10);
 
         if (currentCount >= DAILY_LIMIT) {
-            console.log(`Daily Google Search limit reached (${currentCount}/${DAILY_LIMIT}).`);
             return [];
         }
 
         try {
             // 2. Perform Search
-            // We search for "travel [query]" to ensure relevance
             const url = `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}&cx=${GOOGLE_CX}&q=travel+${encodeURIComponent(query)}&searchType=image&num=4`;
 
             const response = await fetch(url);
@@ -42,15 +44,13 @@ export const GoogleSearchService = {
                     // Quota exceeded signal
                     localStorage.setItem(storageKey, DAILY_LIMIT.toString());
                 }
-                throw new Error(`Google API Error: ${response.statusText}`);
+                throw new Error(`Google API Error: ${response.status} ${response.statusText}`);
             }
 
             const data = await response.json();
 
             // 3. Increment Counter
             localStorage.setItem(storageKey, (currentCount + 1).toString());
-
-            console.log(`Google Search found ${data.items ? data.items.length : 0} items.`);
 
             if (!data.items) return [];
 
@@ -61,7 +61,7 @@ export const GoogleSearchService = {
                 description: item.snippet,
                 type: ListingType.AFFILIATE, // Treat as external link
                 propertyType: PropertyType.HOTEL, // Generic fallback
-                price: 0, // Google results usually don't have structured price
+                price: 0,
                 location: {
                     address: "Google Search Result",
                     lat: 0,
@@ -77,11 +77,6 @@ export const GoogleSearchService = {
 
         } catch (error) {
             console.error("Google Search failed:", error);
-            // Check if it's an API key restriction error (403)
-            // @ts-ignore
-            if (error.message?.includes("403")) {
-                console.warn("Google API 403 Forbidden. Check Domain Restrictions in Cloud Console.");
-            }
             return [];
         }
     }
