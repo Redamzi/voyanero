@@ -16,9 +16,10 @@ interface SearchMaskProps {
     isOpen?: boolean;
 }
 
-const LocationAutocomplete = ({ value, onChange, placeholder, icon, autoFocus, onEnter }: {
+const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, autoFocus, onEnter }: {
     value: string;
     onChange: (val: string) => void;
+    onSelect?: (loc: any) => void;
     placeholder: string;
     icon: string;
     autoFocus?: boolean;
@@ -78,6 +79,7 @@ const LocationAutocomplete = ({ value, onChange, placeholder, icon, autoFocus, o
                                 // If it's Mein Standort, we set the text to "Mein Standort" which the backend handles (maps to FRA/MUC or nearest)
                                 // Or ideally we would use Geolocation API here, but for MVP keeping it simple as per previous logic
                                 onChange(loc.name);
+                                if (onSelect) onSelect(loc);
                                 setShowSuggestions(false);
                             }}
                         >
@@ -159,6 +161,8 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
     // Flight-specific states
     const [flightOrigin, setFlightOrigin] = useState('');
     const [flightDestination, setFlightDestination] = useState('');
+    const [flightOriginCode, setFlightOriginCode] = useState('');
+    const [flightDestinationCode, setFlightDestinationCode] = useState('');
     const [flightType, setFlightType] = useState<'roundtrip' | 'oneway' | 'multicity'>('roundtrip');
 
     // Transfer-specific states
@@ -181,8 +185,8 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
         let finalDestination = "";
 
         if (searchType === 'fluege') {
-            finalOrigin = flightOrigin;
-            finalDestination = flightDestination;
+            finalOrigin = flightOriginCode || flightOrigin;
+            finalDestination = flightDestinationCode || flightDestination;
             finalLocation = `${flightOrigin} nach ${flightDestination}`; // Fallback content for generic display
         } else if (searchType === 'transfer') {
             finalOrigin = transferOrigin;
@@ -543,7 +547,14 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                         <div className="flex flex-col md:flex-row items-center gap-2 relative">
                                                             <LocationAutocomplete
                                                                 value={flightOrigin}
-                                                                onChange={setFlightOrigin}
+                                                                onChange={(val) => {
+                                                                    setFlightOrigin(val);
+                                                                    setFlightOriginCode('');
+                                                                }}
+                                                                onSelect={(loc) => {
+                                                                    setFlightOrigin(loc.address?.cityName || loc.name);
+                                                                    setFlightOriginCode(loc.iataCode);
+                                                                }}
                                                                 placeholder="Von: Abflugort"
                                                                 icon="fa-plane-departure"
                                                                 autoFocus
@@ -555,6 +566,10 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                     const temp = flightOrigin;
                                                                     setFlightOrigin(flightDestination);
                                                                     setFlightDestination(temp);
+
+                                                                    const tempCode = flightOriginCode;
+                                                                    setFlightOriginCode(flightDestinationCode);
+                                                                    setFlightDestinationCode(tempCode);
                                                                 }}
                                                                 className="hidden md:flex shrink-0 w-12 h-12 bg-slate-100 hover:bg-slate-200 rounded-full items-center justify-center text-slate-500 hover:text-slate-900 transition-all z-10 -mx-6 border-4 border-white"
                                                             >
@@ -567,6 +582,10 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                     const temp = flightOrigin;
                                                                     setFlightOrigin(flightDestination);
                                                                     setFlightDestination(temp);
+
+                                                                    const tempCode = flightOriginCode;
+                                                                    setFlightOriginCode(flightDestinationCode);
+                                                                    setFlightDestinationCode(tempCode);
                                                                 }}
                                                                 className="md:hidden w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 transition-all absolute right-4 top-[calc(50%-2.5rem)] rotate-90 z-20"
                                                             >
@@ -575,7 +594,14 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
 
                                                             <LocationAutocomplete
                                                                 value={flightDestination}
-                                                                onChange={setFlightDestination}
+                                                                onChange={(val) => {
+                                                                    setFlightDestination(val);
+                                                                    setFlightDestinationCode('');
+                                                                }}
+                                                                onSelect={(loc) => {
+                                                                    setFlightDestination(loc.address?.cityName || loc.name);
+                                                                    setFlightDestinationCode(loc.iataCode);
+                                                                }}
                                                                 placeholder="Nach: Zielort"
                                                                 icon="fa-plane-arrival"
                                                                 onEnter={() => flightDestination.length > 0 && setCurrentStep(2)}
