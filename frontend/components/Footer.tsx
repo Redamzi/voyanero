@@ -32,8 +32,21 @@ export default function Footer() {
                         </ul>
                     </div>
                 </div>
-                <div className="mt-8 border-t border-gray-200 pt-8 flex justify-between items-center">
-                    <p className="text-base text-gray-400">&copy; 2026 Voyanero, Inc. All rights reserved.</p>
+                <div className="mt-8 border-t border-gray-200 pt-8">
+                    <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <p className="text-base text-gray-400">&copy; 2026 Voyanero, Inc. All rights reserved.</p>
+                        <div className="flex gap-6">
+                            <a href="/impressum" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                                Impressum
+                            </a>
+                            <a href="/datenschutz" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                                Datenschutz
+                            </a>
+                            <a href="/agb" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                                AGB
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </footer>
