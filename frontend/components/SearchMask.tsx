@@ -70,7 +70,13 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
     const [isLocating, setIsLocating] = useState(false);
 
     // Search Type Filter (Reisen/Flüge/Unterkünfte)
-    const [searchType, setSearchType] = useState<'reisen' | 'fluege' | 'unterkunft'>('reisen');
+    const [searchType, setSearchType] = useState<'reisen' | 'fluege' | 'unterkunft' | 'transfer'>('reisen');
+
+    // Transfer-specific states
+    const [transferType, setTransferType] = useState<'oneway' | 'roundtrip'>('oneway');
+    const [origin, setOrigin] = useState('');
+    const [pickupTime, setPickupTime] = useState('');
+    const [returnTime, setReturnTime] = useState('');
 
     // Filter "bestätigen" visibility
     const showConfirm = location.length > 0;
@@ -376,6 +382,12 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                         <div className={`w-4 sm:w-5 h-4 sm:h-5 bg-white rounded-full shadow-md transition-transform duration-200 mt-1 ${searchType === 'unterkunft' ? 'translate-x-5 sm:translate-x-6' : 'translate-x-1'}`} />
                                                     </div>
                                                     <span className="font-semibold text-xs sm:text-sm">Unterkünfte</span>
+                                                </button>
+                                                <button onClick={() => setSearchType('transfer')} className={`relative inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all ${searchType === 'transfer' ? 'text-slate-900' : 'text-slate-400'}`}>
+                                                    <div className={`w-10 sm:w-12 h-6 sm:h-7 rounded-full transition-all ${searchType === 'transfer' ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-slate-300'}`}>
+                                                        <div className={`w-4 sm:w-5 h-4 sm:h-5 bg-white rounded-full shadow-md transition-transform duration-200 mt-1 ${searchType === 'transfer' ? 'translate-x-5 sm:translate-x-6' : 'translate-x-1'}`} />
+                                                    </div>
+                                                    <span className="font-semibold text-xs sm:text-sm">Transfer</span>
                                                 </button>
                                             </div>
 
