@@ -72,11 +72,11 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
     // Search Type Filter (Reisen/Flüge/Unterkünfte)
     const [searchType, setSearchType] = useState<'reisen' | 'fluege' | 'unterkunft' | 'transfer'>('reisen');
 
-    // Transfer-specific states
-    const [transferType, setTransferType] = useState<'oneway' | 'roundtrip'>('oneway');
-    const [origin, setOrigin] = useState('');
-    const [pickupTime, setPickupTime] = useState('');
-    const [returnTime, setReturnTime] = useState('');
+    // Transfer-specific states (TODO: Implement in Phase 2)
+    // const [transferType, setTransferType] = useState<'oneway' | 'roundtrip'>('oneway');
+    // const [origin, setOrigin] = useState('');
+    // const [pickupTime, setPickupTime] = useState('');
+    // const [returnTime, setReturnTime] = useState('');
 
     // Filter "bestätigen" visibility
     const showConfirm = location.length > 0;
