@@ -7,12 +7,90 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getStepsForFilter } from '../utils/searchSteps';
 import { SearchCalendar } from './SearchCalendar';
 
+import { FlightService } from '../services/api';
+
 interface SearchMaskProps {
     variant?: 'hero' | 'default' | 'compact';
     initialLocation?: string;
     onClose?: () => void;
     isOpen?: boolean;
 }
+
+const LocationAutocomplete = ({ value, onChange, placeholder, icon, autoFocus, onEnter }: {
+    value: string;
+    onChange: (val: string) => void;
+    placeholder: string;
+    icon: string;
+    autoFocus?: boolean;
+    onEnter?: () => void;
+}) => {
+    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchSuggestions = async () => {
+            if (value.length > 1) {
+                setIsLoading(true);
+                const results = await FlightService.searchLocations(value);
+                setSuggestions(results);
+                setIsLoading(false);
+                setShowSuggestions(true);
+            } else {
+                setSuggestions([]);
+                setShowSuggestions(false);
+            }
+        };
+        const timeoutId = setTimeout(fetchSuggestions, 300);
+        return () => clearTimeout(timeoutId);
+    }, [value]);
+
+    return (
+        <div className="relative group w-full">
+            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
+                <i className={`fa-solid ${icon} text-xl`}></i>
+            </div>
+            <input
+                type="text"
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                placeholder={placeholder}
+                className="w-full h-16 sm:h-20 pl-14 sm:pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-base sm:text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
+                onFocus={() => value.length > 1 && setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                autoFocus={autoFocus}
+                onKeyDown={(e) => e.key === 'Enter' && onEnter && onEnter()}
+            />
+            {isLoading && (
+                <div className="absolute right-6 top-1/2 -translate-y-1/2 text-orange-500">
+                    <i className="fa-solid fa-circle-notch animate-spin"></i>
+                </div>
+            )}
+            {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 bg-white shadow-xl rounded-[2rem] mt-2 z-50 max-h-60 overflow-y-auto border border-slate-100 p-2 animate-in fade-in slide-in-from-top-2">
+                    {suggestions.map((loc) => (
+                        <div
+                            key={loc.id}
+                            className="p-3 hover:bg-slate-50 rounded-xl cursor-pointer flex items-center gap-3 transition-colors"
+                            onClick={() => {
+                                onChange(loc.iataCode);
+                                setShowSuggestions(false);
+                            }}
+                        >
+                            <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 font-black text-xs shrink-0">
+                                {loc.iataCode}
+                            </div>
+                            <div className="flex flex-col text-left">
+                                <span className="font-bold text-slate-900 text-sm">{loc.address?.cityName || loc.name}</span>
+                                <span className="text-xs text-slate-500 truncate max-w-[200px]">{loc.name}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
 
 const DESTINATIONS = [
     { name: "Bali, Indonesia", icon: "fa-umbrella-beach", label: "Bali" },
@@ -458,30 +536,45 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                             </div>
                                                         </div>
 
-                                                        <div className="relative group">
-                                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400">
-                                                                <i className="fa-solid fa-plane-departure text-xl"></i>
-                                                            </div>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Von: Abflugort (z.B. München)"
-                                                                className="w-full h-20 pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
+                                                        <div className="flex flex-col md:flex-row items-center gap-2 relative">
+                                                            <LocationAutocomplete
                                                                 value={flightOrigin}
-                                                                onChange={(e) => setFlightOrigin(e.target.value)}
+                                                                onChange={setFlightOrigin}
+                                                                placeholder="Von: Abflugort"
+                                                                icon="fa-plane-departure"
                                                                 autoFocus
                                                             />
-                                                        </div>
-                                                        <div className="relative group">
-                                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400">
-                                                                <i className="fa-solid fa-plane-arrival text-xl"></i>
-                                                            </div>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Nach: Zielort (z.B. Bangkok)"
-                                                                className="w-full h-20 pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
+
+                                                            {/* Swap Button (Desktop) */}
+                                                            <button
+                                                                onClick={() => {
+                                                                    const temp = flightOrigin;
+                                                                    setFlightOrigin(flightDestination);
+                                                                    setFlightDestination(temp);
+                                                                }}
+                                                                className="hidden md:flex shrink-0 w-12 h-12 bg-slate-100 hover:bg-slate-200 rounded-full items-center justify-center text-slate-500 hover:text-slate-900 transition-all z-10 -mx-6 border-4 border-white"
+                                                            >
+                                                                <i className="fa-solid fa-arrow-right-arrow-left"></i>
+                                                            </button>
+
+                                                            {/* Swap Button (Mobile) */}
+                                                            <button
+                                                                onClick={() => {
+                                                                    const temp = flightOrigin;
+                                                                    setFlightOrigin(flightDestination);
+                                                                    setFlightDestination(temp);
+                                                                }}
+                                                                className="md:hidden w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 transition-all absolute right-4 top-[calc(50%-2.5rem)] rotate-90 z-20"
+                                                            >
+                                                                <i className="fa-solid fa-arrow-right-arrow-left"></i>
+                                                            </button>
+
+                                                            <LocationAutocomplete
                                                                 value={flightDestination}
-                                                                onChange={(e) => setFlightDestination(e.target.value)}
-                                                                onKeyDown={(e) => e.key === 'Enter' && flightDestination.length > 0 && setCurrentStep(2)}
+                                                                onChange={setFlightDestination}
+                                                                placeholder="Nach: Zielort"
+                                                                icon="fa-plane-arrival"
+                                                                onEnter={() => flightDestination.length > 0 && setCurrentStep(2)}
                                                             />
                                                         </div>
                                                         {flightOrigin.length > 0 && flightDestination.length > 0 && (
@@ -580,67 +673,61 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                 )}
                                             </div>
 
-                                            <div className="flex flex-wrap justify-center gap-6">
-                                                <button
-                                                    onClick={handleLocateMe}
-                                                    className="w-40 h-40 bg-white border border-slate-100 rounded-[2rem] flex flex-col items-center justify-center gap-4 hover:border-slate-900 hover:scale-105 transition-all group"
-                                                >
-                                                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-colors">
-                                                        {isLocating ? <i className="fa-solid fa-circle-notch animate-spin"></i> : <i className="fa-solid fa-location-crosshairs"></i>}
-                                                    </div>
-                                                    <span className="text-xs font-black text-slate-900">Mein Standort</span>
-                                                </button>
+                                            {searchType !== 'fluege' && (
+                                                <div className="flex flex-wrap justify-center gap-6">
+                                                    <button
+                                                        onClick={handleLocateMe}
+                                                        className="w-40 h-40 bg-white border border-slate-100 rounded-[2rem] flex flex-col items-center justify-center gap-4 hover:border-slate-900 hover:scale-105 transition-all group"
+                                                    >
+                                                        <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-colors">
+                                                            {isLocating ? <i className="fa-solid fa-circle-notch animate-spin"></i> : <i className="fa-solid fa-location-crosshairs"></i>}
+                                                        </div>
+                                                        <span className="text-xs font-black text-slate-900">Mein Standort</span>
+                                                    </button>
 
-                                                {DESTINATIONS.map(dest => {
-                                                    const isActive = location === dest.label;
-                                                    return (
-                                                        <button
-                                                            key={dest.name}
-                                                            onClick={() => {
-                                                                if (searchType === 'fluege') {
-                                                                    setFlightDestination(dest.label);
-                                                                    if (flightOrigin) {
-                                                                        setCurrentStep(2);
+                                                    {DESTINATIONS.map(dest => {
+                                                        const isActive = location === dest.label;
+                                                        return (
+                                                            <button
+                                                                key={dest.name}
+                                                                onClick={() => {
+                                                                    if (searchType === 'transfer') {
+                                                                        setTransferDestination(dest.label);
+                                                                        if (transferOrigin) {
+                                                                            setCurrentStep(2);
+                                                                        } else {
+                                                                            document.querySelector<HTMLInputElement>('input[placeholder^="Abholung"]')?.focus();
+                                                                        }
                                                                     } else {
-                                                                        // Focus Origin input if empty
-                                                                        document.querySelector<HTMLInputElement>('input[placeholder^="Von:"]')?.focus();
-                                                                    }
-                                                                } else if (searchType === 'transfer') {
-                                                                    setTransferDestination(dest.label);
-                                                                    if (transferOrigin) {
+                                                                        setLocation(dest.label);
                                                                         setCurrentStep(2);
-                                                                    } else {
-                                                                        document.querySelector<HTMLInputElement>('input[placeholder^="Abholung"]')?.focus();
                                                                     }
-                                                                } else {
-                                                                    setLocation(dest.label);
-                                                                    setCurrentStep(2);
-                                                                }
-                                                            }}
-                                                            className={`w-40 h-40 bg-white rounded-[2rem] flex flex-col items-center justify-center gap-4 transition-all duration-300 group relative overflow-hidden
-                                                            ${isActive
-                                                                    ? 'border-[3px] border-slate-900 shadow-xl scale-105'
-                                                                    : 'border border-slate-100 hover:border-slate-300 hover:shadow-lg hover:scale-105'
-                                                                }`}
-                                                        >
-                                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-300
-                                                            ${isActive
-                                                                    ? 'bg-slate-900 text-white'
-                                                                    : 'bg-slate-50 text-slate-400 group-hover:bg-slate-900 group-hover:text-white'
-                                                                }`}>
-                                                                <i className={`fa-solid ${dest.icon}`}></i>
-                                                            </div>
-                                                            <span className={`text-xs font-black transition-colors duration-300 ${isActive ? 'text-slate-900' : 'text-slate-900'}`}>{dest.label}</span>
-
-                                                            {isActive && (
-                                                                <div className="absolute top-3 right-3 w-6 h-6 bg-slate-900 rounded-full flex items-center justify-center animate-in zoom-in">
-                                                                    <i className="fa-solid fa-check text-white text-[10px]"></i>
+                                                                }}
+                                                                className={`w-40 h-40 bg-white rounded-[2rem] flex flex-col items-center justify-center gap-4 transition-all duration-300 group relative overflow-hidden
+                                                                ${isActive
+                                                                        ? 'border-[3px] border-slate-900 shadow-xl scale-105'
+                                                                        : 'border border-slate-100 hover:border-slate-300 hover:shadow-lg hover:scale-105'
+                                                                    }`}
+                                                            >
+                                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-300
+                                                                ${isActive
+                                                                        ? 'bg-slate-900 text-white'
+                                                                        : 'bg-slate-50 text-slate-400 group-hover:bg-slate-900 group-hover:text-white'
+                                                                    }`}>
+                                                                    <i className={`fa-solid ${dest.icon}`}></i>
                                                                 </div>
-                                                            )}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
+                                                                <span className={`text-xs font-black transition-colors duration-300 ${isActive ? 'text-slate-900' : 'text-slate-900'}`}>{dest.label}</span>
+
+                                                                {isActive && (
+                                                                    <div className="absolute top-3 right-3 w-6 h-6 bg-slate-900 rounded-full flex items-center justify-center animate-in zoom-in">
+                                                                        <i className="fa-solid fa-check text-white text-[10px]"></i>
+                                                                    </div>
+                                                                )}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            )}
                                         </div>
                                     )}
 
