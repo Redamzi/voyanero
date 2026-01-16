@@ -218,7 +218,7 @@ function SearchContent() {
             {
                 title: "Villen & Strand",
                 icon: "fa-umbrella-beach",
-                items: filteredListings.filter(l => l.propertyType === PropertyType.VILLA || (l.location.address.includes("Bali") || l.location.address.includes("Maldives")))
+                items: filteredListings.filter(l => l.propertyType === PropertyType.VILLA || (typeof l.location.address === 'string' && (l.location.address.includes("Bali") || l.location.address.includes("Maldives"))))
             },
             {
                 title: "Städtereisen & Hotels",
