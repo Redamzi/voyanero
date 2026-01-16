@@ -464,7 +464,11 @@ function SearchContent() {
                         </div>
                     </div>
                 </main>
-                <Footer />
+                <div className="hidden md:block">
+                    <div className="hidden md:block">
+                        <Footer />
+                    </div>
+                </div>
             </div>
         );
     }
@@ -582,7 +586,7 @@ function SearchContent() {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-8 max-w-2xl mx-auto">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
                                     <div className="p-10 border-2 border-slate-100 rounded-[2.5rem] bg-white text-center shadow-sm hover:border-slate-900 hover:shadow-xl transition-all duration-300 group cursor-default">
                                         <p className="text-[11px] font-black text-slate-300 uppercase tracking-[0.3em] mb-3 group-hover:text-slate-900 transition-colors">Minimum</p>
                                         <p className="text-4xl font-black text-slate-900">€{priceRange.min}</p>
@@ -647,7 +651,9 @@ function SearchContent() {
                 </div>
             )}
 
-            <Footer />
+            <div className="hidden md:block">
+                <Footer />
+            </div>
         </div>
     );
 }
