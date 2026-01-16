@@ -19,6 +19,7 @@ interface SearchMaskProps {
 const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, autoFocus, onEnter }: {
     value: string;
     onChange: (val: string) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onSelect?: (loc: any) => void;
     placeholder: string;
     icon: string;
