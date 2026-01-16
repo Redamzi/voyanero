@@ -34,6 +34,7 @@ const BookingContent = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contextParam]);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let flightData: any = null;
     try {
         if (contextParam) {
