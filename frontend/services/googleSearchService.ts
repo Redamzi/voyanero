@@ -16,9 +16,10 @@ interface GoogleSearchItem {
 export const GoogleSearchService = {
     async search(query: string): Promise<Listing[]> {
         if (!GOOGLE_API_KEY || !GOOGLE_CX) {
-            console.warn("Google Search API credentials missing.");
+            console.warn("Google Search API credentials missing. Check your .env setup.");
             return [];
         }
+        console.log(`Executing Google Search for: ${query} (CX: ${GOOGLE_CX})`);
 
         // 1. Check Daily Limit (Client-side implementation)
         const today = new Date().toISOString().split('T')[0]; // "2024-01-16"
@@ -49,23 +50,25 @@ export const GoogleSearchService = {
             // 3. Increment Counter
             localStorage.setItem(storageKey, (currentCount + 1).toString());
 
+            console.log(`Google Search found ${data.items ? data.items.length : 0} items.`);
+
             if (!data.items) return [];
 
             // 4. Map to Listings
             return data.items.map((item: GoogleSearchItem, index: number) => ({
                 id: `google-${Date.now()}-${index}`,
-                title: item.title,
+                title: `Web: ${item.title}`,
                 description: item.snippet,
                 type: ListingType.AFFILIATE, // Treat as external link
                 propertyType: PropertyType.HOTEL, // Generic fallback
                 price: 0, // Google results usually don't have structured price
                 location: {
-                    address: "Web Result",
+                    address: "Google Search Result",
                     lat: 0,
                     lng: 0
                 },
                 images: item.pagemap?.cse_image?.[0]?.src ? [item.pagemap.cse_image[0].src] : ['https://via.placeholder.com/800x600?text=Google+Result'],
-                amenities: ["Web Search"],
+                amenities: ["Web Search", "External"],
                 rating: 0,
                 reviewCount: 0,
                 maxGuests: 0,
@@ -74,6 +77,11 @@ export const GoogleSearchService = {
 
         } catch (error) {
             console.error("Google Search failed:", error);
+            // Check if it's an API key restriction error (403)
+            // @ts-ignore
+            if (error.message?.includes("403")) {
+                console.warn("Google API 403 Forbidden. Check Domain Restrictions in Cloud Console.");
+            }
             return [];
         }
     }
