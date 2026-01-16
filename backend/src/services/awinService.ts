@@ -18,7 +18,7 @@ const MOCK_HOTELS = [
         description: 'Luxusresort direkt am Strand von Nusa Dua. Erleben Sie balinesische Gastfreundschaft in Perfektion.',
         price: '245',
         currency: 'EUR',
-        deepLink: 'https://www.booking.com/hotel/id/grand-hyatt-bali.html',
+        deepLink: 'https://www.booking.com/searchresults.html?ss=Grand+Hyatt+Bali',
         image: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/48962638.jpg?k=287711204680879685088',
         rating: 4.8,
         location: 'Nusa Dua, Bali'
@@ -29,7 +29,7 @@ const MOCK_HOTELS = [
         description: 'Iconic Infinity Pool mitten im Dschungel. Ein unvergessliches Erlebnis für Paare und Ruhesuchende.',
         price: '450',
         currency: 'EUR',
-        deepLink: 'https://www.booking.com/hotel/id/hanging-gardens-ubud.html',
+        deepLink: 'https://www.booking.com/searchresults.html?ss=Hanging+Gardens+Ubud',
         image: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/38600465.jpg?k=3f456',
         rating: 4.9,
         location: 'Ubud, Bali'
@@ -40,7 +40,7 @@ const MOCK_HOTELS = [
         description: 'Das führende Entertainment-Hotel in Kuta. Spaß für die ganze Familie mit riesigem Pool.',
         price: '120',
         currency: 'EUR',
-        deepLink: 'https://www.booking.com/hotel/id/hard-rock-bali.html',
+        deepLink: 'https://www.booking.com/searchresults.html?ss=Hard+Rock+Hotel+Bali',
         image: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/19328224.jpg?k=123',
         rating: 4.5,
         location: 'Kuta, Bali'
@@ -51,7 +51,7 @@ const MOCK_HOTELS = [
         description: 'Exquisite Suiten und Villen am Strand. Ein Inbegriff von Luxus und Eleganz.',
         price: '680',
         currency: 'EUR',
-        deepLink: 'https://www.booking.com/hotel/id/the-st-regis-bali-resort.html',
+        deepLink: 'https://www.booking.com/searchresults.html?ss=The+St+Regis+Bali+Resort',
         image: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/31206158.jpg?k=456',
         rating: 5.0,
         location: 'Nusa Dua, Bali'
