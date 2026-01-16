@@ -10,42 +10,36 @@ const BookingContent = () => {
     const contextParam = searchParams.get('context');
 
     // All hooks MUST be declared before any conditional returns
-    const [isValidating, setIsValidating] = React.useState(true);
     const [verificationError, setVerificationError] = React.useState<string | null>(null);
     const [confirmedPrice, setConfirmedPrice] = React.useState<unknown>(null);
+
+    React.useEffect(() => {
+        const verifyFlight = async () => {
+            if (!flightData) return;
+            
+            try {
+                setIsValidating(true);
+                const { FlightService } = await import('../../../services/api');
+                const result = await FlightService.confirmPrice(flightData);
+                console.log("Price confirmed:", result);
+            } catch (err) {
+                console.error("Verification failed", err);
+                setVerificationError("Dieser Tarif ist leider nicht mehr verfügbar (Preisänderung oder ausgebucht).");
+            } finally {
+                setIsValidating(false);
+            }
+        };
+
+        verifyFlight();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [contextParam]);
+
 
     let flightData = null;
     try {
         if (contextParam) {
             flightData = JSON.parse(decodeURIComponent(contextParam));
         }
-    } catch (e) {
-        console.error("Failed to parse flight context:", e);
-    }
-
-    if (!flightData) {
-        return (
-            <div className="min-h-screen pt-32 pb-20 flex items-center justify-center">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold text-slate-900 mb-4">Keine Flugdaten gefunden</h1>
-                    <p className="text-slate-500">Bitte kehren Sie zur Suche zurück.</p>
-                </div>
-            </div>
-        );
-    }
-
-    const price = flightData.price?.total || "0";
-    const currency = flightData.price?.currency || "EUR";
-    const itinerary = flightData.itineraries?.[0];
-    const segments = itinerary?.segments || [];
-    const firstSegment = segments[0];
-    const lastSegment = segments[segments.length - 1];
-
-    React.useEffect(() => {
-        const verifyFlight = async () => {
-            if (!flightData) return;
-
-            try {
                 setIsValidating(true);
                 // Call verification API
                 // Note: We need to import FlightService first. 
