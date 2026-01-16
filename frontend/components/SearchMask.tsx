@@ -67,6 +67,9 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
     const guests = adults + children;
     const [isLocating, setIsLocating] = useState(false);
 
+    // Search Type Filter (Reisen/Flüge/Unterkünfte)
+    const [searchType, setSearchType] = useState<'reisen' | 'fluege' | 'unterkunft'>('reisen');
+
     // Filter "bestätigen" visibility
     const showConfirm = location.length > 0;
 
