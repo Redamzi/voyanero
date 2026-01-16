@@ -142,8 +142,20 @@ function SearchContent() {
 
                     // Process Hotels
                     if (hotelRes && hotelRes.length > 0) {
+                        // Diverse fallback images for hotels
+                        const fallbackImages = [
+                            'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=800&q=80'
+                        ];
+
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const hotelListings: Listing[] = hotelRes.map((hotel: any) => ({
+                        const hotelListings: Listing[] = hotelRes.map((hotel: any, index: number) => ({
                             id: hotel.id,
                             title: hotel.title,
                             description: hotel.description || 'Schönes Hotel in top Lage',
@@ -155,11 +167,11 @@ function SearchContent() {
                                 lat: 0,
                                 lng: 0
                             },
-                            images: hotel.image ? [hotel.image] : ['https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'],
+                            images: hotel.image ? [hotel.image] : [fallbackImages[index % fallbackImages.length]],
                             amenities: hotel.amenities || ['WiFi', 'AC'],
                             rating: hotel.rating,
                             reviewCount: hotel.reviews,
-                            maxGuests: 2, // Mock default
+                            maxGuests: 2,
                             affiliateUrl: hotel.deepLink
                         }));
                         combinedListings = [...combinedListings, ...hotelListings];
@@ -203,8 +215,20 @@ function SearchContent() {
                     const hotelRes = await HotelService.searchHotels(locationQuery);
 
                     if (hotelRes && hotelRes.length > 0) {
+                        // Diverse fallback images for hotels
+                        const fallbackImages = [
+                            'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80',
+                            'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=800&q=80'
+                        ];
+
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const hotelListings: Listing[] = hotelRes.map((hotel: any) => ({
+                        const hotelListings: Listing[] = hotelRes.map((hotel: any, index: number) => ({
                             id: hotel.id,
                             title: hotel.title,
                             description: hotel.description || 'Schönes Hotel in top Lage',
@@ -216,7 +240,7 @@ function SearchContent() {
                                 lat: 0,
                                 lng: 0
                             },
-                            images: hotel.image ? [hotel.image] : ['https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'],
+                            images: hotel.image ? [hotel.image] : [fallbackImages[index % fallbackImages.length]],
                             amenities: hotel.amenities || ['WiFi', 'AC'],
                             rating: hotel.rating,
                             reviewCount: hotel.reviews,
