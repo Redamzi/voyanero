@@ -70,4 +70,21 @@ router.post('/price', async (req, res) => {
     }
 });
 
+router.get('/locations', async (req, res) => {
+    try {
+        const keyword = req.query.keyword as string;
+        if (!keyword || keyword.length < 2) {
+            res.json({ success: true, data: [] });
+            return;
+        }
+
+        console.log(`Searching locations (Amadeus): ${keyword}`);
+        const data = await AmadeusService.searchCity(keyword);
+        res.json({ success: true, data: data.data || data }); // Amadeus response structure can vary, safeguarding
+    } catch (error: any) {
+        console.error("Amadeus Location Search Error:", error);
+        res.status(500).json({ error: "Failed to search locations", details: error.message || error });
+    }
+});
+
 export default router;

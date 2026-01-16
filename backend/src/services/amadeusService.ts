@@ -79,8 +79,7 @@ export const AmadeusService = {
             // Return empty array instead of throwing to prevent UI crash
             return [];
         }
-    }
-},
+    },
 
     // Flight Pricing (Verification)
     confirmPrice: async (flightOffer: any) => {
