@@ -300,20 +300,20 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                     </div>
 
                                     {/* Step Indicators */}
-                                    <div className="flex items-center gap-12">
+                                    <div className="flex items-center gap-2 sm:gap-12">
                                         <button onClick={() => setCurrentStep(1)} className={`flex items-center gap-3 transition-colors ${currentStep === 1 ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}>
                                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 1 ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white' : 'bg-slate-100 text-slate-500'}`}>1</div>
-                                            <span className="text-xs font-black uppercase tracking-widest text-slate-900">Wohin</span>
+                                            <span className="hidden sm:inline text-xs font-black uppercase tracking-widest text-slate-900">Wohin</span>
                                         </button>
-                                        <div className="w-8 h-px bg-slate-200"></div>
+                                        <div className="w-2 sm:w-8 h-px bg-slate-200"></div>
                                         <button onClick={() => setCurrentStep(2)} className={`flex items-center gap-3 transition-colors ${currentStep === 2 ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}>
                                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 2 ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white' : 'bg-slate-100 text-slate-500'}`}>2</div>
-                                            <span className="text-xs font-black uppercase tracking-widest text-slate-900">Wann</span>
+                                            <span className="hidden sm:inline text-xs font-black uppercase tracking-widest text-slate-900">Wann</span>
                                         </button>
-                                        <div className="w-8 h-px bg-slate-200"></div>
+                                        <div className="w-2 sm:w-8 h-px bg-slate-200"></div>
                                         <button onClick={() => setCurrentStep(3)} className={`flex items-center gap-3 transition-colors ${currentStep === 3 ? 'opacity-100' : 'opacity-40 hover:opacity-100'}`}>
                                             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${currentStep === 3 ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white' : 'bg-slate-100 text-slate-500'}`}>3</div>
-                                            <span className="text-xs font-black uppercase tracking-widest text-slate-900">Wer</span>
+                                            <span className="hidden sm:inline text-xs font-black uppercase tracking-widest text-slate-900">Wer</span>
                                         </button>
                                     </div>
 
