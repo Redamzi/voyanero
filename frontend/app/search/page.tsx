@@ -11,7 +11,6 @@ import { MOCK_LISTINGS } from '@/constants';
 import { Listing, ListingType, PropertyType } from '@/types';
 import { FlightService } from '@/services/api';
 import { HotelService } from '@/services/hotelService';
-import { GoogleSearchService } from '@/services/googleSearchService';
 
 // --- ANIMATION VARIANTS ---
 const checkboxVariants = {
@@ -96,7 +95,7 @@ function SearchContent() {
 
             try {
                 // parallel fetch
-                const [flightRes, hotelRes, googleRes] = await Promise.all([
+                const [flightRes, hotelRes] = await Promise.all([
                     FlightService.searchFlights({
                         origin: "MUC", // Default origin for now, maybe customizable later
                         destination: locationQuery,
@@ -106,7 +105,6 @@ function SearchContent() {
                         infants
                     }),
                     HotelService.searchHotels(locationQuery),
-                    GoogleSearchService.search(locationQuery)
                 ]);
 
                 let combinedListings: Listing[] = [];
@@ -163,10 +161,6 @@ function SearchContent() {
                     combinedListings = [...combinedListings, ...hotelListings];
                 }
 
-                // Process Google Results
-                if (googleRes && googleRes.length > 0) {
-                    combinedListings = [...combinedListings, ...googleRes];
-                }
 
                 if (combinedListings.length > 0) {
                     setListings(combinedListings);
