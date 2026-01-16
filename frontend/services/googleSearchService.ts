@@ -2,7 +2,7 @@ import { Listing, ListingType, PropertyType } from '../types';
 
 const GOOGLE_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_API_KEY || '';
 const GOOGLE_CX = process.env.NEXT_PUBLIC_GOOGLE_CX || '';
-const DAILY_LIMIT = 99;
+const DAILY_LIMIT = 70;
 
 interface GoogleSearchItem {
     title: string;
