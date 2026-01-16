@@ -24,7 +24,7 @@ const checkboxVariants = {
     exit: { opacity: 0, x: -20, scale: 0.8 }
 };
 
-const SelectableListing = ({ listing, isSelectionMode, onPreview }: { listing, isSelectionMode: boolean, onPreview: (l: Listing) => void }) => {
+const SelectableListing = ({ listing, isSelectionMode, onPreview }: { listing: Listing, isSelectionMode: boolean, onPreview: (l: Listing) => void }) => {
     // Don't use preview for affiliate listings - redirect directly
     const shouldUsePreview = listing.type !== ListingType.AFFILIATE;
 
