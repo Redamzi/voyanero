@@ -184,7 +184,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                     </div>
                     <div className="flex-1 overflow-y-auto flex items-center justify-center p-8">
                         <div className="w-full max-w-4xl">
-                            <SearchMask variant="hero" onSearch={() => setIsSearchModalOpen(false)} />
+                            <SearchMask variant="hero" />
                         </div>
                     </div>
                 </div>
