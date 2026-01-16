@@ -186,7 +186,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                         {/* Category Filter Cards */}
                         <div className="w-full max-w-4xl mb-8">
                             <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Was suchst du?</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-3 gap-4">
                                 {/* Reisen Card */}
                                 <button className="group relative bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-orange-500 hover:shadow-lg transition-all text-left">
                                     <div className="flex items-start justify-between mb-3">
