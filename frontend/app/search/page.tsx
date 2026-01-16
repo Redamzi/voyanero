@@ -24,7 +24,10 @@ const checkboxVariants = {
     exit: { opacity: 0, x: -20, scale: 0.8 }
 };
 
-const SelectableListing = ({ listing, isSelectionMode, onPreview }: { listing: Listing, isSelectionMode: boolean, onPreview: (l: Listing) => void }) => {
+const SelectableListing = ({ listing, isSelectionMode, onPreview }: { listing, isSelectionMode: boolean, onPreview: (l: Listing) => void }) => {
+    // Don't use preview for affiliate listings - redirect directly
+    const shouldUsePreview = listing.type !== ListingType.AFFILIATE;
+
     return (
         <div className="flex items-start group relative">
             <AnimatePresence>
@@ -44,7 +47,7 @@ const SelectableListing = ({ listing, isSelectionMode, onPreview }: { listing: L
             </AnimatePresence>
 
             <div className="flex-1 min-w-0">
-                <ListingCard listing={listing} onPreview={onPreview} />
+                <ListingCard listing={listing} onPreview={shouldUsePreview ? onPreview : undefined} />
             </div>
         </div>
     );
