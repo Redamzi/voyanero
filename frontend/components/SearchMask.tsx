@@ -459,225 +459,226 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                         )}
                                                     </div>
                                                 )}
-
-                                                <div className="flex flex-wrap justify-center gap-6">
-                                                    <button
-                                                        onClick={handleLocateMe}
-                                                        className="w-40 h-40 bg-white border border-slate-100 rounded-[2rem] flex flex-col items-center justify-center gap-4 hover:border-slate-900 hover:scale-105 transition-all group"
-                                                    >
-                                                        <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-colors">
-                                                            {isLocating ? <i className="fa-solid fa-circle-notch animate-spin"></i> : <i className="fa-solid fa-location-crosshairs"></i>}
-                                                        </div>
-                                                        <span className="text-xs font-black text-slate-900">Mein Standort</span>
-                                                    </button>
-
-                                                    {DESTINATIONS.map(dest => {
-                                                        const isActive = location === dest.label;
-                                                        return (
-                                                            <button
-                                                                key={dest.name}
-                                                                onClick={() => { setLocation(dest.label); setCurrentStep(2); }}
-                                                                className={`w-40 h-40 bg-white rounded-[2rem] flex flex-col items-center justify-center gap-4 transition-all duration-300 group relative overflow-hidden
-                                                            ${isActive
-                                                                        ? 'border-[3px] border-slate-900 shadow-xl scale-105'
-                                                                        : 'border border-slate-100 hover:border-slate-300 hover:shadow-lg hover:scale-105'
-                                                                    }`}
-                                                            >
-                                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-300
-                                                            ${isActive
-                                                                        ? 'bg-slate-900 text-white'
-                                                                        : 'bg-slate-50 text-slate-400 group-hover:bg-slate-900 group-hover:text-white'
-                                                                    }`}>
-                                                                    <i className={`fa-solid ${dest.icon}`}></i>
-                                                                </div>
-                                                                <span className={`text-xs font-black transition-colors duration-300 ${isActive ? 'text-slate-900' : 'text-slate-900'}`}>{dest.label}</span>
-
-                                                                {isActive && (
-                                                                    <div className="absolute top-3 right-3 w-6 h-6 bg-slate-900 rounded-full flex items-center justify-center animate-in zoom-in">
-                                                                        <i className="fa-solid fa-check text-white text-[10px]"></i>
-                                                                    </div>
-                                                                )}
-                                                            </button>
-                                                        );
-                                                    })}
-                                                </div>
                                             </div>
-                                    )}
 
-                                            {/* STEP 2: WANN */}
-                                            {currentStep === 2 && (
-                                                <div className="w-full max-w-5xl px-4 text-center animate-in slide-in-from-right-8 duration-500">
-                                                    {/* ... Step 2 Content ... */}
-                                                    <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-4 tracking-tighter">Wann möchtest du reisen?</h2>
-                                                    <p className="text-slate-500 text-lg md:text-xl mb-12 font-medium">Wähle einen Zeitraum oder spezifische Daten.</p>
-
-                                                    <div className="flex flex-col-reverse lg:flex-row gap-8 lg:gap-12 items-start justify-center">
-                                                        {/* Shortcuts */}
-                                                        <div className="flex flex-col gap-4 lg:gap-6 w-full lg:w-96">
-                                                            <button
-                                                                onClick={() => setCurrentStep(3)}
-                                                                className="w-full p-6 lg:p-8 bg-white border border-slate-100 rounded-[2rem] lg:rounded-[2.5rem] flex items-center gap-6 hover:border-[#FF385C] transition-all group text-left shadow-sm order-2 lg:order-1"
-                                                            >
-                                                                <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-colors shrink-0">
-                                                                    <i className="fa-solid fa-bolt"></i>
-                                                                </div>
-                                                                <div>
-                                                                    <h3 className="font-black text-lg text-slate-900">Dieses Wochenende</h3>
-                                                                    <p className="text-xs text-slate-500 font-medium">Perfekt für eine spontane Reise</p>
-                                                                </div>
-                                                            </button>
-
-                                                            <button
-                                                                onClick={() => setCurrentStep(3)}
-                                                                className="w-full p-6 lg:p-8 bg-white border border-slate-100 rounded-[2.5rem] flex items-center gap-6 hover:border-blue-500 transition-all group text-left shadow-sm hidden lg:flex order-3 lg:order-2"
-                                                            >
-                                                                <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors shrink-0">
-                                                                    <i className="fa-regular fa-calendar-check"></i>
-                                                                </div>
-                                                                <div>
-                                                                    <h3 className="font-black text-lg text-slate-900">Nächsten Monat</h3>
-                                                                    <p className="text-xs text-slate-500 font-medium">Genügend Zeit für die Vorbereitung</p>
-                                                                </div>
-                                                            </button>
-
-                                                            <div className="bg-[#1a1a1a] p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] text-white text-center order-1 lg:order-3">
-                                                                <p className="text-[10px] font-bold uppercase tracking-widest text-[#ffffff60] mb-2">Gewählter Zeitraum</p>
-                                                                <div className="flex items-center justify-center gap-4 text-xl font-black">
-                                                                    <span>{checkIn ? checkIn.toLocaleDateString('de-DE') : 'Anreise'}</span>
-                                                                    <div className="h-0.5 w-4 bg-[#ffffff30]"></div>
-                                                                    <span>{checkOut ? checkOut.toLocaleDateString('de-DE') : 'Abreise'}</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Calendar */}
-                                                        <div className="flex-1 w-full">
-                                                            {renderCalendar()}
-                                                        </div>
+                                            <div className="flex flex-wrap justify-center gap-6">
+                                                <button
+                                                    onClick={handleLocateMe}
+                                                    className="w-40 h-40 bg-white border border-slate-100 rounded-[2rem] flex flex-col items-center justify-center gap-4 hover:border-slate-900 hover:scale-105 transition-all group"
+                                                >
+                                                    <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-colors">
+                                                        {isLocating ? <i className="fa-solid fa-circle-notch animate-spin"></i> : <i className="fa-solid fa-location-crosshairs"></i>}
                                                     </div>
-                                                </div>
-                                            )}
+                                                    <span className="text-xs font-black text-slate-900">Mein Standort</span>
+                                                </button>
 
-                                            {/* STEP 3: WER */}
-                                            {currentStep === 3 && (
-                                                <div className="w-full max-w-lg mx-auto px-4 text-center animate-in slide-in-from-right-8 duration-500">
-                                                    {/* ... Step 3 Content ... */}
-                                                    <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-8 tracking-tighter">Wer reist mit?</h2>
+                                                {DESTINATIONS.map(dest => {
+                                                    const isActive = location === dest.label;
+                                                    return (
+                                                        <button
+                                                            key={dest.name}
+                                                            onClick={() => { setLocation(dest.label); setCurrentStep(2); }}
+                                                            className={`w-40 h-40 bg-white rounded-[2rem] flex flex-col items-center justify-center gap-4 transition-all duration-300 group relative overflow-hidden
+                                                            ${isActive
+                                                                    ? 'border-[3px] border-slate-900 shadow-xl scale-105'
+                                                                    : 'border border-slate-100 hover:border-slate-300 hover:shadow-lg hover:scale-105'
+                                                                }`}
+                                                        >
+                                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-300
+                                                            ${isActive
+                                                                    ? 'bg-slate-900 text-white'
+                                                                    : 'bg-slate-50 text-slate-400 group-hover:bg-slate-900 group-hover:text-white'
+                                                                }`}>
+                                                                <i className={`fa-solid ${dest.icon}`}></i>
+                                                            </div>
+                                                            <span className={`text-xs font-black transition-colors duration-300 ${isActive ? 'text-slate-900' : 'text-slate-900'}`}>{dest.label}</span>
 
-                                                    <div className="bg-white border border-slate-100 p-8 rounded-[2.5rem] shadow-xl text-left space-y-8">
-                                                        {/* Erwachsene */}
-                                                        <div className="flex items-center justify-between pb-8 border-b border-slate-50">
-                                                            <div>
-                                                                <p className="font-black text-lg text-slate-900">Erwachsene</p>
-                                                                <p className="text-slate-400 text-sm font-medium">Ab 13 Jahren</p>
-                                                            </div>
-                                                            <div className="flex items-center gap-6">
-                                                                <button
-                                                                    onClick={() => setAdults(Math.max(1, adults - 1))}
-                                                                    className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${adults > 1 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
-                                                                    disabled={adults <= 1}
-                                                                >
-                                                                    <i className="fa-solid fa-minus text-sm"></i>
-                                                                </button>
-                                                                <span className="text-xl font-black text-slate-900 w-6 text-center">{adults}</span>
-                                                                <button
-                                                                    onClick={() => setAdults(adults + 1)}
-                                                                    className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
-                                                                >
-                                                                    <i className="fa-solid fa-plus text-sm"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Kinder */}
-                                                        <div className="flex items-center justify-between pb-8 border-b border-slate-50">
-                                                            <div>
-                                                                <p className="font-black text-lg text-slate-900">Kinder</p>
-                                                                <p className="text-slate-400 text-sm font-medium">2–12 Jahre alt</p>
-                                                            </div>
-                                                            <div className="flex items-center gap-6">
-                                                                <button
-                                                                    onClick={() => setChildren(Math.max(0, children - 1))}
-                                                                    className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${children > 0 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
-                                                                    disabled={children <= 0}
-                                                                >
-                                                                    <i className="fa-solid fa-minus text-sm"></i>
-                                                                </button>
-                                                                <span className="text-xl font-black text-slate-900 w-6 text-center">{children}</span>
-                                                                <button
-                                                                    onClick={() => setChildren(children + 1)}
-                                                                    className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
-                                                                >
-                                                                    <i className="fa-solid fa-plus text-sm"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Kleinkinder */}
-                                                        <div className="flex items-center justify-between pb-8 border-b border-slate-50">
-                                                            <div>
-                                                                <p className="font-black text-lg text-slate-900">Kleinkinder</p>
-                                                                <p className="text-slate-400 text-sm font-medium">Unter 2 Jahren</p>
-                                                            </div>
-                                                            <div className="flex items-center gap-6">
-                                                                <button
-                                                                    onClick={() => setInfants(Math.max(0, infants - 1))}
-                                                                    className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${infants > 0 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
-                                                                    disabled={infants <= 0}
-                                                                >
-                                                                    <i className="fa-solid fa-minus text-sm"></i>
-                                                                </button>
-                                                                <span className="text-xl font-black text-slate-900 w-6 text-center">{infants}</span>
-                                                                <button
-                                                                    onClick={() => setInfants(infants + 1)}
-                                                                    className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
-                                                                >
-                                                                    <i className="fa-solid fa-plus text-sm"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Haustiere */}
-                                                        <div className="flex items-center justify-between">
-                                                            <div>
-                                                                <p className="font-black text-lg text-slate-900">Haustiere</p>
-                                                                <a href="#" className="text-slate-400 text-sm font-medium underline underline-offset-4 hover:text-slate-800 transition-colors">Hast du ein Assistenztier dabei?</a>
-                                                            </div>
-                                                            <div className="flex items-center gap-6">
-                                                                <button
-                                                                    onClick={() => setPets(Math.max(0, pets - 1))}
-                                                                    className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${pets > 0 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
-                                                                    disabled={pets <= 0}
-                                                                >
-                                                                    <i className="fa-solid fa-minus text-sm"></i>
-                                                                </button>
-                                                                <span className="text-xl font-black text-slate-900 w-6 text-center">{pets}</span>
-                                                                <button
-                                                                    onClick={() => setPets(pets + 1)}
-                                                                    className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
-                                                                >
-                                                                    <i className="fa-solid fa-plus text-sm"></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                        </main>
-
-                                {/* Footer */}
-                                    {(currentStep === 2 || currentStep === 3) && (
-                                        <div className="p-8 flex justify-end max-w-7xl mx-auto w-full shrink-0">
-                                            <button
-                                                onClick={currentStep === 3 ? handleSearch : () => setCurrentStep(3)}
-                                                className="bg-[#1a1a1a] text-white px-12 py-5 rounded-full font-black text-xs uppercase tracking-widest hover:bg-black transition-all flex items-center gap-4 shadow-xl"
-                                            >
-                                                {currentStep === 3 ? 'Ergebnisse zeigen' : 'Weiter'}
-                                                <i className="fa-solid fa-arrow-right"></i>
-                                            </button>
+                                                            {isActive && (
+                                                                <div className="absolute top-3 right-3 w-6 h-6 bg-slate-900 rounded-full flex items-center justify-center animate-in zoom-in">
+                                                                    <i className="fa-solid fa-check text-white text-[10px]"></i>
+                                                                </div>
+                                                            )}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
                                         </div>
                                     )}
+
+                                    {/* STEP 2: WANN */}
+                                    {currentStep === 2 && (
+                                        <div className="w-full max-w-5xl px-4 text-center animate-in slide-in-from-right-8 duration-500">
+                                            {/* ... Step 2 Content ... */}
+                                            <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-4 tracking-tighter">Wann möchtest du reisen?</h2>
+                                            <p className="text-slate-500 text-lg md:text-xl mb-12 font-medium">Wähle einen Zeitraum oder spezifische Daten.</p>
+
+                                            <div className="flex flex-col-reverse lg:flex-row gap-8 lg:gap-12 items-start justify-center">
+                                                {/* Shortcuts */}
+                                                <div className="flex flex-col gap-4 lg:gap-6 w-full lg:w-96">
+                                                    <button
+                                                        onClick={() => setCurrentStep(3)}
+                                                        className="w-full p-6 lg:p-8 bg-white border border-slate-100 rounded-[2rem] lg:rounded-[2.5rem] flex items-center gap-6 hover:border-[#FF385C] transition-all group text-left shadow-sm order-2 lg:order-1"
+                                                    >
+                                                        <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-colors shrink-0">
+                                                            <i className="fa-solid fa-bolt"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h3 className="font-black text-lg text-slate-900">Dieses Wochenende</h3>
+                                                            <p className="text-xs text-slate-500 font-medium">Perfekt für eine spontane Reise</p>
+                                                        </div>
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() => setCurrentStep(3)}
+                                                        className="w-full p-6 lg:p-8 bg-white border border-slate-100 rounded-[2.5rem] flex items-center gap-6 hover:border-blue-500 transition-all group text-left shadow-sm hidden lg:flex order-3 lg:order-2"
+                                                    >
+                                                        <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors shrink-0">
+                                                            <i className="fa-regular fa-calendar-check"></i>
+                                                        </div>
+                                                        <div>
+                                                            <h3 className="font-black text-lg text-slate-900">Nächsten Monat</h3>
+                                                            <p className="text-xs text-slate-500 font-medium">Genügend Zeit für die Vorbereitung</p>
+                                                        </div>
+                                                    </button>
+
+                                                    <div className="bg-[#1a1a1a] p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] text-white text-center order-1 lg:order-3">
+                                                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#ffffff60] mb-2">Gewählter Zeitraum</p>
+                                                        <div className="flex items-center justify-center gap-4 text-xl font-black">
+                                                            <span>{checkIn ? checkIn.toLocaleDateString('de-DE') : 'Anreise'}</span>
+                                                            <div className="h-0.5 w-4 bg-[#ffffff30]"></div>
+                                                            <span>{checkOut ? checkOut.toLocaleDateString('de-DE') : 'Abreise'}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Calendar */}
+                                                <div className="flex-1 w-full">
+                                                    {renderCalendar()}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* STEP 3: WER */}
+                                    {currentStep === 3 && (
+                                        <div className="w-full max-w-lg mx-auto px-4 text-center animate-in slide-in-from-right-8 duration-500">
+                                            {/* ... Step 3 Content ... */}
+                                            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-8 tracking-tighter">Wer reist mit?</h2>
+
+                                            <div className="bg-white border border-slate-100 p-8 rounded-[2.5rem] shadow-xl text-left space-y-8">
+                                                {/* Erwachsene */}
+                                                <div className="flex items-center justify-between pb-8 border-b border-slate-50">
+                                                    <div>
+                                                        <p className="font-black text-lg text-slate-900">Erwachsene</p>
+                                                        <p className="text-slate-400 text-sm font-medium">Ab 13 Jahren</p>
+                                                    </div>
+                                                    <div className="flex items-center gap-6">
+                                                        <button
+                                                            onClick={() => setAdults(Math.max(1, adults - 1))}
+                                                            className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${adults > 1 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
+                                                            disabled={adults <= 1}
+                                                        >
+                                                            <i className="fa-solid fa-minus text-sm"></i>
+                                                        </button>
+                                                        <span className="text-xl font-black text-slate-900 w-6 text-center">{adults}</span>
+                                                        <button
+                                                            onClick={() => setAdults(adults + 1)}
+                                                            className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
+                                                        >
+                                                            <i className="fa-solid fa-plus text-sm"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Kinder */}
+                                                <div className="flex items-center justify-between pb-8 border-b border-slate-50">
+                                                    <div>
+                                                        <p className="font-black text-lg text-slate-900">Kinder</p>
+                                                        <p className="text-slate-400 text-sm font-medium">2–12 Jahre alt</p>
+                                                    </div>
+                                                    <div className="flex items-center gap-6">
+                                                        <button
+                                                            onClick={() => setChildren(Math.max(0, children - 1))}
+                                                            className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${children > 0 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
+                                                            disabled={children <= 0}
+                                                        >
+                                                            <i className="fa-solid fa-minus text-sm"></i>
+                                                        </button>
+                                                        <span className="text-xl font-black text-slate-900 w-6 text-center">{children}</span>
+                                                        <button
+                                                            onClick={() => setChildren(children + 1)}
+                                                            className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
+                                                        >
+                                                            <i className="fa-solid fa-plus text-sm"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Kleinkinder */}
+                                                <div className="flex items-center justify-between pb-8 border-b border-slate-50">
+                                                    <div>
+                                                        <p className="font-black text-lg text-slate-900">Kleinkinder</p>
+                                                        <p className="text-slate-400 text-sm font-medium">Unter 2 Jahren</p>
+                                                    </div>
+                                                    <div className="flex items-center gap-6">
+                                                        <button
+                                                            onClick={() => setInfants(Math.max(0, infants - 1))}
+                                                            className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${infants > 0 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
+                                                            disabled={infants <= 0}
+                                                        >
+                                                            <i className="fa-solid fa-minus text-sm"></i>
+                                                        </button>
+                                                        <span className="text-xl font-black text-slate-900 w-6 text-center">{infants}</span>
+                                                        <button
+                                                            onClick={() => setInfants(infants + 1)}
+                                                            className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
+                                                        >
+                                                            <i className="fa-solid fa-plus text-sm"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Haustiere */}
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <p className="font-black text-lg text-slate-900">Haustiere</p>
+                                                        <a href="#" className="text-slate-400 text-sm font-medium underline underline-offset-4 hover:text-slate-800 transition-colors">Hast du ein Assistenztier dabei?</a>
+                                                    </div>
+                                                    <div className="flex items-center gap-6">
+                                                        <button
+                                                            onClick={() => setPets(Math.max(0, pets - 1))}
+                                                            className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${pets > 0 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
+                                                            disabled={pets <= 0}
+                                                        >
+                                                            <i className="fa-solid fa-minus text-sm"></i>
+                                                        </button>
+                                                        <span className="text-xl font-black text-slate-900 w-6 text-center">{pets}</span>
+                                                        <button
+                                                            onClick={() => setPets(pets + 1)}
+                                                            className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
+                                                        >
+                                                            <i className="fa-solid fa-plus text-sm"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                </main>
+
+                                {/* Footer */}
+                                {(currentStep === 2 || currentStep === 3) && (
+                                    <div className="p-8 flex justify-end max-w-7xl mx-auto w-full shrink-0">
+                                        <button
+                                            onClick={currentStep === 3 ? handleSearch : () => setCurrentStep(3)}
+                                            className="bg-[#1a1a1a] text-white px-12 py-5 rounded-full font-black text-xs uppercase tracking-widest hover:bg-black transition-all flex items-center gap-4 shadow-xl"
+                                        >
+                                            {currentStep === 3 ? 'Ergebnisse zeigen' : 'Weiter'}
+                                            <i className="fa-solid fa-arrow-right"></i>
+                                        </button>
+                                    </div>
+                                )}
                             </motion.div>
                         </>
                     )}
