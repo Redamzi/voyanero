@@ -34,7 +34,7 @@ const BookingContent = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contextParam]);
 
-    let flightData = null;
+    let flightData: any = null;
     try {
         if (contextParam) {
             flightData = JSON.parse(decodeURIComponent(contextParam));
