@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { User } from '../types';
 import SearchMask from './SearchMask';
 
@@ -188,7 +189,17 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                             <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Was suchst du?</h3>
                             <div className="grid grid-cols-3 gap-4">
                                 {/* Reisen Card */}
-                                <button className="group relative bg-white border-2 border-slate-200 rounded-2xl p-4 hover:border-orange-500 hover:shadow-lg transition-all text-left">
+                                <motion.button
+                                    initial={{ scale: 0, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 260,
+                                        damping: 20,
+                                        delay: 0.1
+                                    }}
+                                    className="group relative bg-white border-2 border-slate-200 rounded-2xl p-4 hover:border-orange-500 hover:shadow-lg transition-all text-left"
+                                >
                                     <div className="flex items-start justify-between mb-2">
                                         <div className="w-10 h-10 bg-gradient-to-br from-orange-100 to-orange-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                             <i className="fa-solid fa-suitcase-rolling text-orange-600 text-lg"></i>
@@ -197,10 +208,20 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                                     </div>
                                     <h4 className="text-base font-black text-slate-900 mb-0.5">Reisen</h4>
                                     <p className="text-xs text-slate-500">Komplette Reisepakete</p>
-                                </button>
+                                </motion.button>
 
                                 {/* Flüge Card */}
-                                <button className="group relative bg-white border-2 border-slate-200 rounded-2xl p-4 hover:border-blue-500 hover:shadow-lg transition-all text-left">
+                                <motion.button
+                                    initial={{ scale: 0, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 260,
+                                        damping: 20,
+                                        delay: 0.2
+                                    }}
+                                    className="group relative bg-white border-2 border-slate-200 rounded-2xl p-4 hover:border-blue-500 hover:shadow-lg transition-all text-left"
+                                >
                                     <div className="flex items-start justify-between mb-2">
                                         <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                             <i className="fa-solid fa-plane-departure text-blue-600 text-lg"></i>
@@ -209,10 +230,20 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                                     </div>
                                     <h4 className="text-base font-black text-slate-900 mb-0.5">Flüge</h4>
                                     <p className="text-xs text-slate-500">Nur Flugtickets</p>
-                                </button>
+                                </motion.button>
 
                                 {/* Hotels Card */}
-                                <button className="group relative bg-white border-2 border-slate-200 rounded-2xl p-4 hover:border-emerald-500 hover:shadow-lg transition-all text-left">
+                                <motion.button
+                                    initial={{ scale: 0, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 260,
+                                        damping: 20,
+                                        delay: 0.3
+                                    }}
+                                    className="group relative bg-white border-2 border-slate-200 rounded-2xl p-4 hover:border-emerald-500 hover:shadow-lg transition-all text-left"
+                                >
                                     <div className="flex items-start justify-between mb-2">
                                         <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                             <i className="fa-solid fa-hotel text-emerald-600 text-lg"></i>
@@ -221,7 +252,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                                     </div>
                                     <h4 className="text-base font-black text-slate-900 mb-0.5">Hotels</h4>
                                     <p className="text-xs text-slate-500">Nur Unterkünfte</p>
-                                </button>
+                                </motion.button>
                             </div>
                         </div>
 
