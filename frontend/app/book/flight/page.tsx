@@ -10,8 +10,8 @@ const BookingContent = () => {
     const contextParam = searchParams.get('context');
 
     // All hooks MUST be declared before any conditional returns
+    const [isValidating, setIsValidating] = React.useState(true);
     const [verificationError, setVerificationError] = React.useState<string | null>(null);
-    const [confirmedPrice, setConfirmedPrice] = React.useState<unknown>(null);
 
     React.useEffect(() => {
         const verifyFlight = async () => {
@@ -92,7 +92,6 @@ const BookingContent = () => {
         );
     }
 
-    const airlineCode = flightData.validatingAirlineCodes?.[0];
 
     return (
         <div className="relative min-h-screen bg-slate-50 font-jakarta">
