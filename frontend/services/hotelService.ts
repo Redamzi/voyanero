@@ -6,7 +6,9 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/a
 export const HotelService = {
     searchHotels: async (query: string): Promise<Listing[]> => {
         try {
-            const response = await fetch(`${API_BASE_URL}/hotels/search?location=${encodeURIComponent(query)}`);
+            // Robustly handle API URL (ensure /api suffix)
+            const baseUrl = API_BASE_URL.endsWith('/api') ? API_BASE_URL : `${API_BASE_URL}/api`;
+            const response = await fetch(`${baseUrl}/hotels/search?location=${encodeURIComponent(query)}`);
             if (!response.ok) throw new Error('Failed to fetch hotels');
 
             const data = await response.json();
