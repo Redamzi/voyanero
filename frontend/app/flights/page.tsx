@@ -1,10 +1,28 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import Script from 'next/script';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export default function FlightsPage() {
+    useEffect(() => {
+        // Initialize widget after script loads
+        const initWidget = () => {
+            if (typeof window !== 'undefined' && (window as any).TPWidgetLoader) {
+                (window as any).TPWidgetLoader.init();
+            }
+        };
+
+        // Try to init if script already loaded
+        initWidget();
+
+        // Set up interval to check if script loaded
+        const interval = setInterval(initWidget, 500);
+
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <div className="min-h-screen bg-white">
             <Navbar />
@@ -17,18 +35,31 @@ export default function FlightsPage() {
                     Finde die besten Flüge zu deinem Traumziel
                 </p>
 
-                {/* Travelpayouts Widget (iframe embed) */}
-                <div className="w-full min-h-[600px] bg-white rounded-2xl shadow-lg overflow-hidden">
-                    <iframe
-                        src="https://tpwdg.com/content?trs=353305&shmarker=575179&locale=de&curr=EUR&powered_by=true&border_radius=30&plain=true&color_button=%23000000ff&color_button_text=%23ffffff&color_border=%23000000ff&promo_id=4132&campaign_id=121"
-                        width="100%"
-                        height="600"
-                        frameBorder="0"
-                        style={{ border: 'none', minHeight: '600px' }}
-                        title="Flugsuche"
+                {/* Travelpayouts Widget Container */}
+                <div className="w-full min-h-[600px] bg-white rounded-2xl shadow-lg p-6">
+                    <div
+                        data-tpwdgt-widget="search_form"
+                        data-tpwdgt-marker="575179"
+                        data-tpwdgt-locale="de"
+                        data-tpwdgt-currency="EUR"
+                        data-tpwdgt-powered-by="true"
+                        data-tpwdgt-border-radius="30"
+                        data-tpwdgt-color-button="#000000"
+                        data-tpwdgt-color-button-text="#ffffff"
                     />
                 </div>
             </div>
+
+            {/* Load Travelpayouts Widget Script */}
+            <Script
+                src="https://tpwdg.com/widget-init.js"
+                strategy="afterInteractive"
+                onLoad={() => {
+                    if (typeof window !== 'undefined' && (window as any).TPWidgetLoader) {
+                        (window as any).TPWidgetLoader.init();
+                    }
+                }}
+            />
 
             <Footer />
         </div>
