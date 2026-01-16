@@ -40,6 +40,9 @@ const ListingPreviewModal: React.FC<ListingPreviewModalProps> = ({ listing, onCl
 
     const isAffiliate = listing.type === ListingType.AFFILIATE;
 
+    // Debug logging
+    console.log('[ListingPreviewModal] Listing:', listing.id, 'Type:', listing.type, 'AffiliateURL:', listing.affiliateUrl, 'Final URL:', url);
+
     return (
         <div className="fixed inset-0 z-[1200] flex items-center justify-center p-4 sm:p-6">
             <motion.div
