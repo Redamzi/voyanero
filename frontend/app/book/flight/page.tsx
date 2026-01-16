@@ -80,6 +80,7 @@ const BookingContent = () => {
                                 {/* Route visual line */}
                                 <div className="absolute left-[19px] top-4 bottom-4 w-0.5 bg-slate-100" />
 
+                                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                                 {segments.map((seg: any, idx: number) => {
                                     const depTime = new Date(seg.departure.at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
                                     const arrTime = new Date(seg.arrival.at).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
@@ -165,7 +166,7 @@ const BookingContent = () => {
                             </button>
 
                             <p className="text-center text-xs text-slate-400 mt-4">
-                                Durch Klick auf "Jetzt buchen" werden Sie zur Zahlung weitergeleitet.
+                                Durch Klick auf &quot;Jetzt buchen&quot; werden Sie zur Zahlung weitergeleitet.
                             </p>
                         </div>
                     </div>

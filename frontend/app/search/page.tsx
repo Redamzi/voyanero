@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useState, useMemo, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import ListingCard from '@/components/ListingCard';
 import ListingPreviewModal from '@/components/ListingPreviewModal';
+import FlightResultCard from '@/components/FlightResultCard';
+import FilterSidebar from '@/components/FilterSidebar';
+import DateStrip from '@/components/DateStrip';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Listing, ListingType, PropertyType } from '@/types';
@@ -53,19 +56,18 @@ const SelectableListing = ({ listing, isSelectionMode, onPreview }: { listing: L
 };
 
 function SearchContent() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const searchType = searchParams.get('type') || 'reisen';
     const locationQuery = searchParams.get('location') || '';
     const originQuery = searchParams.get('origin') || '';
     const destinationQuery = searchParams.get('destination') || '';
+
     const getValidFutureDate = (dateStr: string | null) => {
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Midnight local time
-
+        today.setHours(0, 0, 0, 0);
         if (!dateStr) return new Date().toISOString().split('T')[0];
-
         const date = new Date(dateStr);
-        // If invalid or in the past (before today's midnight)
         if (isNaN(date.getTime()) || date < today) {
             return new Date().toISOString().split('T')[0];
         }
@@ -80,24 +82,37 @@ function SearchContent() {
     const children = parseInt(searchParams.get('children') || '0');
     const infants = parseInt(searchParams.get('infants') || '0');
 
+    // UI State
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const [isSelectionMode, setIsSelectionMode] = useState(false);
+    const [selectedPreviewListing, setSelectedPreviewListing] = useState<Listing | null>(null);
+
+    // Legacy Filter State (for Hotels/Mixed)
     const [priceRange, setPriceRange] = useState({ min: 0, max: 2000 });
     const [counts, setCounts] = useState({ bedrooms: 0, beds: 0, bathrooms: 0 });
-    const [selectedPreviewListing, setSelectedPreviewListing] = useState<Listing | null>(null);
+    const histogramData = [5, 15, 25, 40, 60, 85, 100, 95, 80, 65, 50, 35, 20, 15, 8];
+
 
     // API State
     const [listings, setListings] = useState<Listing[]>([]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [flightOffers, setFlightOffers] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [availableAirlines, setAvailableAirlines] = useState<string[]>([]);
 
-    const histogramData = [5, 15, 25, 40, 60, 85, 100, 95, 80, 65, 50, 35, 20, 15, 8];
+    // Flight Filters
+    const [flightFilters, setFlightFilters] = useState({
+        stops: 'Alle' as string | null,
+        maxPrice: null as number | null,
+        airlines: [] as string[]
+    });
+    const [sortOption, setSortOption] = useState<'best' | 'cheapest' | 'fastest'>('best');
 
     // Fetch Data (Flights & Hotels)
     React.useEffect(() => {
         const fetchData = async () => {
-            if (!locationQuery && !dateQuery) {
-                // No search params - show empty state or featured listings
+            if (!locationQuery && !dateQuery && !destinationQuery) {
                 setListings([]);
                 setError("Bitte gib ein Reiseziel ein, um Angebote zu finden.");
                 return;
@@ -111,202 +126,51 @@ function SearchContent() {
 
                 // Fetch based on search type
                 if (searchType === 'reisen') {
-                    // Fetch both flights and hotels
+                    // Legacy Logic for Mixed Search
                     const [flightRes, hotelRes] = await Promise.all([
                         FlightService.searchFlights({
                             origin: "MUC",
                             destination: locationQuery,
                             date: dateQuery || new Date().toISOString().split('T')[0],
-                            adults,
-                            children,
-                            infants
+                            adults, children, infants
                         }),
                         HotelService.searchHotels(locationQuery),
                     ]);
 
-                    // Process Flights (Amadeus Structure)
-                    if (flightRes && Array.isArray(flightRes) && flightRes.length > 0) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const flightListings: Listing[] = flightRes.map((flight: any, index: number) => {
-                            const itinerary = flight.itineraries?.[0];
-                            const firstSegment = itinerary?.segments?.[0];
-                            const lastSegment = itinerary?.segments?.[itinerary.segments.length - 1];
-                            const airlineCode = flight.validatingAirlineCodes?.[0];
-                            const startTime = firstSegment?.departure?.at;
-
-                            return {
-                                id: flight.id, // Amadeus offer ID
-                                title: `Flug mit ${airlineCode || 'Airline'}`,
-                                description: startTime ? `Ab ${new Date(startTime).toLocaleDateString('de-DE', { hour: '2-digit', minute: '2-digit' })}` : 'Flugdaten',
-                                type: ListingType.AFFILIATE, // Using Affiliate type for generic card, but it's internal booking
-                                propertyType: PropertyType.HOTEL, // Reuse existing type for card styling
-                                price: parseFloat(flight.price?.total || '0'),
-                                location: {
-                                    address: `${firstSegment?.departure?.iataCode || 'Start'} → ${lastSegment?.arrival?.iataCode || 'Ziel'}`,
-                                    lat: 0,
-                                    lng: 0
-                                },
-                                images: airlineCode
-                                    ? [`http://pics.avs.io/200/200/${airlineCode}.png`]
-                                    : ['https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'],
-                                amenities: [
-                                    index === 0 ? "Günstigster" : "Economy",
-                                    flight.oneWay ? "One Way" : "Return"
-                                ].filter(Boolean),
-                                rating: 4.5, // Placeholder
-                                reviewCount: 20,
-                                maxGuests: adults + children,
-                                affiliateUrl: `/book/flight?offerId=${flight.id}&context=${encodeURIComponent(JSON.stringify(flight))}` // Internal booking link logic
-                            };
-                        });
-                        combinedListings = [...combinedListings, ...flightListings];
-                    }
-
-                    // Process Hotels
-                    if (hotelRes && hotelRes.length > 0) {
-                        // Diverse fallback images for hotels
-                        const fallbackImages = [
-                            'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
-                            'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80',
-                            'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80',
-                            'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80',
-                            'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80',
-                            'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=800&q=80',
-                            'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80',
-                            'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=800&q=80'
-                        ];
-
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const hotelListings: Listing[] = hotelRes.map((hotel: any, index: number) => ({
-                            id: hotel.id,
-                            title: hotel.title,
-                            description: hotel.description || 'Schönes Hotel in top Lage',
-                            type: ListingType.AFFILIATE,
-                            propertyType: PropertyType.HOTEL,
-                            price: hotel.price,
-                            location: {
-                                address: typeof hotel.location === 'string' ? hotel.location : (hotel.location?.address || 'Unknown Location'),
-                                lat: 0,
-                                lng: 0
-                            },
-                            images: hotel.image ? [hotel.image] : [fallbackImages[index % fallbackImages.length]],
-                            amenities: hotel.amenities || ['WiFi', 'AC'],
-                            rating: hotel.rating,
-                            reviewCount: hotel.reviews,
-                            maxGuests: 2,
-                            affiliateUrl: hotel.deepLink
-                        }));
-                        combinedListings = [...combinedListings, ...hotelListings];
-                    }
-                } else if (searchType === 'fluege') {
-                    // Fetch only flights
-                    const flightRes = await FlightService.searchFlights({
-                        origin: originQuery || "MUC",
-                        destination: destinationQuery || locationQuery,
-                        date: dateQuery || new Date().toISOString().split('T')[0],
-                        return_date: returnDateQuery,
-                        adults,
-                        children,
-                        infants
-                    });
-
                     if (flightRes && Array.isArray(flightRes) && flightRes.length > 0) {
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         const flightListings: Listing[] = flightRes.map((flight: any) => {
-                            const itinerary = flight.itineraries?.[0];
-                            const firstSegment = itinerary?.segments?.[0];
-                            const lastSegment = itinerary?.segments?.[itinerary.segments.length - 1];
                             const airlineCode = flight.validatingAirlineCodes?.[0];
-                            const startTime = firstSegment?.departure?.at;
-
                             return {
                                 id: flight.id,
                                 title: `Flug mit ${airlineCode || 'Airline'}`,
-                                description: startTime ? `Ab ${new Date(startTime).toLocaleDateString('de-DE', { hour: '2-digit', minute: '2-digit' })}` : 'Flugdaten',
+                                description: 'Flugdaten',
                                 type: ListingType.AFFILIATE,
                                 propertyType: PropertyType.HOTEL,
                                 price: parseFloat(flight.price?.total || '0'),
-                                location: {
-                                    address: `${firstSegment?.departure?.iataCode || 'Start'} → ${lastSegment?.arrival?.iataCode || 'Ziel'}`,
-                                    lat: 0,
-                                    lng: 0
-                                },
-                                images: airlineCode
-                                    ? [`http://pics.avs.io/200/200/${airlineCode}.png`]
-                                    : ['https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80'],
-                                amenities: ["Economy"],
+                                location: { address: 'Flight', lat: 0, lng: 0 },
+                                images: airlineCode ? [`http://pics.avs.io/200/200/${airlineCode}.png`] : [],
+                                amenities: [],
                                 rating: 4.5,
-                                reviewCount: 15,
+                                reviewCount: 20,
                                 maxGuests: adults + children,
                                 affiliateUrl: `/book/flight?offerId=${flight.id}&context=${encodeURIComponent(JSON.stringify(flight))}`
                             };
                         });
                         combinedListings = [...combinedListings, ...flightListings];
                     }
-                } else if (searchType === 'transfer') {
-                    // Fetch transfers
-                    const transferRes = await TransferService.searchTransfers({
-                        startLocationCode: originQuery || 'LHR',
-                        endLocationCode: destinationQuery || 'CDG',
-                        startDateTime: dateQuery ? new Date(dateQuery).toISOString() : new Date().toISOString(),
-                        passengers: adults + children || 1
-                    });
-
-                    if (transferRes && Array.isArray(transferRes)) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const transferListings: Listing[] = transferRes.map((offer: any, index: number) => ({
-                            id: offer.id || `transfer-${index}`,
-                            title: `Transfer (${offer.transferType})`,
-                            description: `Fahrzeug: ${offer.vehicle?.category || 'Standard'} - ${offer.vehicle?.code || ''}`,
-                            type: ListingType.AFFILIATE,
-                            propertyType: PropertyType.HOTEL, // Reuse for card styling
-                            price: parseFloat(offer.price?.total || '0'),
-                            location: {
-                                address: `${offer.start?.locationCode || originQuery} → ${offer.end?.locationCode || destinationQuery}`,
-                                lat: 0,
-                                lng: 0
-                            },
-                            images: ['https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=800&q=80'], // Car/Taxi image
-                            amenities: [offer.vehicle?.category, `${offer.passengers || 1} Passagiere`, "Meet & Greet"].filter(Boolean),
-                            rating: 4.8,
-                            reviewCount: 50,
-                            maxGuests: offer.vehicle?.passengerCapacity || 4,
-                            affiliateUrl: '#' // TODO: Deep link if available
-                        }));
-                        combinedListings = [...combinedListings, ...transferListings];
-                    }
-                } else if (searchType === 'unterkunft') {
-                    // Fetch only hotels
-                    const hotelRes = await HotelService.searchHotels(locationQuery);
-
                     if (hotelRes && hotelRes.length > 0) {
-                        // Diverse fallback images for hotels
-                        const fallbackImages = [
-                            'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
-                            'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=80',
-                            'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80',
-                            'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=800&q=80',
-                            'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=800&q=80',
-                            'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=800&q=80',
-                            'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80',
-                            'https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=800&q=80'
-                        ];
-
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const hotelListings: Listing[] = hotelRes.map((hotel: any, index: number) => ({
+                        const hotelListings: Listing[] = hotelRes.map((hotel: any) => ({
                             id: hotel.id,
                             title: hotel.title,
-                            description: hotel.description || 'Schönes Hotel in top Lage',
+                            description: hotel.description,
                             type: ListingType.AFFILIATE,
                             propertyType: PropertyType.HOTEL,
                             price: hotel.price,
-                            location: {
-                                address: typeof hotel.location === 'string' ? hotel.location : (hotel.location?.address || 'Unknown Location'),
-                                lat: 0,
-                                lng: 0
-                            },
-                            images: hotel.image ? [hotel.image] : [fallbackImages[index % fallbackImages.length]],
-                            amenities: hotel.amenities || ['WiFi', 'AC'],
+                            location: { address: hotel.location?.address || 'Unknown', lat: 0, lng: 0 },
+                            images: hotel.image ? [hotel.image] : [],
+                            amenities: hotel.amenities || [],
                             rating: hotel.rating,
                             reviewCount: hotel.reviews,
                             maxGuests: 2,
@@ -314,29 +178,152 @@ function SearchContent() {
                         }));
                         combinedListings = [...combinedListings, ...hotelListings];
                     }
-                }
-
-                if (combinedListings.length > 0) {
                     setListings(combinedListings);
-                } else {
-                    setListings([]);
-                    setError("Keine Ergebnisse gefunden. Versuche andere Daten oder Ziele.");
+
+                } else if (searchType === 'fluege') {
+                    // Flight Redesign Logic
+                    const flightRes = await FlightService.searchFlights({
+                        origin: originQuery || "MUC",
+                        destination: destinationQuery || locationQuery,
+                        date: dateQuery || new Date().toISOString().split('T')[0],
+                        return_date: returnDateQuery,
+                        adults, children, infants
+                    });
+
+                    if (flightRes && Array.isArray(flightRes)) {
+                        setFlightOffers(flightRes);
+
+                        // Extract airlines for filter
+                        const airlines = new Set<string>();
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        flightRes.forEach((f: any) => {
+                            f.validatingAirlineCodes?.forEach((code: string) => airlines.add(code));
+                        });
+                        setAvailableAirlines(Array.from(airlines));
+
+                        // Set initial max price for filter slider if not set
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const maxP = Math.max(...flightRes.map((f: any) => parseFloat(f.price.total)));
+                        if (!flightFilters.maxPrice) {
+                            setFlightFilters(prev => ({ ...prev, maxPrice: Math.ceil(maxP) }));
+                        }
+                    } else {
+                        setFlightOffers([]);
+                    }
+                } else if (searchType === 'transfer') {
+                    const transferRes = await TransferService.searchTransfers({
+                        startLocationCode: originQuery || 'LHR',
+                        endLocationCode: destinationQuery || 'CDG',
+                        startDateTime: dateQuery ? new Date(dateQuery).toISOString() : new Date().toISOString(),
+                        passengers: adults + children || 1
+                    });
+                    if (transferRes && Array.isArray(transferRes)) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const transferListings: Listing[] = transferRes.map((offer: any, index: number) => ({
+                            id: offer.id || `transfer-${index}`,
+                            title: `Transfer (${offer.transferType})`,
+                            description: `Fahrzeug: ${offer.vehicle?.category || 'Standard'}`,
+                            type: ListingType.AFFILIATE,
+                            propertyType: PropertyType.HOTEL,
+                            price: parseFloat(offer.price?.total || '0'),
+                            location: { address: 'Transfer', lat: 0, lng: 0 },
+                            images: ['https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=800&q=80'],
+                            amenities: [offer.vehicle?.category],
+                            rating: 4.8,
+                            reviewCount: 50,
+                            maxGuests: offer.vehicle?.passengerCapacity || 4,
+                            affiliateUrl: '#'
+                        }));
+                        setListings(transferListings);
+                    }
+                } else if (searchType === 'unterkunft') {
+                    const hotelRes = await HotelService.searchHotels(locationQuery);
+                    if (hotelRes && hotelRes.length > 0) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const hotelListings: Listing[] = hotelRes.map((hotel: any) => ({
+                            id: hotel.id,
+                            title: hotel.title,
+                            description: hotel.description,
+                            type: ListingType.AFFILIATE,
+                            propertyType: PropertyType.HOTEL,
+                            price: hotel.price,
+                            location: { address: hotel.location?.address || 'Unknown', lat: 0, lng: 0 },
+                            images: hotel.image ? [hotel.image] : [],
+                            amenities: hotel.amenities || [],
+                            rating: hotel.rating,
+                            reviewCount: hotel.reviews,
+                            maxGuests: 2,
+                            affiliateUrl: hotel.deepLink
+                        }));
+                        setListings(hotelListings);
+                    }
                 }
 
             } catch (err) {
                 console.error("Data fetch failed", err);
                 setError("Daten konnten nicht geladen werden.");
-                // Fallback to mock only on error? Or just valid error state.
                 setListings([]);
+                setFlightOffers([]);
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchData();
-    }, [locationQuery, dateQuery, adults, children, infants, searchType]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [locationQuery, dateQuery, destinationQuery, adults, children, infants, searchType]);
+
+    // Derived Flight State
+    const filteredFlights = useMemo(() => {
+        let res = [...flightOffers];
+
+        // Filter by Stops
+        if (flightFilters.stops && flightFilters.stops !== 'Alle') {
+            res = res.filter(offer => {
+                const stops = offer.itineraries[0].segments.length - 1;
+                if (flightFilters.stops === 'Direkt') return stops === 0;
+                if (flightFilters.stops === 'Max. 1 Stopp') return stops <= 1;
+                if (flightFilters.stops === 'Max. 2 Stopps') return stops <= 2;
+                return true;
+            });
+        }
+
+        // Filter by Price
+        if (flightFilters.maxPrice) {
+            res = res.filter(offer => parseFloat(offer.price.total) <= flightFilters.maxPrice!);
+        }
+
+        // Filter by Airline
+        if (flightFilters.airlines.length > 0) {
+            res = res.filter(offer =>
+                offer.validatingAirlineCodes.some((code: string) => flightFilters.airlines.includes(code))
+            );
+        }
+
+        // Sorting
+        res.sort((a, b) => {
+            const priceA = parseFloat(a.price.total);
+            const priceB = parseFloat(b.price.total);
+            // const durationA = a.itineraries[0].duration; 
+
+            if (sortOption === 'cheapest') return priceA - priceB;
+            // Best = Mix of price and duration (mock logic: cheaper is better)
+            if (sortOption === 'best') return priceA - priceB;
+            return 0;
+        });
+
+        return res;
+    }, [flightOffers, flightFilters, sortOption]);
 
 
+    const handleDateSelect = (newDate: Date) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('checkIn', newDate.toISOString().split('T')[0]);
+        params.set('date', newDate.toISOString().split('T')[0]); // Ensure both are set just in case
+        router.push(`?${params.toString()}`);
+    };
+
+    // Generic groupings for non-flight views
     const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = parseInt(e.target.value);
         if (val <= priceRange.max) setPriceRange({ ...priceRange, min: val });
@@ -351,43 +338,126 @@ function SearchContent() {
         return listings.filter(l => l.price >= priceRange.min && l.price <= priceRange.max);
     }, [listings, priceRange]);
 
-    // Grouping Logic
     const sections = useMemo(() => {
-        if (filteredListings.length === 0) return [];
-
-        const categories = [
+        if (searchType === 'fluege') return []; // Flights use new layout
+        if (listings.length === 0) return [];
+        return [
             {
-                title: "Beliebt bei Gästen",
-                icon: "fa-star",
-                items: filteredListings.filter(l => l.rating >= 4.8)
-            },
-            {
-                title: "Villen & Strand",
-                icon: "fa-umbrella-beach",
-                items: filteredListings.filter(l => l.propertyType === PropertyType.VILLA || (typeof l.location.address === 'string' && (l.location.address.includes("Bali") || l.location.address.includes("Maldives"))))
-            },
-            {
-                title: "Städtereisen & Hotels",
-                icon: "fa-city",
-                items: filteredListings.filter(l => l.propertyType === PropertyType.HOTEL || l.propertyType === PropertyType.APARTMENT)
-            },
-            {
-                title: "Natur & Cabins",
-                icon: "fa-tree",
-                items: filteredListings.filter(l => l.propertyType === PropertyType.CABIN || l.description.includes('Nature') || l.description.includes('Camping'))
+                title: "Ergebnisse",
+                icon: "fa-list",
+                items: filteredListings
             }
         ];
-
-        // Removing duplicates logic could be complex, for now we let items appear in multiple relevant sections for fuller feed
-        // OR we can deduplicate. Let's keep distinct references for now but maybe just filter unique IDs if we wanted strict separation.
-        // User requested "nach kategorie und sectionen", usually implies strict separation or curated feeds.
-
-        // Let's filter out empty categories
-        return categories.filter(c => c.items.length > 0);
-
-    }, [filteredListings]);
+    }, [listings, searchType, filteredListings]);
 
 
+    // RENDER: FLIGHTS (KIWI STYLE)
+    if (searchType === 'fluege') {
+        const minPrice = flightOffers.length > 0 ? Math.min(...flightOffers.map(f => parseFloat(f.price.total))) : 0;
+        const maxPrice = flightOffers.length > 0 ? Math.max(...flightOffers.map(f => parseFloat(f.price.total))) : 1000;
+
+        return (
+            <div className="min-h-screen bg-slate-50">
+                <Navbar
+                    onFilterClick={() => setIsFilterModalOpen(true)}
+                    forceCompact={true}
+                    onToggleSelectionMode={() => setIsSelectionMode(!isSelectionMode)}
+                />
+
+                <main className="max-w-7xl mx-auto px-4 md:px-8 py-8">
+                    {/* Date Strip */}
+                    <div className="mb-8">
+                        <DateStrip
+                            currentDate={dateQuery ? new Date(dateQuery) : new Date()}
+                            onDateSelect={handleDateSelect}
+                            prices={{}} // Mock prices could go here
+                        />
+                    </div>
+
+                    <div className="flex flex-col lg:flex-row gap-8 items-start">
+                        {/* Sidebar */}
+                        <aside className="hidden lg:block w-72 shrink-0">
+                            <FilterSidebar
+                                filters={flightFilters}
+                                onFilterChange={setFlightFilters}
+                                minPrice={Math.floor(minPrice)}
+                                maxPrice={Math.ceil(maxPrice)}
+                                availableAirlines={availableAirlines}
+                            />
+                        </aside>
+
+                        {/* Main Results */}
+                        <div className="flex-1 min-w-0">
+                            {/* Sort Tabs */}
+                            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+                                {[
+                                    { id: 'best', label: 'Beste Ergebnisse', icon: 'fa-star' },
+                                    { id: 'cheapest', label: 'Am billigsten', icon: 'fa-tag' },
+                                    { id: 'fastest', label: 'Am kürzesten', icon: 'fa-stopwatch' }
+                                ].map(opt => (
+                                    <button
+                                        key={opt.id}
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        onClick={() => setSortOption(opt.id as any)}
+                                        className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap transition-all
+                                            ${sortOption === opt.id
+                                                ? 'bg-slate-900 text-white shadow-md'
+                                                : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
+                                            }`}
+                                    >
+                                        <i className={`fa-solid ${opt.icon} ${sortOption === opt.id ? 'text-orange-400' : 'text-slate-400'}`}></i>
+                                        {opt.label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Loading State */}
+                            {isLoading && (
+                                <div className="space-y-4">
+                                    {[1, 2, 3].map(i => (
+                                        <div key={i} className="bg-white h-48 rounded-xl animate-pulse"></div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Error State */}
+                            {error && (
+                                <div className="bg-red-50 text-red-600 p-4 rounded-xl text-center font-bold">
+                                    {error}
+                                </div>
+                            )}
+
+                            {/* Results List */}
+                            <div className="space-y-4">
+                                {filteredFlights.map((offer, idx) => (
+                                    <FlightResultCard
+                                        key={offer.id}
+                                        offer={offer}
+                                        cheapest={idx === 0 && sortOption === 'cheapest'}
+                                        best={idx === 0 && sortOption === 'best'}
+                                    />
+                                ))}
+
+                                {!isLoading && filteredFlights.length === 0 && !error && (
+                                    <div className="text-center py-20 bg-white rounded-xl border border-slate-200 border-dashed">
+                                        <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <i className="fa-solid fa-plane-slash text-slate-400 text-2xl"></i>
+                                        </div>
+                                        <h3 className="text-slate-900 font-bold text-lg mb-1">Keine Flüge gefunden</h3>
+                                        <p className="text-slate-500">Versuche deine Filter anzupassen oder wähle ein anderes Datum.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <Footer />
+            </div>
+        );
+    }
+
+
+    // RENDER: DEFAULT (HOTELS, TRANSFERS, MIXED)
     return (
         <div className="min-h-screen bg-white">
             <Navbar
@@ -399,8 +469,7 @@ function SearchContent() {
             <div className="max-w-[1600px] mx-auto px-6 sm:px-8 lg:px-12 py-10 text-left">
                 <div className="flex items-end justify-between mb-8">
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-                        {isLoading ? 'Suche Angebote...' : `${filteredListings.length} Ergebnisse`}
-                        <span className="block text-slate-400 text-sm font-medium mt-1">Gefunden in {sections.length} Kategorien</span>
+                        {isLoading ? 'Suche Angebote...' : `${listings.length} Ergebnisse`}
                     </h1>
                 </div>
 
@@ -412,11 +481,10 @@ function SearchContent() {
 
                 {isLoading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map(n => (
+                        {[1, 2, 3, 4].map(n => (
                             <div key={n} className="animate-pulse">
                                 <div className="bg-slate-100 rounded-[1.5rem] aspect-[20/19] mb-3"></div>
                                 <div className="h-4 bg-slate-100 rounded w-2/3 mb-2"></div>
-                                <div className="h-3 bg-slate-100 rounded w-1/3"></div>
                             </div>
                         ))}
                     </div>
@@ -424,17 +492,7 @@ function SearchContent() {
                     <div className="space-y-16">
                         {sections.map((section, idx) => (
                             <section key={idx}>
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 text-lg">
-                                        <i className={`fa-solid ${section.icon}`}></i>
-                                    </div>
-                                    <h2 className="text-2xl font-bold text-slate-900 tracking-tight">{section.title}</h2>
-                                    <div className="h-px bg-slate-100 flex-1 ml-4 mt-1"></div>
-                                </div>
-
-                                <div
-                                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10"
-                                >
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
                                     {section.items.map(listing => (
                                         <SelectableListing
                                             key={`${section.title}-${listing.id}`}
@@ -447,7 +505,7 @@ function SearchContent() {
                             </section>
                         ))}
 
-                        {filteredListings.length === 0 && (
+                        {listings.length === 0 && (
                             <div className="text-center py-20">
                                 <i className="fa-solid fa-ghost text-4xl text-slate-300 mb-4"></i>
                                 <p className="text-slate-500 font-medium">Keine Ergebnisse gefunden.</p>
@@ -569,7 +627,7 @@ function SearchContent() {
                                 onClick={() => setIsFilterModalOpen(false)}
                                 className="bg-slate-900 text-white px-20 py-6 rounded-[2.2rem] font-black text-sm uppercase tracking-[0.2em] hover:bg-black transition-all shadow-2xl active:scale-95"
                             >
-                                {filteredListings.length} Ergebnisse anzeigen
+                                {listings.length} Ergebnisse anzeigen
                             </button>
                         </div>
                     </footer>
