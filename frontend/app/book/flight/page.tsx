@@ -43,6 +43,25 @@ const BookingContent = () => {
         console.error("Failed to parse flight context:", e);
     }
 
+    // Early returns AFTER all hooks
+    if (!flightData) {
+        return (
+            <div className="min-h-screen pt-32 pb-20 flex items-center justify-center">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-slate-900 mb-4">Keine Flugdaten gefunden</h1>
+                    <p className="text-slate-500">Bitte kehren Sie zur Suche zurück.</p>
+                </div>
+            </div>
+        );
+    }
+
+    const price = flightData.price?.total || "0";
+    const currency = flightData.price?.currency || "EUR";
+    const itinerary = flightData.itineraries?.[0];
+    const segments = itinerary?.segments || [];
+    const firstSegment = segments[0];
+    const lastSegment = segments[segments.length - 1];
+    const airlineCode = flightData.validatingAirlineCodes?.[0];
 
     // Show loading state while validating
     if (isValidating && flightData) {
