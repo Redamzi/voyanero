@@ -198,7 +198,7 @@ function SearchContent() {
 
                     if (flightRes && Array.isArray(flightRes) && flightRes.length > 0) {
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const flightListings: Listing[] = flightRes.map((flight: any, index: number) => {
+                        const flightListings: Listing[] = flightRes.map((flight: any) => {
                             const itinerary = flight.itineraries?.[0];
                             const firstSegment = itinerary?.segments?.[0];
                             const lastSegment = itinerary?.segments?.[itinerary.segments.length - 1];
