@@ -16,7 +16,7 @@ const BookingContent = () => {
     React.useEffect(() => {
         const verifyFlight = async () => {
             if (!flightData) return;
-            
+
             try {
                 setIsValidating(true);
                 const { FlightService } = await import('../../../services/api');
@@ -34,34 +34,15 @@ const BookingContent = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contextParam]);
 
-
     let flightData = null;
     try {
         if (contextParam) {
             flightData = JSON.parse(decodeURIComponent(contextParam));
         }
-                setIsValidating(true);
-                // Call verification API
-                // Note: We need to import FlightService first. 
-                // Using a dynamic import for now or adding it in separate step
-                const { FlightService } = await import('../../../services/api');
+    } catch (e) {
+        console.error("Failed to parse flight context:", e);
+    }
 
-                const result = await FlightService.confirmPrice(flightData);
-
-                if (result) {
-                    // Check if price changed? Amadeus returns updated offer.
-                    setConfirmedPrice(result);
-                }
-            } catch (err) {
-                console.error("Verification failed", err);
-                setVerificationError("Dieser Tarif ist leider nicht mehr verfügbar (Preisänderung oder ausgebucht).");
-            } finally {
-                setIsValidating(false);
-            }
-        };
-
-        verifyFlight();
-    }, [contextParam]);
 
     // Show loading state while validating
     if (isValidating && flightData) {
