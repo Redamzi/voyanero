@@ -173,13 +173,13 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
             {/* Fullscreen Search Modal */}
             {isSearchModalOpen && (
                 <div className="fixed inset-0 z-[9999] bg-white flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300">
-                    <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between">
-                        <h2 className="text-lg font-black text-slate-900 uppercase tracking-widest">Suche starten</h2>
+                    <div className="px-4 sm:px-8 py-4 sm:py-6 border-b border-slate-100 flex items-center justify-between">
+                        <h2 className="hidden sm:block text-lg font-black text-slate-900 uppercase tracking-widest">Suche starten</h2>
                         <button
                             onClick={() => setIsSearchModalOpen(false)}
-                            className="w-12 h-12 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-all"
+                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-all ml-auto"
                         >
-                            <i className="fa-solid fa-xmark text-xl"></i>
+                            <i className="fa-solid fa-xmark text-lg sm:text-xl"></i>
                         </button>
                     </div>
                     <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center p-8">
@@ -193,7 +193,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                                         <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-orange-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                             <i className="fa-solid fa-suitcase-rolling text-orange-600 text-xl"></i>
                                         </div>
-                                        <div className="w-6 h-6 border-2 border-slate-300 rounded-md group-hover:border-orange-500 transition-colors"></div>
+                                        <div className="w-6 h-6 border-2 border-slate-300 rounded-full group-hover:border-orange-500 transition-colors"></div>
                                     </div>
                                     <h4 className="text-lg font-black text-slate-900 mb-1">Reisen</h4>
                                     <p className="text-sm text-slate-500">Komplette Reisepakete</p>
@@ -205,7 +205,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                                         <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                             <i className="fa-solid fa-plane-departure text-blue-600 text-xl"></i>
                                         </div>
-                                        <div className="w-6 h-6 border-2 border-slate-300 rounded-md group-hover:border-blue-500 transition-colors"></div>
+                                        <div className="w-6 h-6 border-2 border-slate-300 rounded-full group-hover:border-blue-500 transition-colors"></div>
                                     </div>
                                     <h4 className="text-lg font-black text-slate-900 mb-1">Flüge</h4>
                                     <p className="text-sm text-slate-500">Nur Flugtickets</p>
@@ -217,7 +217,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                                         <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                             <i className="fa-solid fa-hotel text-emerald-600 text-xl"></i>
                                         </div>
-                                        <div className="w-6 h-6 border-2 border-slate-300 rounded-md group-hover:border-emerald-500 transition-colors"></div>
+                                        <div className="w-6 h-6 border-2 border-slate-300 rounded-full group-hover:border-emerald-500 transition-colors"></div>
                                     </div>
                                     <h4 className="text-lg font-black text-slate-900 mb-1">Hotels</h4>
                                     <p className="text-sm text-slate-500">Nur Unterkünfte</p>
