@@ -22,20 +22,57 @@ export const FlightService = {
             // Aviasales API usually requires IATA codes (e.g., BER, PAR).
             // We will need an Autocomplete step later. For now, let's pass them as is or try to map known ones temporarily.
 
-            // Temporary IATA mapping for demo locations from SearchMask DESTINATIONS
+            // Enhanced IATA mapping (Temporary solution until Autocomplete is implemented)
+            // Maps lowercase city names to IATA codes
             const iataMap: { [key: string]: string } = {
-                "Bali": "DPS",
-                "Berlin": "BER",
-                "Rome": "FCO",
-                "Paris": "PAR",
-                "Tokyo": "TYO",
-                "Bangkok": "BKK",
-                "Istanbul": "IST",
-                "Mein Standort": "FRA" // Default to FRA for testing locate me
+                // International
+                "bali": "DPS",
+                "berlin": "BER",
+                "rome": "FCO",
+                "rom": "FCO",
+                "paris": "PAR",
+                "tokyo": "TYO",
+                "bangkok": "BKK",
+                "istanbul": "IST",
+                "london": "LON",
+                "new york": "NYC",
+                "dubai": "DXB",
+                "singapore": "SIN",
+                "singapur": "SIN",
+
+                // Germany
+                "münchen": "MUC",
+                "munich": "MUC",
+                "frankfurt": "FRA",
+                "hamburg": "HAM",
+                "dortmund": "DTM",
+                "düsseldorf": "DUS",
+                "duesseldorf": "DUS",
+                "köln": "CGN",
+                "cologne": "CGN",
+                "stuttgart": "STR",
+                "leipzig": "LEJ",
+                "dresden": "DRS",
+                "hannover": "HAJ",
+                "bremen": "BRE",
+                "nürnberg": "NUE",
+
+                // Defaults
+                "mein standort": "FRA"
             };
 
-            const origin = iataMap[params.origin] || params.origin || "MUC";
-            const destination = iataMap[params.destination] || params.destination;
+            const normalize = (loc: string) => loc ? loc.toLowerCase().trim() : "";
+            const lookup = (loc: string) => {
+                const norm = normalize(loc);
+                // Direct map match
+                if (iataMap[norm]) return iataMap[norm];
+                // If it's already a 3-letter code (e.g. "BER"), use it
+                if (norm.length === 3) return norm.toUpperCase();
+                return loc; // Fallback (API will likely error if not IATA)
+            };
+
+            const origin = lookup(params.origin) || "MUC";
+            const destination = lookup(params.destination);
 
             const payload = {
                 origin: origin,
