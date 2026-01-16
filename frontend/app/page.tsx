@@ -76,21 +76,21 @@ export default function Home() {
             <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-r from-amber-500 to-orange-600 skew-x-[-12deg] translate-x-48 opacity-10 md:block hidden group-hover:translate-x-32 transition-transform duration-1000"></div>
 
             <div className="flex-1 space-y-6 md:space-y-8 relative z-10">
-              <div className="inline-flex items-center gap-3 px-5 py-2 bg-gradient-to-r from-amber-500 to-orange-600/10 border border-rose-500/20 rounded-full text-rose-500 text-[10px] font-black uppercase tracking-[0.3em]">
-                Voyanero Membership
+              <div className="inline-flex items-center gap-3 px-5 py-2 bg-gradient-to-r from-amber-500 to-orange-600/10 border border-amber-500/20 rounded-full text-amber-400 text-[10px] font-black uppercase tracking-[0.3em]">
+                Voyanero Vergleichsportal
               </div>
-              <h2 className="text-3xl md:text-7xl font-black text-white tracking-tighter leading-none">Spare 15% bei jeder <br /> Direktbuchung.</h2>
-              <p className="text-slate-400 font-medium text-base md:text-xl leading-relaxed max-w-xl">Werde Mitglied und schalte exklusive Raten bei unseren lokalen Gastgebern frei.</p>
-              <button className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-10 md:px-12 py-4 md:py-5 rounded-[1.2rem] md:rounded-[1.5rem] font-black text-[10px] md:text-[11px] uppercase tracking-[0.3em] shadow-2xl shadow-rose-500/30 active:scale-95 transition-all hover:bg-rose-600">
-                Jetzt Mitglied werden
+              <h2 className="text-3xl md:text-7xl font-black text-white tracking-tighter leading-none">Vergleiche & spare <br /> bei jeder Buchung.</h2>
+              <p className="text-slate-400 font-medium text-base md:text-xl leading-relaxed max-w-xl">Finde die besten Angebote für Hotels, Flüge und Reisepakete – alles an einem Ort.</p>
+              <button className="bg-gradient-to-r from-amber-500 to-orange-600 text-white px-10 md:px-12 py-4 md:py-5 rounded-[1.2rem] md:rounded-[1.5rem] font-black text-[10px] md:text-[11px] uppercase tracking-[0.3em] shadow-2xl shadow-amber-500/30 active:scale-95 transition-all hover:shadow-amber-500/50">
+                Jetzt Angebote vergleichen
               </button>
             </div>
 
             <div className="w-full md:w-[450px] aspect-square rounded-[2.5rem] md:rounded-[3.5rem] overflow-hidden shadow-[0_48px_80px_-16px_rgba(0,0,0,0.5)] relative z-10 border-[8px] border-white/5 transform md:rotate-3 md:hover:rotate-0 transition-all duration-700">
               <img
-                src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=800"
+                src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=800"
                 className="w-full h-full object-cover"
-                alt="Promotion"
+                alt="Travel Comparison"
               />
             </div>
           </div>
@@ -105,7 +105,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {[
-              { title: "Direktbuchung", desc: "Sichere dir einzigartige Unterkünfte ohne Umwege und spare kräftig.", icon: "fa-key", color: "bg-rose-50 text-rose-600" },
+              { title: "Preisvergleich", desc: "Vergleiche Millionen von Angeboten und finde garantiert den besten Preis.", icon: "fa-chart-line", color: "bg-rose-50 text-rose-600" },
               { title: "AI Concierge", desc: "Dein persönlicher Reiseplaner, angetrieben von Google Gemini.", icon: "fa-robot", color: "bg-indigo-50 text-indigo-600" },
               { title: "Portfolio", desc: "Zugriff auf über 2 Millionen Hotels weltweit über unsere Partner.", icon: "fa-globe", color: "bg-blue-50 text-blue-600" },
               { title: "Bestpreis", desc: "Wir garantieren dir den besten Preis für deine nächste Reise.", icon: "fa-shield-halved", color: "bg-emerald-50 text-emerald-600" }
