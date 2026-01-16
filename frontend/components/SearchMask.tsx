@@ -24,6 +24,7 @@ const LocationAutocomplete = ({ value, onChange, placeholder, icon, autoFocus, o
     autoFocus?: boolean;
     onEnter?: () => void;
 }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [suggestions, setSuggestions] = useState<any[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
