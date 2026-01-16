@@ -58,7 +58,21 @@ function SearchContent() {
     const locationQuery = searchParams.get('location') || '';
     const originQuery = searchParams.get('origin') || '';
     const destinationQuery = searchParams.get('destination') || '';
-    const dateQuery = searchParams.get('checkIn') || '';
+    const getValidFutureDate = (dateStr: string | null) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Midnight local time
+
+        if (!dateStr) return new Date().toISOString().split('T')[0];
+
+        const date = new Date(dateStr);
+        // If invalid or in the past (before today's midnight)
+        if (isNaN(date.getTime()) || date < today) {
+            return new Date().toISOString().split('T')[0];
+        }
+        return dateStr;
+    };
+
+    const dateQuery = getValidFutureDate(searchParams.get('checkIn') || searchParams.get('date'));
     const returnDateQuery = searchParams.get('checkOut') || undefined;
 
     // Guest params

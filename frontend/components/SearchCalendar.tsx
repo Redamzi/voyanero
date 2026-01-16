@@ -47,7 +47,10 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
         for (let d = 1; d <= daysInMonth; d++) {
             const date = new Date(year, month, d);
             // Reset time part for safe comparison
-            date.setHours(0, 0, 0, 0);
+            // Disable past dates
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const isPast = date < today;
 
             const isSelectedCheckIn = checkIn && date.getTime() === checkIn.getTime();
             const isSelectedCheckOut = checkOut && date.getTime() === checkOut.getTime();
@@ -61,7 +64,9 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
             days.push(
                 <button
                     key={d}
+                    disabled={isPast}
                     onClick={() => {
+                        if (isPast) return;
                         const clickedTime = date.getTime();
                         if (!checkIn || (checkIn && checkOut)) {
                             // Start new selection
@@ -78,13 +83,13 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
                     }}
                     className={`
                         relative h-14 w-full flex flex-col items-center justify-center rounded-lg transition-all
-                        ${isSelected ? 'bg-slate-900 text-white z-10' : ''}
+                        ${isPast ? 'opacity-20 cursor-not-allowed' : 'hover:bg-slate-50 text-slate-700'}
+                        ${isSelected ? 'bg-slate-900 text-white z-10 !opacity-100 !cursor-pointer' : ''}
                         ${isInRange ? 'bg-slate-100' : ''}
-                        ${!isSelected && !isInRange ? 'hover:bg-slate-50 text-slate-700' : ''}
                     `}
                 >
                     <span className={`text-sm font-bold ${isSelected ? 'text-white' : 'text-slate-900'}`}>{d}</span>
-                    {price && !isSelected && !isInRange && (
+                    {price && !isSelected && !isInRange && !isPast && (
                         <span className={`text-[10px] font-medium mt-[-2px] ${isGreen ? 'text-green-600' : 'text-slate-400'}`}>
                             {price} €
                         </span>
