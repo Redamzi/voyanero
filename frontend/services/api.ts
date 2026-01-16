@@ -26,9 +26,11 @@ export const FlightService = {
             const iataMap: { [key: string]: string } = {
                 "Bali": "DPS",
                 "Berlin": "BER",
-                "Rome": "ROM",
+                "Rome": "FCO",
                 "Paris": "PAR",
                 "Tokyo": "TYO",
+                "Bangkok": "BKK",
+                "Istanbul": "IST",
                 "Mein Standort": "FRA" // Default to FRA for testing locate me
             };
 
