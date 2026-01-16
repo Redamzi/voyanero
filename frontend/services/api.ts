@@ -149,6 +149,18 @@ export const FlightService = {
             console.error("Flight Price Confirmation Error:", error);
             throw error;
         }
+    },
+
+    searchLocations: async (keyword: string) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/locations?keyword=${encodeURIComponent(keyword)}`);
+            if (!response.ok) return [];
+            const result = await response.json();
+            return result.data || [];
+        } catch (error) {
+            console.error("Location Search Error:", error);
+            return [];
+        }
     }
 };
 
