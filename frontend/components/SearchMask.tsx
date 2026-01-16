@@ -352,7 +352,29 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                         <div className="w-full max-w-4xl px-4 text-center animate-in slide-in-from-bottom-8 duration-500">
                                             {/* ... Step 1 Content ... */}
                                             <h2 className="text-6xl font-black text-slate-900 mb-4 tracking-tighter">Wohin soll es gehen?</h2>
-                                            <p className="text-slate-500 text-lg mb-12">Entdecke exklusive Ziele weltweit.</p>
+                                            <p className="text-slate-500 text-lg mb-8">Entdecke exklusive Ziele weltweit.</p>
+
+                                            {/* Filter Toggles */}
+                                            <div className="flex items-center justify-center gap-4 mb-8">
+                                                <button onClick={() => setSearchType('reisen')} className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-full transition-all ${searchType === 'reisen' ? 'text-slate-900' : 'text-slate-400'}`}>
+                                                    <div className={`w-12 h-7 rounded-full transition-all ${searchType === 'reisen' ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-slate-300'}`}>
+                                                        <div className={`w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200 mt-1 ${searchType === 'reisen' ? 'translate-x-6' : 'translate-x-1'}`} />
+                                                    </div>
+                                                    <span className="font-semibold text-sm">Reisen</span>
+                                                </button>
+                                                <button onClick={() => setSearchType('fluege')} className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-full transition-all ${searchType === 'fluege' ? 'text-slate-900' : 'text-slate-400'}`}>
+                                                    <div className={`w-12 h-7 rounded-full transition-all ${searchType === 'fluege' ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-slate-300'}`}>
+                                                        <div className={`w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200 mt-1 ${searchType === 'fluege' ? 'translate-x-6' : 'translate-x-1'}`} />
+                                                    </div>
+                                                    <span className="font-semibold text-sm">Flüge</span>
+                                                </button>
+                                                <button onClick={() => setSearchType('unterkunft')} className={`relative inline-flex items-center gap-2 px-4 py-2 rounded-full transition-all ${searchType === 'unterkunft' ? 'text-slate-900' : 'text-slate-400'}`}>
+                                                    <div className={`w-12 h-7 rounded-full transition-all ${searchType === 'unterkunft' ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-slate-300'}`}>
+                                                        <div className={`w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-200 mt-1 ${searchType === 'unterkunft' ? 'translate-x-6' : 'translate-x-1'}`} />
+                                                    </div>
+                                                    <span className="font-semibold text-sm">Unterkünfte</span>
+                                                </button>
+                                            </div>
 
                                             <div className="relative max-w-2xl mx-auto mb-16 group">
                                                 <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400">
