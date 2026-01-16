@@ -22,10 +22,6 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
     React.useEffect(() => {
         const fetchPrices = async () => {
             if (origin && destination) {
-                // Remove generic terms like "nach" if present (just in case)
-                const cleanOrigin = origin.split(':')[0].trim(); // "Von: MUC" -> "Von" (no, inputs are plain text usually)
-                // Actually SearchMask inputs are just strings.
-
                 try {
                     const dates = await FlightService.getFlightDates({
                         origin,
@@ -34,6 +30,7 @@ export const SearchCalendar: React.FC<SearchCalendarProps> = ({ checkIn, checkOu
 
                     // Transform array to map: "2026-01-16" -> 120
                     const priceMap: { [key: string]: number } = {};
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     dates.forEach((d: any) => {
                         if (d.price && d.departureDate) {
                             priceMap[d.departureDate] = parseFloat(d.price.total);
