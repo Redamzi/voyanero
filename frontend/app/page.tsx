@@ -129,7 +129,7 @@ export default function Home() {
       </div>
 
       {/* Compact Search Wizard Modal */}
-      {showWizard && <SearchMask variant="compact" />}
+      {showWizard && <SearchMask variant="compact" isOpen={true} onClose={() => setShowWizard(false)} />}
 
       <Footer />
     </div>
