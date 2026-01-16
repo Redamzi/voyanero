@@ -52,4 +52,22 @@ router.post('/dates', async (req, res) => {
     }
 });
 
+router.post('/price', async (req, res) => {
+    try {
+        const { flightOffer } = req.body;
+        console.log("Verifying flight price...");
+
+        if (!flightOffer) {
+            res.status(400).json({ error: "Flight offer is required" });
+            return;
+        }
+
+        const data = await AmadeusService.confirmPrice(flightOffer);
+        res.json({ success: true, data });
+    } catch (error: any) {
+        console.error("Amadeus Pricing Error:", error);
+        res.status(500).json({ error: "Failed to verify price", details: error.message || error });
+    }
+});
+
 export default router;

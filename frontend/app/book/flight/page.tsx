@@ -36,6 +36,70 @@ const BookingContent = () => {
     const firstSegment = segments[0];
     const lastSegment = segments[segments.length - 1];
 
+    const [isValidating, setIsValidating] = React.useState(true);
+    const [verificationError, setVerificationError] = React.useState<string | null>(null);
+    const [confirmedPrice, setConfirmedPrice] = React.useState<any>(null); // Store update price if needed
+
+    // API Service Import (ensure this is imported at top of file, see next tool call)
+    // For now, assuming FlightService is available or I will add import in next chunk
+
+    React.useEffect(() => {
+        const verifyFlight = async () => {
+            if (!flightData) return;
+
+            try {
+                setIsValidating(true);
+                // Call verification API
+                // Note: We need to import FlightService first. 
+                // Using a dynamic import for now or adding it in separate step
+                const { FlightService } = await import('../../../services/api');
+
+                const result = await FlightService.confirmPrice(flightData);
+
+                if (result) {
+                    // Check if price changed? Amadeus returns updated offer.
+                    setConfirmedPrice(result);
+                }
+            } catch (err) {
+                console.error("Verification failed", err);
+                setVerificationError("Dieser Tarif ist leider nicht mehr verfügbar (Preisänderung oder ausgebucht).");
+            } finally {
+                setIsValidating(false);
+            }
+        };
+
+        verifyFlight();
+    }, [contextParam]);
+
+    // Show loading state while validating
+    if (isValidating && flightData) {
+        return (
+            <div className="min-h-screen pt-32 pb-20 flex flex-col items-center justify-center bg-slate-50">
+                <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <h2 className="text-xl font-bold text-slate-900">Flugpreis wird geprüft...</h2>
+                <p className="text-slate-500">Wir checken die Live-Verfügbarkeit bei der Airline.</p>
+            </div>
+        );
+    }
+
+    // Show Error if invalid
+    if (verificationError) {
+        return (
+            <div className="min-h-screen pt-32 pb-20 flex items-center justify-center bg-slate-50">
+                <div className="text-center max-w-md p-8 bg-white rounded-3xl shadow-xl border border-red-100">
+                    <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i className="fa-solid fa-circle-exclamation text-2xl"></i>
+                    </div>
+                    <h1 className="text-2xl font-bold text-slate-900 mb-4">Nicht mehr verfügbar</h1>
+                    <p className="text-slate-600 mb-8">{verificationError}</p>
+                    <a href="/search?type=fluege" className="px-8 py-3 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all">
+                        Zurück zur Suche
+                    </a>
+                </div>
+            </div>
+        );
+    }
+
     const airlineCode = flightData.validatingAirlineCodes?.[0];
 
     return (

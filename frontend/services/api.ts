@@ -133,6 +133,22 @@ export const FlightService = {
             console.error("Flight Results Error:", error);
             throw error;
         }
+    },
+
+    confirmPrice: async (flightOffer: any) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/price`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ flightOffer }),
+            });
+            if (!response.ok) throw new Error("Price verification failed");
+            const result = await response.json();
+            return result.data;
+        } catch (error) {
+            console.error("Flight Price Confirmation Error:", error);
+            throw error;
+        }
     }
 };
 

@@ -80,4 +80,21 @@ export const AmadeusService = {
             return [];
         }
     }
+},
+
+    // Flight Pricing (Verification)
+    confirmPrice: async (flightOffer: any) => {
+        try {
+            const response = await amadeus.shopping.flightOffers.pricing.post({
+                'data': {
+                    'type': 'flight-offers-pricing',
+                    'flightOffers': [flightOffer]
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Amadeus Pricing Error:', error);
+            throw error;
+        }
+    }
 };
