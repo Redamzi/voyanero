@@ -74,28 +74,103 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
                 </div>
             )}
             {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 bg-white shadow-xl rounded-[2rem] mt-2 z-50 max-h-60 overflow-y-auto border border-slate-100 p-2 animate-in fade-in slide-in-from-top-2">
-                    {suggestions.map((loc, index) => (
-                        <div
-                            key={loc.id || index}
-                            className="p-3 hover:bg-slate-50 rounded-xl cursor-pointer flex items-center gap-3 transition-colors"
-                            onClick={() => {
-                                // If it's Mein Standort, we set the text to "Mein Standort" which the backend handles (maps to FRA/MUC or nearest)
-                                // Or ideally we would use Geolocation API here, but for MVP keeping it simple as per previous logic
-                                onChange(loc.name);
-                                if (onSelect) onSelect(loc);
-                                setShowSuggestions(false);
-                            }}
-                        >
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-xs shrink-0 ${loc.isCurrentLocation ? 'bg-slate-100 text-slate-900' : 'bg-orange-50 text-orange-600'}`}>
-                                {loc.isCurrentLocation ? <i className="fa-solid fa-location-crosshairs"></i> : loc.iataCode}
-                            </div>
-                            <div className="flex flex-col text-left">
-                                <span className="font-bold text-slate-900 text-sm">{loc.address?.cityName || loc.name}</span>
-                                {loc.subType && <span className="text-xs text-slate-500 truncate max-w-[200px]">{loc.name}</span>}
-                            </div>
+                <div className="absolute top-full left-0 right-0 bg-white shadow-2xl rounded-3xl mt-3 z-50 max-h-[400px] overflow-y-auto border border-slate-200 animate-in fade-in slide-in-from-top-2 duration-200">
+                    {/* Mein Standort Section */}
+                    {suggestions.some(loc => loc.isCurrentLocation) && (
+                        <div className="border-b border-slate-100">
+                            {suggestions.filter(loc => loc.isCurrentLocation).map((loc, index) => (
+                                <div
+                                    key={`current-${index}`}
+                                    className="p-4 hover:bg-orange-50/50 cursor-pointer flex items-center gap-4 transition-all group"
+                                    onClick={() => {
+                                        onChange(loc.name);
+                                        if (onSelect) onSelect(loc);
+                                        setShowSuggestions(false);
+                                    }}
+                                >
+                                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shrink-0 shadow-lg shadow-orange-500/30 group-hover:scale-110 transition-transform">
+                                        <i className="fa-solid fa-location-crosshairs text-white text-lg"></i>
+                                    </div>
+                                    <div className="flex flex-col text-left">
+                                        <span className="font-bold text-slate-900 text-base">{loc.name}</span>
+                                        <span className="text-xs text-slate-500">Deinen aktuellen Standort verwenden</span>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    ))}
+                    )}
+
+                    {/* Beliebte Ziele Section */}
+                    {value.length === 0 && !suggestions.some(loc => loc.isCurrentLocation) && (
+                        <div>
+                            <div className="px-4 pt-3 pb-2">
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Beliebte Ziele</span>
+                            </div>
+                            {['Frankfurt', 'München', 'Berlin', 'Paris', 'London'].map((city, idx) => (
+                                <div
+                                    key={`popular-${idx}`}
+                                    className="px-4 py-3 hover:bg-slate-50 cursor-pointer flex items-center gap-4 transition-colors group"
+                                    onClick={() => {
+                                        onChange(city);
+                                        setShowSuggestions(false);
+                                    }}
+                                >
+                                    <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 group-hover:bg-orange-100 transition-colors">
+                                        <i className="fa-solid fa-fire text-orange-500 text-sm"></i>
+                                    </div>
+                                    <span className="font-semibold text-slate-700 text-sm">{city}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Search Results Section */}
+                    {value.length > 0 && suggestions.filter(loc => !loc.isCurrentLocation).length > 0 && (
+                        <div>
+                            <div className="px-4 pt-3 pb-2">
+                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Suchergebnisse</span>
+                            </div>
+                            {suggestions.filter(loc => !loc.isCurrentLocation).map((loc, index) => {
+                                const isAirport = loc.subType === 'AIRPORT';
+                                const iataCode = loc.iataCode || '✈';
+
+                                return (
+                                    <div
+                                        key={loc.id || `result-${index}`}
+                                        className="px-4 py-3 hover:bg-slate-50 cursor-pointer flex items-center gap-4 transition-colors group"
+                                        onClick={() => {
+                                            onChange(loc.name);
+                                            if (onSelect) onSelect(loc);
+                                            setShowSuggestions(false);
+                                        }}
+                                    >
+                                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-all ${isAirport
+                                                ? 'bg-blue-50 group-hover:bg-blue-100'
+                                                : 'bg-emerald-50 group-hover:bg-emerald-100'
+                                            }`}>
+                                            {isAirport ? (
+                                                <div className="flex flex-col items-center">
+                                                    <i className="fa-solid fa-plane text-blue-600 text-xs mb-0.5"></i>
+                                                    <span className="text-[9px] font-black text-blue-700">{iataCode}</span>
+                                                </div>
+                                            ) : (
+                                                <i className="fa-solid fa-city text-emerald-600 text-lg"></i>
+                                            )}
+                                        </div>
+                                        <div className="flex flex-col text-left flex-1 min-w-0">
+                                            <span className="font-bold text-slate-900 text-sm truncate">
+                                                {loc.address?.cityName || loc.name}
+                                            </span>
+                                            <span className="text-xs text-slate-500 truncate">
+                                                {isAirport ? `${loc.name} (${iataCode})` : loc.address?.countryName || 'Stadt'}
+                                            </span>
+                                        </div>
+                                        <i className="fa-solid fa-chevron-right text-slate-300 text-xs opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
             )}
         </div>
