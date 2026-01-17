@@ -216,14 +216,58 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
 };
 
 const DESTINATIONS = [
-    { name: "Bali, Indonesia", icon: "fa-umbrella-beach", label: "Bali" },
-    { name: "Berlin, Germany", icon: "fa-city", label: "Berlin" },
-    { name: "Rome, Italy", icon: "fa-monument", label: "Rome" },
-    { name: "Paris, France", icon: "fa-archway", label: "Paris" },
-    { name: "Tokyo, Japan", icon: "fa-torii-gate", label: "Tokyo" },
-    { name: "Bangkok, Thailand", icon: "fa-temple-buddhist", label: "Bangkok" },
-    { name: "Istanbul, Turkey", icon: "fa-mosque", label: "Istanbul" }
+    {
+        name: "Bali, Indonesia",
+        icon: "fa-umbrella-beach",
+        label: "Bali",
+        image: "https://images.unsplash.com/photo-1555400038-63f5ba517a47?auto=format&fit=crop&q=80&w=600",
+        className: "md:col-span-1 md:row-span-1"
+    },
+    {
+        name: "Berlin, Germany",
+        icon: "fa-city",
+        label: "Berlin",
+        image: "https://images.unsplash.com/photo-1599946347371-68eb71b16afc?auto=format&fit=crop&q=80&w=600",
+        className: "md:col-span-1 md:row-span-1"
+    },
+    {
+        name: "Tokyo, Japan",
+        icon: "fa-torii-gate",
+        label: "Tokyo",
+        image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&q=80&w=600",
+        className: "md:col-span-2 md:row-span-2"
+    },
+    {
+        name: "Rome, Italy",
+        icon: "fa-monument",
+        label: "Rome",
+        image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&q=80&w=600",
+        className: "md:col-span-1 md:row-span-1"
+    },
+    {
+        name: "Paris, France",
+        icon: "fa-archway",
+        label: "Paris",
+        image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=600",
+        className: "md:col-span-1 md:row-span-1"
+    },
+    {
+        name: "Bangkok, Thailand",
+        icon: "fa-temple-buddhist",
+        label: "Bangkok",
+        image: "https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&q=80&w=600",
+        className: "md:col-span-1 md:row-span-1"
+    },
+    {
+        name: "Istanbul, Turkey",
+        icon: "fa-mosque",
+        label: "Istanbul",
+        image: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&q=80&w=600",
+        className: "md:col-span-1 md:row-span-1"
+    }
 ];
+
+
 
 const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLocation = "", onClose, isOpen: isOpenProp }) => {
     const router = useRouter();
@@ -836,15 +880,19 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                             </div>
 
                                             {searchType !== 'fluege' && (
-                                                <div className="flex flex-wrap justify-center gap-6">
+                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-5xl mx-auto px-4">
                                                     <button
                                                         onClick={handleLocateMe}
-                                                        className="w-40 h-40 bg-white border border-slate-100 rounded-[2rem] flex flex-col items-center justify-center gap-4 hover:border-slate-900 hover:scale-105 transition-all group"
+                                                        className="col-span-2 aspect-[2/1] md:aspect-auto md:h-full bg-slate-50 border border-slate-100 rounded-[2rem] flex flex-row items-center justify-center gap-4 hover:border-slate-900 hover:scale-[1.02] transition-all group relative overflow-hidden shadow-sm hover:shadow-md"
                                                     >
-                                                        <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-slate-900 group-hover:text-white transition-colors">
+                                                        <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-white/50 opacity-50" />
+                                                        <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-orange-500 shadow-sm group-hover:scale-110 transition-transform relative z-10 border border-orange-100">
                                                             {isLocating ? <i className="fa-solid fa-circle-notch animate-spin"></i> : <i className="fa-solid fa-location-crosshairs"></i>}
                                                         </div>
-                                                        <span className="text-xs font-black text-slate-900">Mein Standort</span>
+                                                        <div className="flex flex-col text-left relative z-10">
+                                                            <span className="text-sm font-black text-slate-900 leading-tight">Mein Standort</span>
+                                                            <span className="text-xs text-slate-500">In meiner Nähe suchen</span>
+                                                        </div>
                                                     </button>
 
                                                     {DESTINATIONS.map(dest => {
@@ -865,26 +913,40 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                         setCurrentStep(2);
                                                                     }
                                                                 }}
-                                                                className={`w-40 h-40 bg-white rounded-[2rem] flex flex-col items-center justify-center gap-4 transition-all duration-300 group relative overflow-hidden
+                                                                className={`relative group rounded-[2rem] overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl aspect-square flex flex-col justify-end p-4 text-left border
+                                                                ${dest.className || 'col-span-1'}
                                                                 ${isActive
-                                                                        ? 'border-[3px] border-slate-900 shadow-xl scale-105'
-                                                                        : 'border border-slate-100 hover:border-slate-300 hover:shadow-lg hover:scale-105'
+                                                                        ? 'border-slate-900 ring-4 ring-slate-900/10 z-10'
+                                                                        : 'border-slate-100 hover:border-slate-300'
                                                                     }`}
                                                             >
-                                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-300
-                                                                ${isActive
-                                                                        ? 'bg-slate-900 text-white'
-                                                                        : 'bg-slate-50 text-slate-400 group-hover:bg-slate-900 group-hover:text-white'
-                                                                    }`}>
-                                                                    <i className={`fa-solid ${dest.icon}`}></i>
-                                                                </div>
-                                                                <span className={`text-xs font-black transition-colors duration-300 ${isActive ? 'text-slate-900' : 'text-slate-900'}`}>{dest.label}</span>
-
-                                                                {isActive && (
-                                                                    <div className="absolute top-3 right-3 w-6 h-6 bg-slate-900 rounded-full flex items-center justify-center animate-in zoom-in">
-                                                                        <i className="fa-solid fa-check text-white text-[10px]"></i>
-                                                                    </div>
+                                                                {/* Background Image */}
+                                                                {dest.image ? (
+                                                                    <img src={dest.image} alt={dest.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                                                ) : (
+                                                                    <div className="absolute inset-0 bg-slate-100" />
                                                                 )}
+
+                                                                {/* Overlay */}
+                                                                <div className={`absolute inset-0 transition-colors duration-300 ${isActive ? 'bg-black/20' : 'bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90'}`} />
+
+                                                                {/* Content */}
+                                                                <div className="relative z-10 w-full">
+                                                                    <div className="flex items-start justify-between mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute top-0 right-0 -mt-12">
+                                                                        <div className="bg-white/20 backdrop-blur-md border border-white/30 p-2 rounded-xl">
+                                                                            <i className={`fa-solid ${dest.icon} text-white text-xs`}></i>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <span className="block text-white font-black text-lg leading-none mb-1 drop-shadow-md">{dest.label}</span>
+                                                                    <span className="block text-white/80 text-[10px] uppercase tracking-widest font-bold truncate drop-shadow-sm">{dest.name.split(', ')[1]}</span>
+
+                                                                    {isActive && (
+                                                                        <div className="absolute top-[-140%] right-[-10%] w-8 h-8 bg-white rounded-full flex items-center justify-center animate-in zoom-in shadow-lg text-slate-900">
+                                                                            <i className="fa-solid fa-check text-xs"></i>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             </button>
                                                         );
                                                     })}
