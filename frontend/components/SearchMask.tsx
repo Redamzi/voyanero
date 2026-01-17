@@ -880,7 +880,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                             </div>
 
                                             {searchType !== 'fluege' && (
-                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-5xl mx-auto px-4">
+                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-3xl mx-auto px-4">
                                                     <button
                                                         onClick={handleLocateMe}
                                                         className="col-span-2 aspect-[2/1] md:aspect-auto md:h-full bg-slate-50 border border-slate-100 rounded-[2rem] flex flex-row items-center justify-center gap-4 hover:border-slate-900 hover:scale-[1.02] transition-all group relative overflow-hidden shadow-sm hover:shadow-md"
