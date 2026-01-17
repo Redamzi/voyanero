@@ -16,48 +16,60 @@ const CITIES = [
     country: "Indonesia",
     lat: -8.4095,
     lon: 115.1889,
-    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=1000",
-    desc: "Perfekt für Surfer und Entdecker."
+    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=2000",
+    desc: "Perfekt für Surfer und Entdecker.",
+    title: "Escape to Paradise.",
+    photographer: "Alfatih Yukrie"
   },
   {
     name: "Tokio",
     country: "Japan",
     lat: 35.6762,
     lon: 139.6503,
-    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&q=80&w=1000",
-    desc: "Neonlichter und alte Traditionen."
+    image: "https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?auto=format&fit=crop&q=80&w=2000",
+    desc: "Neonlichter und alte Traditionen.",
+    title: "Discover the Future.",
+    photographer: "Jezael Melgoza"
   },
   {
     name: "New York",
     country: "USA",
     lat: 40.7128,
     lon: -74.0060,
-    image: "https://images.unsplash.com/photo-1496442226666-8d4a0e62e6e9?auto=format&fit=crop&q=80&w=1000",
-    desc: "Die Stadt, die niemals schläft."
+    image: "https://images.unsplash.com/photo-1496442226666-8d4a0e62e6e9?auto=format&fit=crop&q=80&w=2000",
+    desc: "Die Stadt, die niemals schläft.",
+    title: "Wake Up in NYC.",
+    photographer: "Emiliano Bar"
   },
   {
     name: "London",
     country: "UK",
     lat: 51.5074,
     lon: -0.1278,
-    image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80&w=1000",
-    desc: "Königliche Geschichte erleben."
+    image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80&w=2000",
+    desc: "Königliche Geschichte erleben.",
+    title: "Live the Royal Life.",
+    photographer: "Giammarco Boscaro"
   },
   {
     name: "Dubai",
     country: "UAE",
     lat: 25.2048,
     lon: 55.2708,
-    image: "https://images.unsplash.com/photo-1512453979798-5ea904ac6605?auto=format&fit=crop&q=80&w=1000",
-    desc: "Luxus in der Wüste."
+    image: "https://images.unsplash.com/photo-1512453979798-5ea904ac6605?auto=format&fit=crop&q=80&w=2000",
+    desc: "Luxus in der Wüste.",
+    title: "Touch the Sky.",
+    photographer: "ZQ Lee"
   },
   {
     name: "Sydney",
     country: "Australien",
     lat: -33.8688,
     lon: 151.2093,
-    image: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80&w=1000",
-    desc: "Hafenstadt mit Flair."
+    image: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80&w=2000",
+    desc: "Hafenstadt mit Flair.",
+    title: "Adventure Awaits.",
+    photographer: "Dan Freeman"
   }
 ];
 
@@ -102,24 +114,32 @@ export default function Home() {
               {/* Content */}
               <div className="relative z-10 w-full max-w-5xl px-6 py-12 flex flex-col items-center justify-center gap-10 text-center">
                 <div className="space-y-6 flex flex-col items-center">
-                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold shadow-lg">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold shadow-lg transform transition-all hover:scale-105 cursor-default">
                     <i className="fa-solid fa-star text-amber-300"></i>
                     Premium Travel Experience
                   </span>
 
-                  <div className="space-y-4">
-                    <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter drop-shadow-2xl">
-                      Escape the <span className="text-orange-500 italic">Ordinary.</span>
+                  <div className="space-y-4 max-w-4xl mx-auto">
+                    <h1
+                      key={currentCity.title} // Animate on change
+                      className="text-5xl sm:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter drop-shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-700"
+                    >
+                      {currentCity.title.split(' ').slice(0, -1).join(' ')} <span className="text-orange-500 italic font-serif">{currentCity.title.split(' ').slice(-1)}</span>
                     </h1>
 
-                    <p className="text-lg sm:text-xl text-white/90 font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-md">
-                      Entdecke exklusive Unterkünfte weltweit – handverlesen für unvergessliche Momente.
+                    <p className="text-lg sm:text-xl text-slate-200 font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-lg p-2 rounded-lg backdrop-blur-[2px]">
+                      Exklusive Unterkünfte in <span className="font-bold text-white border-b-2 border-orange-500">{currentCity.name}</span> und weltweit.
                     </p>
                   </div>
                 </div>
 
                 <div className="w-full max-w-3xl">
                   <SearchMask variant="hero" />
+                </div>
+
+                <div className="absolute bottom-6 right-6 opacity-30 text-[10px] font-mono text-white flex items-center gap-2">
+                  <i className="fa-solid fa-camera"></i>
+                  <span>Photo by {currentCity.photographer} / Unsplash</span>
                 </div>
               </div>
             </BentoCard>
