@@ -79,12 +79,17 @@ export default function Home() {
   const [currentCityIndex, setCurrentCityIndex] = useState(0);
 
   useEffect(() => {
-    // 1. Preload the NEXT image at exactly 8 seconds (2s before switch)
-    // This "forces" the browser to start fetching just before the transition
+    // 1. Preload the NEXT TWO images at exactly 8 seconds
+    // This ensures a deeper buffer for smooth transitions
     const preloadTimeout = setTimeout(() => {
       const nextIndex = (currentCityIndex + 1) % CITIES.length;
-      const img = new window.Image();
-      img.src = CITIES[nextIndex].image;
+      const nextNextIndex = (currentCityIndex + 2) % CITIES.length;
+
+      const img1 = new window.Image();
+      img1.src = CITIES[nextIndex].image;
+
+      const img2 = new window.Image();
+      img2.src = CITIES[nextNextIndex].image;
     }, 8000);
 
     // 2. Rotate every 10 seconds
