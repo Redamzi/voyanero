@@ -137,7 +137,7 @@ export default function Home() {
                   <SearchMask variant="hero" />
                 </div>
 
-                <div className="absolute bottom-3 right-4 opacity-40 text-[9px] font-sans font-medium text-white/80 flex items-center gap-1.5 z-20 backdrop-blur-[2px] px-2 py-1 rounded bg-black/10 hover:bg-black/30 transition-colors cursor-help group-hover:opacity-100">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-40 text-[9px] font-sans font-medium text-white/80 flex items-center gap-1.5 z-20 backdrop-blur-[2px] px-3 py-1 rounded-full bg-black/20 hover:bg-black/40 transition-all cursor-help group-hover:opacity-100">
                   <i className="fa-solid fa-camera"></i>
                   <span>Photo by {currentCity.photographer} / Unsplash</span>
                 </div>
