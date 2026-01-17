@@ -100,18 +100,25 @@ export default function Home() {
               </div>
 
               {/* Content */}
-              <div className="relative z-10 w-full max-w-4xl px-6 py-12 flex flex-col items-center gap-8">
-                <div className="space-y-4">
-                  <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/20 backdrop-blur-md border border-white/30 rounded-full text-white text-[10px] uppercase tracking-[0.2em] font-bold shadow-lg">
+              <div className="relative z-10 w-full max-w-5xl px-6 py-12 flex flex-col items-center justify-center gap-10 text-center">
+                <div className="space-y-6 flex flex-col items-center">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold shadow-lg">
                     <i className="fa-solid fa-star text-amber-300"></i>
-                    Premium Travel
+                    Premium Travel Experience
                   </span>
-                  <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white leading-[0.9] tracking-tighter drop-shadow-xl">
-                    Escape the <span className="text-orange-400 italic">Ordinary.</span>
-                  </h1>
+
+                  <div className="space-y-4">
+                    <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter drop-shadow-2xl">
+                      Escape the <span className="text-orange-500 italic">Ordinary.</span>
+                    </h1>
+
+                    <p className="text-lg sm:text-xl text-white/90 font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-md">
+                      Entdecke exklusive Unterkünfte weltweit – handverlesen für unvergessliche Momente.
+                    </p>
+                  </div>
                 </div>
 
-                <div className="w-full">
+                <div className="w-full max-w-3xl">
                   <SearchMask variant="hero" />
                 </div>
               </div>
