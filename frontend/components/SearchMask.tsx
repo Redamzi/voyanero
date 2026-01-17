@@ -16,7 +16,7 @@ interface SearchMaskProps {
     isOpen?: boolean;
 }
 
-const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, autoFocus, onEnter, showMyLocation = false }: {
+const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, autoFocus, onEnter, showMyLocation = false, selectedCode, variant = 'default' }: {
     value: string;
     onChange: (val: string) => void;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,6 +26,8 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
     autoFocus?: boolean;
     onEnter?: () => void;
     showMyLocation?: boolean;
+    selectedCode?: string | null;
+    variant?: 'origin' | 'destination' | 'default';
 }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -34,6 +36,12 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
 
     useEffect(() => {
         const fetchSuggestions = async () => {
+            // Don't fetch if we have a selected code (selection made)
+            if (selectedCode) {
+                setShowSuggestions(false);
+                return;
+            }
+
             if (value.length > 1) {
                 setIsLoading(true);
                 // Debounce is handled by setTimeout wrapper
@@ -50,30 +58,60 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
         };
         const timeoutId = setTimeout(fetchSuggestions, 300);
         return () => clearTimeout(timeoutId);
-    }, [value, showMyLocation]);
+    }, [value, showMyLocation, selectedCode]);
+
+    const handleClear = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onChange('');
+        // We rely on parent to clear selectedCode via onChange
+    };
+
+    // Chip Colors based on variant
+    const chipColors = {
+        origin: 'bg-[#008f7a] text-white border-transparent', // Teal
+        destination: 'bg-[#ea580c] text-white border-transparent', // Orange
+        default: 'bg-slate-100 text-slate-900 border-slate-200'
+    };
+
+    const currentColor = selectedCode ? chipColors[variant] || chipColors.default : '';
 
     return (
         <div className="relative group w-full">
-            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
+            <div className={`absolute left-6 top-1/2 -translate-y-1/2 z-10 ${selectedCode ? 'text-white/80' : 'text-slate-400'}`}>
                 <i className={`fa-solid ${icon} text-xl`}></i>
             </div>
-            <input
-                type="text"
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                placeholder={placeholder}
-                className="w-full h-16 sm:h-20 pl-14 sm:pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-base sm:text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
-                onFocus={() => setShowSuggestions(true)}
-                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                autoFocus={autoFocus}
-                onKeyDown={(e) => e.key === 'Enter' && onEnter && onEnter()}
-            />
-            {isLoading && (
+
+            {/* Render Input or Chip */}
+            {selectedCode ? (
+                <div className={`w-full h-16 sm:h-20 pl-14 sm:pl-16 pr-12 rounded-full border-2 shadow-sm text-base sm:text-lg font-bold flex items-center justify-between transition-all ${currentColor}`} onClick={() => onChange('')}>
+                    <span className="truncate mr-2">{value}</span>
+                    <button
+                        onClick={handleClear}
+                        className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors shrink-0"
+                    >
+                        <i className="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+            ) : (
+                <input
+                    type="text"
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    placeholder={placeholder}
+                    className="w-full h-16 sm:h-20 pl-14 sm:pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-base sm:text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
+                    onFocus={() => setShowSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                    autoFocus={autoFocus}
+                    onKeyDown={(e) => e.key === 'Enter' && onEnter && onEnter()}
+                />
+            )}
+
+            {isLoading && !selectedCode && (
                 <div className="absolute right-6 top-1/2 -translate-y-1/2 text-orange-500">
                     <i className="fa-solid fa-circle-notch animate-spin"></i>
                 </div>
             )}
-            {showSuggestions && suggestions.length > 0 && (
+            {showSuggestions && suggestions.length > 0 && !selectedCode && (
                 <div className="absolute top-full left-0 right-0 bg-white shadow-2xl rounded-3xl mt-3 z-50 max-h-[400px] overflow-y-auto border border-slate-200 animate-in fade-in slide-in-from-top-2 duration-200">
                     {/* Mein Standort Section */}
                     {suggestions.some(loc => loc.isCurrentLocation) && (
@@ -125,7 +163,7 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
                     )}
 
                     {/* Search Results Section */}
-                    {value.length > 0 && suggestions.filter(loc => !loc.isCurrentLocation).length > 0 && (
+                    {suggestions.filter(loc => !loc.isCurrentLocation).length > 0 && (
                         <div>
                             <div className="px-4 pt-3 pb-2">
                                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Suchergebnisse</span>
@@ -638,6 +676,8 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                 icon="fa-plane-departure"
                                                                 autoFocus
                                                                 showMyLocation={true}
+                                                                selectedCode={flightOriginCode || null}
+                                                                variant="origin"
                                                             />
 
                                                             {/* Swap Button (Desktop) */}
@@ -685,6 +725,8 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                 placeholder="Nach: Zielort"
                                                                 icon="fa-plane-arrival"
                                                                 onEnter={() => flightDestination.length > 0 && setCurrentStep(2)}
+                                                                selectedCode={flightDestinationCode || null}
+                                                                variant="destination"
                                                             />
                                                         </div>
                                                         {flightOrigin.length > 0 && flightDestination.length > 0 && !flightOriginCode && (
