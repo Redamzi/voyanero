@@ -79,17 +79,23 @@ export default function Home() {
   const [currentCityIndex, setCurrentCityIndex] = useState(0);
 
   useEffect(() => {
-    // 1. Preload the NEXT image immediately so it's ready in 20s
-    const nextIndex = (currentCityIndex + 1) % CITIES.length;
-    const img = new window.Image();
-    img.src = CITIES[nextIndex].image;
+    // 1. Preload the NEXT image at exactly 8 seconds (2s before switch)
+    // This "forces" the browser to start fetching just before the transition
+    const preloadTimeout = setTimeout(() => {
+      const nextIndex = (currentCityIndex + 1) % CITIES.length;
+      const img = new window.Image();
+      img.src = CITIES[nextIndex].image;
+    }, 8000);
 
-    // 2. Rotate every 20 seconds
+    // 2. Rotate every 10 seconds
     const interval = setInterval(() => {
       setCurrentCityIndex((prev) => (prev + 1) % CITIES.length);
-    }, 20000);
+    }, 10000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(preloadTimeout);
+    };
   }, [currentCityIndex]);
 
   const currentCity = CITIES[currentCityIndex];
@@ -112,9 +118,12 @@ export default function Home() {
                   <motion.div
                     key={currentCity.image}
                     initial={{ opacity: 0, scale: 1.1 }}
-                    animate={{ opacity: 1, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1.0 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 1.5, ease: "easeInOut" }}
+                    transition={{
+                      opacity: { duration: 1.5, ease: "easeInOut" },
+                      scale: { duration: 10, ease: "linear" }
+                    }}
                     className="absolute inset-0 w-full h-full"
                     style={{ willChange: "transform, opacity" }}
                   >
