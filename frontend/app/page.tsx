@@ -192,8 +192,8 @@ export default function Home() {
 
             {/* SIDE WIDGET 2: Promo / Login */}
             <BentoCard className="lg:col-span-1 bg-white flex flex-col justify-center items-center text-center gap-4 shadow-xl">
-              <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center text-orange-500 text-2xl mb-2">
-                <i className="fa-solid fa-user-astronaut"></i>
+              <div className="w-16 h-16 rounded-full bg-orange-100 grid place-items-center text-orange-500 text-2xl mb-2">
+                <i className="fa-solid fa-user-astronaut leading-none"></i>
               </div>
               <div>
                 <h3 className="text-lg font-bold text-slate-900 leading-tight">Melde dich an</h3>
@@ -233,12 +233,6 @@ export default function Home() {
           {/* Grid Layout replacing legacy flex/grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {MOCK_LISTINGS.slice(0, 4).map((listing) => (
-              // We wrap ListingCard or style it to look 'Bento'
-              // Since ListingCard has its own logic, we'll keep it but ensure the container fits the grid perfectly.
-              // We can add a Bento-wrapper effect if needed, but ListingCard is likely already card-like.
-              // To make it truly 'Bento', we could make the first item larger? 
-              // But user said "keep structure", so 4 equal cards is the safer bet for structure.
-              // We just ensure uniform height.
               <div key={listing.id} className="h-full">
                 <ListingCard listing={listing} />
               </div>
@@ -301,8 +295,8 @@ export default function Home() {
               { title: "Bestpreis", desc: "Wir garantieren den besten Preis.", icon: "fa-shield-halved", bg: "bg-amber-50", text: "text-amber-600" }
             ].map((item, i) => (
               <BentoCard key={i} className="flex flex-col items-center text-center p-8 hover:bg-slate-50/80 transition-colors group border-slate-100 shadow-sm hover:shadow-lg">
-                <div className={`w-16 h-16 ${item.bg} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <i className={`fa-solid ${item.icon} text-2xl ${item.text}`}></i>
+                <div className={`w-16 h-16 ${item.bg} rounded-2xl grid place-items-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  <i className={`fa-solid ${item.icon} text-2xl ${item.text} leading-none`}></i>
                 </div>
                 <h3 className="text-xl font-black text-slate-900 mb-2">{item.title}</h3>
                 <p className="text-slate-500 font-medium text-sm leading-relaxed">{item.desc}</p>
