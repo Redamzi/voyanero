@@ -608,7 +608,17 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                 onEnter={() => flightDestination.length > 0 && setCurrentStep(2)}
                                                             />
                                                         </div>
-                                                        {flightOrigin.length > 0 && flightDestination.length > 0 && (
+                                                        {flightOrigin.length > 0 && flightDestination.length > 0 && !flightOriginCode && (
+                                                            <div className="text-orange-600 text-sm font-medium bg-orange-50 p-3 rounded-xl">
+                                                                ⚠️ Bitte wähle einen Flughafen aus der Vorschlagsliste für "Von"
+                                                            </div>
+                                                        )}
+                                                        {flightOrigin.length > 0 && flightDestination.length > 0 && !flightDestinationCode && (
+                                                            <div className="text-orange-600 text-sm font-medium bg-orange-50 p-3 rounded-xl">
+                                                                ⚠️ Bitte wähle einen Flughafen aus der Vorschlagsliste für "Nach"
+                                                            </div>
+                                                        )}
+                                                        {flightOriginCode && flightDestinationCode && (
                                                             <button
                                                                 onClick={() => setCurrentStep(2)}
                                                                 className="w-full h-14 px-8 bg-slate-900 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-black transition-all animate-in fade-in zoom-in"
