@@ -50,7 +50,7 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
         };
         const timeoutId = setTimeout(fetchSuggestions, 300);
         return () => clearTimeout(timeoutId);
-    }, [value]);
+    }, [value, showMyLocation]);
 
     return (
         <div className="relative group w-full">
@@ -145,8 +145,8 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
                                         }}
                                     >
                                         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 transition-all ${isAirport
-                                                ? 'bg-blue-50 group-hover:bg-blue-100'
-                                                : 'bg-emerald-50 group-hover:bg-emerald-100'
+                                            ? 'bg-blue-50 group-hover:bg-blue-100'
+                                            : 'bg-emerald-50 group-hover:bg-emerald-100'
                                             }`}>
                                             {isAirport ? (
                                                 <div className="flex flex-col items-center">
@@ -689,12 +689,12 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                         </div>
                                                         {flightOrigin.length > 0 && flightDestination.length > 0 && !flightOriginCode && (
                                                             <div className="text-orange-600 text-sm font-medium bg-orange-50 p-3 rounded-xl">
-                                                                ⚠️ Bitte wähle einen Flughafen aus der Vorschlagsliste für "Von"
+                                                                ⚠️ Bitte wähle einen Flughafen aus der Vorschlagsliste für &quot;Von&quot;
                                                             </div>
                                                         )}
                                                         {flightOrigin.length > 0 && flightDestination.length > 0 && !flightDestinationCode && (
                                                             <div className="text-orange-600 text-sm font-medium bg-orange-50 p-3 rounded-xl">
-                                                                ⚠️ Bitte wähle einen Flughafen aus der Vorschlagsliste für "Nach"
+                                                                ⚠️ Bitte wähle einen Flughafen aus der Vorschlagsliste für &quot;Nach&quot;
                                                             </div>
                                                         )}
                                                         {flightOriginCode && flightDestinationCode && (
