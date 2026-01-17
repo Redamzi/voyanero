@@ -7,6 +7,7 @@ import SearchMask from '@/components/SearchMask';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import BentoCard from '@/components/BentoCard';
+import WeatherWidget from '@/components/WeatherWidget';
 import { MOCK_LISTINGS } from '@/constants';
 
 export default function Home() {
@@ -53,20 +54,10 @@ export default function Home() {
               </div>
             </BentoCard>
 
-            {/* SIDE WIDGET 1: Weather */}
-            <BentoCard className="lg:col-span-1 bg-gradient-to-br from-blue-500 to-indigo-600 border-0 text-white flex flex-col justify-between shadow-xl">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-widest opacity-70">Wetter</span>
-                <i className="fa-solid fa-cloud-sun text-yellow-300 text-xl"></i>
-              </div>
-              <div className="mt-4">
-                <div className="text-5xl font-black tracking-tighter">24°</div>
-                <div className="text-sm font-medium opacity-90 mt-1">Bali, Indonesia</div>
-              </div>
-              <div className="mt-8 text-xs font-medium opacity-70">
-                Perfektes Reisewetter für deinen nächsten Trip.
-              </div>
-            </BentoCard>
+            {/* SIDE WIDGET 1: Weather (Span 1) */}
+            <div className="lg:col-span-1 h-full min-h-[220px]">
+              <WeatherWidget />
+            </div>
 
             {/* SIDE WIDGET 2: Promo / Login */}
             <BentoCard className="lg:col-span-1 bg-white flex flex-col justify-center items-center text-center gap-4 shadow-xl">
