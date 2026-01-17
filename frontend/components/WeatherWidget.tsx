@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import BentoCard from './BentoCard';
 
 // 1. Safe/Public Data Sources (OpenMeteo for Weather)
@@ -108,21 +108,32 @@ export default function WeatherWidget({ city }: WeatherWidgetProps) {
         >
             <BentoCard className="h-full !p-0 relative overflow-hidden group shadow-xl border-0 bg-slate-900">
                 {/* Dynamic Background Image with Scale & Parallax */}
-                <motion.div
-                    className="absolute inset-0 z-0"
-                    style={{ x: bgX, y: bgY, scale: 1.2 }}
-                >
-                    <Image
-                        src={city.image}
-                        alt={city.name}
-                        fill
-                        className="object-cover transition-opacity duration-1000 ease-in-out"
-                        priority
-                        key={city.image} // Force re-mount for fade effect
-                    />
-                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-500" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
-                </motion.div>
+                <div className="absolute inset-0 z-0">
+                    <AnimatePresence mode="popLayout" initial={false}>
+                        <motion.div
+                            key={city.image}
+                            initial={{ opacity: 0, scale: 1.1 }}
+                            animate={{ opacity: 1, scale: 1.0 }}
+                            exit={{ opacity: 0 }}
+                            transition={{
+                                opacity: { duration: 1.5, ease: "easeInOut" },
+                                scale: { duration: 10, ease: "linear" }
+                            }}
+                            className="absolute inset-0 w-full h-full"
+                            style={{ x: bgX, y: bgY, willChange: "transform, opacity" }} // Combine parallax with transition
+                        >
+                            <Image
+                                src={city.image}
+                                alt={city.name}
+                                fill
+                                className="object-cover"
+                                priority
+                            />
+                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-500" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
 
                 {/* Content Overlay */}
                 <div className="relative z-10 p-6 flex flex-col justify-between h-full text-white">
