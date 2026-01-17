@@ -16,7 +16,7 @@ interface SearchMaskProps {
     isOpen?: boolean;
 }
 
-const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, autoFocus, onEnter }: {
+const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, autoFocus, onEnter, showMyLocation = false }: {
     value: string;
     onChange: (val: string) => void;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,6 +25,7 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
     icon: string;
     autoFocus?: boolean;
     onEnter?: () => void;
+    showMyLocation?: boolean;
 }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -40,9 +41,11 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
                 setSuggestions(results);
                 setIsLoading(false);
                 setShowSuggestions(true);
-            } else {
-                // Default functionality for empty input - Suggest Current Location
+            } else if (showMyLocation) {
+                // Default functionality for empty input - Suggest Current Location (only for origin)
                 setSuggestions([{ isCurrentLocation: true, iataCode: '📍', name: 'Mein Standort' }]);
+            } else {
+                setSuggestions([]);
             }
         };
         const timeoutId = setTimeout(fetchSuggestions, 300);
@@ -559,6 +562,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                 placeholder="Von: Abflugort"
                                                                 icon="fa-plane-departure"
                                                                 autoFocus
+                                                                showMyLocation={true}
                                                             />
 
                                                             {/* Swap Button (Desktop) */}
