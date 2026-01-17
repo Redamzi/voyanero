@@ -110,7 +110,7 @@ export default function Home() {
 
           {/* Grid Layout replacing legacy flex/grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {MOCK_LISTINGS.slice(0, 4).map((listing, index) => (
+            {MOCK_LISTINGS.slice(0, 4).map((listing) => (
               // We wrap ListingCard or style it to look 'Bento'
               // Since ListingCard has its own logic, we'll keep it but ensure the container fits the grid perfectly.
               // We can add a Bento-wrapper effect if needed, but ListingCard is likely already card-like.
