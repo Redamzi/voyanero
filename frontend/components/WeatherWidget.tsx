@@ -9,69 +9,25 @@ import BentoCard from './BentoCard';
 // No API Key required, completely open.
 const WEATHER_API = "https://api.open-meteo.com/v1/forecast";
 
-// 2. Curated City List with Coordinates & High-Quality Images
-const CITIES = [
-    {
-        name: "Bali",
-        country: "Indonesia",
-        lat: -8.4095,
-        lon: 115.1889,
-        image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=1000",
-        desc: "Perfekt für Surfer und Entdecker."
-    },
-    {
-        name: "Tokio",
-        country: "Japan",
-        lat: 35.6762,
-        lon: 139.6503,
-        image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&q=80&w=1000",
-        desc: "Neonlichter und alte Traditionen."
-    },
-    {
-        name: "New York",
-        country: "USA",
-        lat: 40.7128,
-        lon: -74.0060,
-        image: "https://images.unsplash.com/photo-1496442226666-8d4a0e62e6e9?auto=format&fit=crop&q=80&w=1000",
-        desc: "Die Stadt, die niemals schläft."
-    },
-    {
-        name: "London",
-        country: "UK",
-        lat: 51.5074,
-        lon: -0.1278,
-        image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80&w=1000",
-        desc: "Königliche Geschichte erleben."
-    },
-    {
-        name: "Dubai",
-        country: "UAE",
-        lat: 25.2048,
-        lon: 55.2708,
-        image: "https://images.unsplash.com/photo-1512453979798-5ea904ac6605?auto=format&fit=crop&q=80&w=1000",
-        desc: "Luxus in der Wüste."
-    },
-    {
-        name: "Sydney",
-        country: "Australien",
-        lat: -33.8688,
-        lon: 151.2093,
-        image: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80&w=1000",
-        desc: "Hafenstadt mit Flair."
-    }
-];
+export interface CityData {
+    name: string;
+    country: string;
+    lat: number;
+    lon: number;
+    image: string;
+    desc: string;
+}
 
-export default function WeatherWidget() {
-    const [currentIndex, setCurrentIndex] = useState(0);
+interface WeatherWidgetProps {
+    city: CityData;
+}
+
+export default function WeatherWidget({ city }: WeatherWidgetProps) {
     const [weather, setWeather] = useState<{ temp: number, code: number } | null>(null);
-    const [loading, setLoading] = useState(false);
 
-    const city = CITIES[currentIndex];
-
-    // 3. Rotation Logic (Every 30s as requested)
+    // Fetch weather when city changes
     useEffect(() => {
         const fetchWeather = async () => {
-            setLoading(true);
             try {
                 const res = await fetch(`${WEATHER_API}?latitude=${city.lat}&longitude=${city.lon}&current=temperature_2m,weather_code`);
                 const data = await res.json();
@@ -81,19 +37,11 @@ export default function WeatherWidget() {
                 });
             } catch (err) {
                 console.error("Weather fetch failed", err);
-            } finally {
-                setLoading(false);
             }
         };
 
         fetchWeather();
-
-        const interval = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % CITIES.length);
-        }, 30000); // 30 seconds
-
-        return () => clearInterval(interval);
-    }, [currentIndex, city.lat, city.lon]);
+    }, [city]);
 
     // Icon & Label Mapping (WMO Weather Codes)
     const getWeatherInfo = (code: number) => {

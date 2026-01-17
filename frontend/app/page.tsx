@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import ListingCard from '@/components/ListingCard';
 import SearchMask from '@/components/SearchMask';
@@ -10,8 +10,69 @@ import BentoCard from '@/components/BentoCard';
 import WeatherWidget from '@/components/WeatherWidget';
 import { MOCK_LISTINGS } from '@/constants';
 
+const CITIES = [
+  {
+    name: "Bali",
+    country: "Indonesia",
+    lat: -8.4095,
+    lon: 115.1889,
+    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=1000",
+    desc: "Perfekt für Surfer und Entdecker."
+  },
+  {
+    name: "Tokio",
+    country: "Japan",
+    lat: 35.6762,
+    lon: 139.6503,
+    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&q=80&w=1000",
+    desc: "Neonlichter und alte Traditionen."
+  },
+  {
+    name: "New York",
+    country: "USA",
+    lat: 40.7128,
+    lon: -74.0060,
+    image: "https://images.unsplash.com/photo-1496442226666-8d4a0e62e6e9?auto=format&fit=crop&q=80&w=1000",
+    desc: "Die Stadt, die niemals schläft."
+  },
+  {
+    name: "London",
+    country: "UK",
+    lat: 51.5074,
+    lon: -0.1278,
+    image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80&w=1000",
+    desc: "Königliche Geschichte erleben."
+  },
+  {
+    name: "Dubai",
+    country: "UAE",
+    lat: 25.2048,
+    lon: 55.2708,
+    image: "https://images.unsplash.com/photo-1512453979798-5ea904ac6605?auto=format&fit=crop&q=80&w=1000",
+    desc: "Luxus in der Wüste."
+  },
+  {
+    name: "Sydney",
+    country: "Australien",
+    lat: -33.8688,
+    lon: 151.2093,
+    image: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80&w=1000",
+    desc: "Hafenstadt mit Flair."
+  }
+];
+
 export default function Home() {
   const [showWizard, setShowWizard] = useState(false);
+  const [currentCityIndex, setCurrentCityIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentCityIndex((prev) => (prev + 1) % CITIES.length);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const currentCity = CITIES[currentCityIndex];
 
   return (
     <div className="min-h-screen font-sans bg-white text-slate-900 pb-20">
@@ -24,14 +85,16 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 auto-rows-[minmax(180px,auto)]">
 
             {/* HERO (Span 3) */}
-            <BentoCard className="lg:col-span-3 lg:row-span-2 relative min-h-[500px] lg:min-h-[600px] flex flex-col items-center justify-center text-center !p-0 border-0 shadow-2xl">
-              {/* Background Image */}
+            <BentoCard className="lg:col-span-3 lg:row-span-2 relative min-h-[500px] lg:min-h-[600px] flex flex-col items-center justify-center text-center !p-0 border-0 shadow-2xl overflow-hidden group">
+              {/* Background Image - Synced with Weather Widget */}
               <div className="absolute inset-0 z-0">
                 <Image
-                  src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=2000"
+                  src={currentCity.image}
                   alt="Hero Background"
                   fill
-                  className="object-cover opacity-90 transition-transform duration-700 hover:scale-105"
+                  className="object-cover opacity-90 transition-all duration-[2000ms] ease-in-out transform scale-105 group-hover:scale-110"
+                  key={currentCity.image} // Force fade transition
+                  priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
               </div>
@@ -56,7 +119,7 @@ export default function Home() {
 
             {/* SIDE WIDGET 1: Weather (Span 1) */}
             <div className="lg:col-span-1 h-full min-h-[220px]">
-              <WeatherWidget />
+              <WeatherWidget city={currentCity} />
             </div>
 
             {/* SIDE WIDGET 2: Promo / Login */}
