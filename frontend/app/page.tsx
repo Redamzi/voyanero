@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
 import ListingCard from '@/components/ListingCard';
 import SearchMask from '@/components/SearchMask';
 import Navbar from '@/components/Navbar';
@@ -106,16 +107,27 @@ export default function Home() {
             {/* HERO (Span 3) */}
             <BentoCard className="lg:col-span-3 lg:row-span-2 relative min-h-[500px] lg:min-h-[600px] flex flex-col items-center justify-center text-center !p-0 border-0 shadow-2xl overflow-hidden group">
               {/* Background Image - Synced with Weather Widget */}
-              <div className="absolute inset-0 z-0">
-                <Image
-                  src={currentCity.image}
-                  alt="Hero Background"
-                  fill
-                  className="object-cover opacity-90 transition-all duration-[2000ms] ease-in-out transform scale-105 group-hover:scale-110"
-                  key={currentCity.image} // Force fade transition
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
+              <div className="absolute inset-0 z-0 bg-slate-900">
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.div
+                    key={currentCity.image}
+                    initial={{ opacity: 0, scale: 1.1 }}
+                    animate={{ opacity: 1, scale: 1.05 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1.5, ease: "easeInOut" }}
+                    className="absolute inset-0 w-full h-full"
+                    style={{ willChange: "transform, opacity" }}
+                  >
+                    <Image
+                      src={currentCity.image}
+                      alt="Hero Background"
+                      fill
+                      className="object-cover opacity-90"
+                      priority
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
+                  </motion.div>
+                </AnimatePresence>
               </div>
 
               {/* Content */}
@@ -126,17 +138,25 @@ export default function Home() {
                     Premium Travel Experience
                   </span>
 
-                  <div className="space-y-4 max-w-4xl mx-auto">
-                    <h1
-                      key={currentCity.title} // Animate on change
-                      className="text-5xl sm:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter drop-shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-700"
-                    >
-                      {currentCity.title.split(' ').slice(0, -1).join(' ')} <span className="text-orange-500 italic font-serif">{currentCity.title.split(' ').slice(-1)}</span>
-                    </h1>
+                  <div className="space-y-4 max-w-4xl mx-auto h-[160px] flex flex-col justify-center items-center">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentCity.title}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                        className="flex flex-col items-center space-y-4"
+                      >
+                        <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter drop-shadow-2xl">
+                          {currentCity.title.split(' ').slice(0, -1).join(' ')} <span className="text-orange-500 italic font-serif">{currentCity.title.split(' ').slice(-1)}</span>
+                        </h1>
 
-                    <p className="text-lg sm:text-xl text-slate-200 font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-lg p-2 rounded-lg backdrop-blur-[2px]">
-                      Exklusive Unterkünfte in <span className="font-bold text-white border-b-2 border-orange-500">{currentCity.name}</span> und weltweit.
-                    </p>
+                        <p className="text-lg sm:text-xl text-slate-200 font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-lg p-2 rounded-lg backdrop-blur-[2px]">
+                          Exklusive Unterkünfte in <span className="font-bold text-white border-b-2 border-orange-500">{currentCity.name}</span> und weltweit.
+                        </p>
+                      </motion.div>
+                    </AnimatePresence>
                   </div>
                 </div>
 
