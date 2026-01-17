@@ -16,7 +16,7 @@ const CITIES = [
     country: "Indonesia",
     lat: -8.4095,
     lon: 115.1889,
-    image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=2000",
+    image: "https://images.unsplash.com/photo-1555400038-63f5ba517a47?auto=format&fit=crop&q=80&w=2000",
     desc: "Perfekt für Surfer und Entdecker.",
     title: "Escape to Paradise.",
     photographer: "Alfatih Yukrie"
@@ -26,7 +26,7 @@ const CITIES = [
     country: "Japan",
     lat: 35.6762,
     lon: 139.6503,
-    image: "https://images.unsplash.com/photo-1536098561742-ca998e48cbcc?auto=format&fit=crop&q=80&w=2000",
+    image: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&q=80&w=2000",
     desc: "Neonlichter und alte Traditionen.",
     title: "Discover the Future.",
     photographer: "Jezael Melgoza"
@@ -36,20 +36,20 @@ const CITIES = [
     country: "USA",
     lat: 40.7128,
     lon: -74.0060,
-    image: "https://images.unsplash.com/photo-1496442226666-8d4a0e62e6e9?auto=format&fit=crop&q=80&w=2000",
+    image: "https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?auto=format&fit=crop&q=80&w=2000",
     desc: "Die Stadt, die niemals schläft.",
     title: "Wake Up in NYC.",
-    photographer: "Emiliano Bar"
+    photographer: "New York C"
   },
   {
     name: "London",
     country: "UK",
     lat: 51.5074,
     lon: -0.1278,
-    image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80&w=2000",
+    image: "https://images.unsplash.com/photo-1529655683826-ece48428bc80?auto=format&fit=crop&q=80&w=2000",
     desc: "Königliche Geschichte erleben.",
     title: "Live the Royal Life.",
-    photographer: "Giammarco Boscaro"
+    photographer: "Marcin Nowak"
   },
   {
     name: "Dubai",
