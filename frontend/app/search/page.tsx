@@ -127,58 +127,75 @@ function SearchContent() {
                 // Fetch based on search type
                 if (searchType === 'reisen') {
                     // Legacy Logic for Mixed Search
-                    const [flightRes, hotelRes] = await Promise.all([
-                        FlightService.searchFlights({
+                    // Execute requests independently to prevent one failure from blocking the other
+                    let flightListings: Listing[] = [];
+                    let hotelListings: Listing[] = [];
+
+                    try {
+                        const flightRes = await FlightService.searchFlights({
                             origin: "MUC",
                             destination: locationQuery,
                             date: dateQuery || new Date().toISOString().split('T')[0],
                             adults, children, infants
-                        }),
-                        HotelService.searchHotels(locationQuery),
-                    ]);
+                        });
 
-                    if (flightRes && Array.isArray(flightRes) && flightRes.length > 0) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const flightListings: Listing[] = flightRes.map((flight: any) => {
-                            const airlineCode = flight.validatingAirlineCodes?.[0];
-                            return {
-                                id: flight.id,
-                                title: `Flug mit ${airlineCode || 'Airline'}`,
-                                description: 'Flugdaten',
+                        if (flightRes && Array.isArray(flightRes) && flightRes.length > 0) {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            flightListings = flightRes.map((flight: any) => {
+                                const airlineCode = flight.validatingAirlineCodes?.[0];
+                                return {
+                                    id: flight.id,
+                                    title: `Flug mit ${airlineCode || 'Airline'}`,
+                                    description: 'Flugdaten',
+                                    type: ListingType.AFFILIATE,
+                                    propertyType: PropertyType.HOTEL,
+                                    price: parseFloat(flight.price?.total || '0'),
+                                    location: { address: 'Flight', lat: 0, lng: 0 },
+                                    images: airlineCode ? [`https://pics.avs.io/200/200/${airlineCode}.png`] : [],
+                                    amenities: [],
+                                    rating: 4.5,
+                                    reviewCount: 20,
+                                    maxGuests: adults + children,
+                                    affiliateUrl: `/book/flight?offerId=${flight.id}&context=${encodeURIComponent(JSON.stringify(flight))}`
+                                };
+                            });
+                        }
+                    } catch (e) {
+                        console.error("Mixed Search - Flights failed:", e);
+                        // Don't set global error, just log it. Users will just see no flights.
+                    }
+
+                    try {
+                        const hotelRes = await HotelService.searchHotels(locationQuery);
+                        if (hotelRes && hotelRes.length > 0) {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            hotelListings = hotelRes.map((hotel: any) => ({
+                                id: hotel.id,
+                                title: hotel.title,
+                                description: hotel.description,
                                 type: ListingType.AFFILIATE,
                                 propertyType: PropertyType.HOTEL,
-                                price: parseFloat(flight.price?.total || '0'),
-                                location: { address: 'Flight', lat: 0, lng: 0 },
-                                images: airlineCode ? [`https://pics.avs.io/200/200/${airlineCode}.png`] : [],
-                                amenities: [],
-                                rating: 4.5,
-                                reviewCount: 20,
-                                maxGuests: adults + children,
-                                affiliateUrl: `/book/flight?offerId=${flight.id}&context=${encodeURIComponent(JSON.stringify(flight))}`
-                            };
-                        });
-                        combinedListings = [...combinedListings, ...flightListings];
+                                price: hotel.price,
+                                location: { address: hotel.location?.address || 'Unknown', lat: 0, lng: 0 },
+                                images: hotel.image ? [hotel.image] : [],
+                                amenities: hotel.amenities || [],
+                                rating: hotel.rating,
+                                reviewCount: hotel.reviews,
+                                maxGuests: 2,
+                                affiliateUrl: hotel.deepLink
+                            }));
+                        }
+                    } catch (e) {
+                        console.error("Mixed Search - Hotels failed:", e);
                     }
-                    if (hotelRes && hotelRes.length > 0) {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const hotelListings: Listing[] = hotelRes.map((hotel: any) => ({
-                            id: hotel.id,
-                            title: hotel.title,
-                            description: hotel.description,
-                            type: ListingType.AFFILIATE,
-                            propertyType: PropertyType.HOTEL,
-                            price: hotel.price,
-                            location: { address: hotel.location?.address || 'Unknown', lat: 0, lng: 0 },
-                            images: hotel.image ? [hotel.image] : [],
-                            amenities: hotel.amenities || [],
-                            rating: hotel.rating,
-                            reviewCount: hotel.reviews,
-                            maxGuests: 2,
-                            affiliateUrl: hotel.deepLink
-                        }));
-                        combinedListings = [...combinedListings, ...hotelListings];
-                    }
+
+                    combinedListings = [...flightListings, ...hotelListings];
                     setListings(combinedListings);
+
+                    if (combinedListings.length === 0) {
+                        // Only show error if BOTH failed or returned nothing
+                        setError("Keine Ergebnisse gefunden. Bitte versuche es mit einem anderen Ziel oder Datum.");
+                    }
 
                 } else if (searchType === 'fluege') {
                     // Flight Redesign Logic
