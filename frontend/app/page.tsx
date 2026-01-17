@@ -78,11 +78,18 @@ export default function Home() {
   const [currentCityIndex, setCurrentCityIndex] = useState(0);
 
   useEffect(() => {
+    // 1. Preload the NEXT image immediately so it's ready in 20s
+    const nextIndex = (currentCityIndex + 1) % CITIES.length;
+    const img = new window.Image();
+    img.src = CITIES[nextIndex].image;
+
+    // 2. Rotate every 20 seconds
     const interval = setInterval(() => {
       setCurrentCityIndex((prev) => (prev + 1) % CITIES.length);
-    }, 30000);
+    }, 20000);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [currentCityIndex]);
 
   const currentCity = CITIES[currentCityIndex];
 
