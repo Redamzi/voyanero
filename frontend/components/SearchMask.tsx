@@ -793,7 +793,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                         )}
                                                     </div>
                                                 ) : searchType === 'transfer' ? (
-                                                    // Transfer-specific: Pickup/Dropoff fields
+                                                    // Transfer-specific: Pickup/Dropoff fields (Redesigned to match Flight UI)
                                                     <div className="space-y-4">
                                                         {/* Transfer Type Toggle */}
                                                         <div className="flex justify-center mb-2">
@@ -817,32 +817,60 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                             </div>
                                                         </div>
 
-                                                        <div className="relative group">
-                                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400">
-                                                                <i className="fa-solid fa-car text-xl"></i>
+                                                        <div className="flex flex-col md:flex-row items-center gap-2 relative">
+                                                            <div className="relative group w-full">
+                                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
+                                                                    <i className="fa-solid fa-car text-xl"></i>
+                                                                </div>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Abholung (Flughafen/Ort)"
+                                                                    className="w-full h-20 pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
+                                                                    value={transferOrigin}
+                                                                    onChange={(e) => setTransferOrigin(e.target.value)}
+                                                                    autoFocus
+                                                                />
                                                             </div>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Abholung (Flughafen/Ort)"
-                                                                className="w-full h-20 pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
-                                                                value={transferOrigin}
-                                                                onChange={(e) => setTransferOrigin(e.target.value)}
-                                                                autoFocus
-                                                            />
-                                                        </div>
-                                                        <div className="relative group">
-                                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400">
-                                                                <i className="fa-solid fa-location-dot text-xl"></i>
+
+                                                            {/* Swap Button (Desktop) */}
+                                                            <button
+                                                                onClick={() => {
+                                                                    const temp = transferOrigin;
+                                                                    setTransferOrigin(transferDestination);
+                                                                    setTransferDestination(temp);
+                                                                }}
+                                                                className="hidden md:flex shrink-0 w-12 h-12 bg-slate-100 hover:bg-slate-200 rounded-full items-center justify-center text-slate-500 hover:text-slate-900 transition-all z-10 -mx-6 border-4 border-white"
+                                                            >
+                                                                <i className="fa-solid fa-arrow-right-arrow-left"></i>
+                                                            </button>
+
+                                                            {/* Swap Button (Mobile) */}
+                                                            <button
+                                                                onClick={() => {
+                                                                    const temp = transferOrigin;
+                                                                    setTransferOrigin(transferDestination);
+                                                                    setTransferDestination(temp);
+                                                                }}
+                                                                className="md:hidden w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 transition-all absolute right-4 top-[calc(50%-2.5rem)] rotate-90 z-20"
+                                                            >
+                                                                <i className="fa-solid fa-arrow-right-arrow-left"></i>
+                                                            </button>
+
+                                                            <div className="relative group w-full">
+                                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
+                                                                    <i className="fa-solid fa-location-dot text-xl"></i>
+                                                                </div>
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Zielort (Hotel/Adresse)"
+                                                                    className="w-full h-20 pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
+                                                                    value={transferDestination}
+                                                                    onChange={(e) => setTransferDestination(e.target.value)}
+                                                                    onKeyDown={(e) => e.key === 'Enter' && transferDestination.length > 0 && setCurrentStep(2)}
+                                                                />
                                                             </div>
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Zielort (Hotel/Adresse)"
-                                                                className="w-full h-20 pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
-                                                                value={transferDestination}
-                                                                onChange={(e) => setTransferDestination(e.target.value)}
-                                                                onKeyDown={(e) => e.key === 'Enter' && transferDestination.length > 0 && setCurrentStep(2)}
-                                                            />
                                                         </div>
+
                                                         {transferOrigin.length > 0 && transferDestination.length > 0 && (
                                                             <button
                                                                 onClick={() => setCurrentStep(2)}
@@ -879,7 +907,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                 )}
                                             </div>
 
-                                            {searchType !== 'fluege' && (
+                                            {searchType !== 'fluege' && searchType !== 'transfer' && (
                                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-3xl mx-auto px-4">
                                                     <button
                                                         onClick={handleLocateMe}
