@@ -539,10 +539,18 @@ function SearchContent() {
                             </section>
                         ))}
 
-                        {listings.length === 0 && (
+                        {filteredListings.length === 0 && (
                             <div className="text-center py-20">
                                 <i className="fa-solid fa-ghost text-4xl text-slate-300 mb-4"></i>
                                 <p className="text-slate-500 font-medium">Keine Ergebnisse gefunden.</p>
+                                {listings.length > 0 && (
+                                    <button
+                                        onClick={() => { setPriceRange({ min: 0, max: 2000 }); }}
+                                        className="mt-4 text-orange-600 font-bold hover:underline"
+                                    >
+                                        Filter zurücksetzen
+                                    </button>
+                                )}
                             </div>
                         )}
                     </div>
