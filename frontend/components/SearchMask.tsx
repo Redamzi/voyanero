@@ -980,8 +980,8 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                             <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tighter">Wann möchtest du reisen?</h2>
                                             <p className="text-slate-500 text-lg md:text-xl mb-12 font-medium">Finde die besten Flugpreise.</p>
 
-                                            {searchType === 'fluege' ? (
-                                                <div className="flex justify-center">
+                                            {searchType === 'fluege' || searchType === 'transfer' ? (
+                                                <div className="flex justify-center w-full">
                                                     <SearchCalendar
                                                         checkIn={checkIn}
                                                         checkOut={checkOut}
@@ -990,8 +990,8 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                             setCheckOut(end);
                                                         }}
                                                         onClose={() => setCurrentStep(3)}
-                                                        origin={flightOrigin}
-                                                        destination={flightDestination}
+                                                        origin={searchType === 'fluege' ? flightOrigin : transferOrigin}
+                                                        destination={searchType === 'fluege' ? flightDestination : transferDestination}
                                                     />
                                                 </div>
                                             ) : (
