@@ -929,17 +929,8 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                             <button
                                                                 key={dest.name}
                                                                 onClick={() => {
-                                                                    if (searchType === 'transfer') {
-                                                                        setTransferDestination(dest.label);
-                                                                        if (transferOrigin) {
-                                                                            setCurrentStep(2);
-                                                                        } else {
-                                                                            document.querySelector<HTMLInputElement>('input[placeholder^="Abholung"]')?.focus();
-                                                                        }
-                                                                    } else {
-                                                                        setLocation(dest.label);
-                                                                        setCurrentStep(2);
-                                                                    }
+                                                                    setLocation(dest.label);
+                                                                    setCurrentStep(2);
                                                                 }}
                                                                 className={`relative group rounded-[2rem] overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-xl aspect-square flex flex-col justify-end p-4 text-left border
                                                                 ${dest.className || 'col-span-1'}
