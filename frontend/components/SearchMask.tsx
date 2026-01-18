@@ -514,7 +514,14 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                         <div className="w-px h-8 bg-slate-200 shrink-0"></div>
 
                         {/* Date */}
-                        <div className="flex items-center gap-3 px-4 py-2 flex-1 min-w-0 cursor-pointer hover:bg-slate-50 transition-colors rounded-full hidden sm:flex">
+                        <div
+                            className="flex items-center gap-3 px-4 py-2 flex-1 min-w-0 cursor-pointer hover:bg-slate-50 transition-colors rounded-full hidden sm:flex"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsOpen(true);
+                                setCurrentStep(2);
+                            }}
+                        >
                             <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 text-xs shrink-0">
                                 <i className="fa-solid fa-calendar-days"></i>
                             </div>
@@ -529,7 +536,14 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                         <div className="w-px h-8 bg-slate-200 shrink-0 hidden sm:block"></div>
 
                         {/* Guests */}
-                        <div className="flex items-center gap-3 px-4 py-2 flex-1 min-w-0 cursor-pointer hover:bg-slate-50 transition-colors rounded-full hidden md:flex">
+                        <div
+                            className="flex items-center gap-3 px-4 py-2 flex-1 min-w-0 cursor-pointer hover:bg-slate-50 transition-colors rounded-full hidden md:flex"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsOpen(true);
+                                setCurrentStep(3);
+                            }}
+                        >
                             <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 text-xs shrink-0">
                                 <i className="fa-solid fa-user-group"></i>
                             </div>
@@ -555,7 +569,14 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                 <span className="text-slate-400 font-medium truncate max-w-[120px]">{location || "Ziele suchen"}</span>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 px-8 border-r border-slate-100 hidden md:flex">
+                        <div
+                            className="flex items-center gap-4 px-8 border-r border-slate-100 hidden md:flex"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsOpen(true);
+                                setCurrentStep(2);
+                            }}
+                        >
                             <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
                                 <i className="fa-solid fa-calendar-days text-sm"></i>
                             </div>
@@ -566,7 +587,14 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                 </span>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 px-8 hidden md:flex">
+                        <div
+                            className="flex items-center gap-4 px-8 hidden md:flex"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsOpen(true);
+                                setCurrentStep(3);
+                            }}
+                        >
                             <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
                                 <i className="fa-solid fa-user-group text-sm"></i>
                             </div>
@@ -1255,7 +1283,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                             onClick={currentStep === 3 ? handleSearch : () => setCurrentStep(3)}
                                             className="bg-[#1a1a1a] text-white px-12 py-5 rounded-full font-black text-xs uppercase tracking-widest hover:bg-black transition-all flex items-center gap-4 shadow-xl"
                                         >
-                                            {currentStep === 3 ? 'Ergebnisse zeigen' : 'Weiter'}
+                                            {currentStep === 3 ? 'RESERVIEREN' : 'Weiter'}
                                             <i className="fa-solid fa-arrow-right"></i>
                                         </button>
                                     </div>
