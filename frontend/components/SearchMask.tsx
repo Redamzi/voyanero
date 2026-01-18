@@ -220,49 +220,49 @@ const DESTINATIONS = [
         name: "Bali, Indonesia",
         icon: "fa-umbrella-beach",
         label: "Bali",
-        image: "https://images.unsplash.com/photo-1555400038-63f5ba517a47?auto=format&fit=crop&q=80&w=600",
+        image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=600",
         className: "md:col-span-1 md:row-span-1"
     },
     {
         name: "Berlin, Germany",
         icon: "fa-city",
         label: "Berlin",
-        image: "https://images.unsplash.com/photo-1599946347371-68eb71b16afc?auto=format&fit=crop&q=80&w=600",
+        image: "https://images.unsplash.com/photo-1560969184-10fe8719e047?auto=format&fit=crop&q=80&w=600",
         className: "md:col-span-1 md:row-span-1"
     },
     {
         name: "Tokyo, Japan",
         icon: "fa-torii-gate",
         label: "Tokyo",
-        image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&q=80&w=600",
+        image: "https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&q=80&w=600",
         className: "md:col-span-2 md:row-span-2"
     },
     {
         name: "Rome, Italy",
         icon: "fa-monument",
         label: "Rome",
-        image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&q=80&w=600",
+        image: "https://images.unsplash.com/photo-1531572753322-ad063cecc140?auto=format&fit=crop&q=80&w=600",
         className: "md:col-span-1 md:row-span-1"
     },
     {
         name: "Paris, France",
         icon: "fa-archway",
         label: "Paris",
-        image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=600",
+        image: "https://images.unsplash.com/photo-1499856871940-a09c4262ae32?auto=format&fit=crop&q=80&w=600",
         className: "md:col-span-1 md:row-span-1"
     },
     {
         name: "Bangkok, Thailand",
         icon: "fa-temple-buddhist",
         label: "Bangkok",
-        image: "https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&q=80&w=600",
+        image: "https://images.unsplash.com/photo-1509024644558-2f56ce76c490?auto=format&fit=crop&q=80&w=600",
         className: "md:col-span-1 md:row-span-1"
     },
     {
         name: "Istanbul, Turkey",
         icon: "fa-mosque",
         label: "Istanbul",
-        image: "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&q=80&w=600",
+        image: "https://images.unsplash.com/photo-1527838832700-50592524d78c?auto=format&fit=crop&q=80&w=600",
         className: "md:col-span-1 md:row-span-1"
     }
 ];
