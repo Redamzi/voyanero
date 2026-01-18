@@ -975,7 +975,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                         </div>
 
                                                         {/* Date & Time Row */}
-                                                        <div className="flex flex-col gap-4">
+                                                        <div className="flex flex-col gap-6">
                                                             {/* HINREISE */}
                                                             <div className="flex gap-4 items-center">
                                                                 {transferType === 'roundtrip' && <div className="w-24 text-sm font-bold text-slate-500 uppercase tracking-wider">Hinreise</div>}
@@ -1007,61 +1007,66 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
 
                                                             {/* RÜCKREISE (Only for Roundtrip) */}
                                                             {transferType === 'roundtrip' && (
-                                                                <div className="flex gap-4 items-center animate-in slide-in-from-top-4 duration-300">
-                                                                    <div className="w-24 text-sm font-bold text-slate-500 uppercase tracking-wider">Rückreise</div>
+                                                                <div className="grid grid-cols-[6rem_1fr] gap-4 items-start animate-in slide-in-from-top-4 duration-300 pt-6 border-t border-slate-100">
+                                                                    <div className="text-sm font-bold text-slate-500 uppercase tracking-wider pt-5">Rückreise</div>
 
-                                                                    {/* Read-only Reversed Route */}
-                                                                    <div className="flex flex-col gap-3 flex-1 opacity-60">
-                                                                        <div className="relative group w-full">
-                                                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
-                                                                                <i className="fa-solid fa-car text-xl"></i>
+                                                                    <div className="flex flex-col gap-4 w-full">
+                                                                        {/* Read-only Reversed Route */}
+                                                                        <div className="flex flex-col gap-3 opacity-60">
+                                                                            <div className="relative group w-full">
+                                                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
+                                                                                    <i className="fa-solid fa-car text-xl"></i>
+                                                                                </div>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    readOnly
+                                                                                    disabled
+                                                                                    className="w-full h-16 pl-16 pr-6 rounded-2xl border-2 border-slate-100 bg-slate-50 text-lg font-bold text-slate-500 font-jakarta cursor-not-allowed"
+                                                                                    value={transferDestination}
+                                                                                />
                                                                             </div>
-                                                                            <input
-                                                                                type="text"
-                                                                                readOnly
-                                                                                disabled
-                                                                                className="w-full h-16 pl-16 pr-6 rounded-2xl border-2 border-slate-100 bg-slate-50 text-lg font-bold text-slate-500 font-jakarta cursor-not-allowed"
-                                                                                value={transferDestination}
-                                                                            />
-                                                                        </div>
-                                                                        <div className="relative group w-full">
-                                                                            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
-                                                                                <i className="fa-solid fa-location-dot text-xl"></i>
+                                                                            <div className="relative group w-full">
+                                                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
+                                                                                    <i className="fa-solid fa-location-dot text-xl"></i>
+                                                                                </div>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    readOnly
+                                                                                    disabled
+                                                                                    className="w-full h-16 pl-16 pr-6 rounded-2xl border-2 border-slate-100 bg-slate-50 text-lg font-bold text-slate-500 font-jakarta cursor-not-allowed"
+                                                                                    value={transferOrigin}
+                                                                                />
                                                                             </div>
-                                                                            <input
-                                                                                type="text"
-                                                                                readOnly
-                                                                                disabled
-                                                                                className="w-full h-16 pl-16 pr-6 rounded-2xl border-2 border-slate-100 bg-slate-50 text-lg font-bold text-slate-500 font-jakarta cursor-not-allowed"
-                                                                                value={transferOrigin}
-                                                                            />
                                                                         </div>
-                                                                    </div>
 
-                                                                    <div className="flex-1 relative group" onClick={() => (document.getElementById('transfer-return-date') as HTMLInputElement)?.showPicker()}>
-                                                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
-                                                                            <i className="fa-regular fa-calendar text-xl"></i>
+                                                                        {/* Return Date & Time */}
+                                                                        <div className="flex gap-4">
+                                                                            <div className="flex-1 relative group" onClick={() => (document.getElementById('transfer-return-date') as HTMLInputElement)?.showPicker()}>
+                                                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
+                                                                                    <i className="fa-regular fa-calendar text-xl"></i>
+                                                                                </div>
+                                                                                <input
+                                                                                    id="transfer-return-date"
+                                                                                    type="date"
+                                                                                    className="w-full h-16 pl-16 pr-6 rounded-2xl border-2 border-slate-100 bg-white text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-slate-300 transition-all font-jakarta cursor-pointer"
+                                                                                    value={checkOut ? checkOut.toISOString().split('T')[0] : ''}
+                                                                                    min={checkIn ? checkIn.toISOString().split('T')[0] : ''}
+                                                                                    onChange={(e) => setCheckOut(e.target.value ? new Date(e.target.value) : null)}
+                                                                                />
+                                                                            </div>
+                                                                            <div className="w-40 relative group" onClick={() => (document.getElementById('transfer-return-time') as HTMLInputElement)?.showPicker()}>
+                                                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
+                                                                                    <i className="fa-regular fa-clock text-xl"></i>
+                                                                                </div>
+                                                                                <input
+                                                                                    id="transfer-return-time"
+                                                                                    type="time"
+                                                                                    className="w-full h-16 pl-16 pr-6 rounded-2xl border-2 border-slate-100 bg-white text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-slate-300 transition-all font-jakarta cursor-pointer"
+                                                                                    value={transferReturnTime}
+                                                                                    onChange={(e) => setTransferReturnTime(e.target.value)}
+                                                                                />
+                                                                            </div>
                                                                         </div>
-                                                                        <input
-                                                                            id="transfer-return-date"
-                                                                            type="date"
-                                                                            className="w-full h-16 pl-16 pr-6 rounded-2xl border-2 border-slate-100 bg-white text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-slate-300 transition-all font-jakarta cursor-pointer"
-                                                                            value={checkOut ? checkOut.toISOString().split('T')[0] : ''}
-                                                                            min={checkIn ? checkIn.toISOString().split('T')[0] : ''}
-                                                                            onChange={(e) => setCheckOut(e.target.value ? new Date(e.target.value) : null)}
-                                                                        />
-                                                                    </div>
-                                                                    <div className="w-40 relative group" onClick={() => (document.getElementById('transfer-return-time') as HTMLInputElement)?.showPicker()}>
-                                                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
-                                                                            <i className="fa-regular fa-clock text-xl"></i>
-                                                                        </div>
-                                                                        <input
-                                                                            id="transfer-return-time"
-                                                                            type="time"
-                                                                            className="w-full h-16 pl-16 pr-6 rounded-2xl border-2 border-slate-100 bg-white text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-slate-300 transition-all font-jakarta cursor-pointer"
-                                                                            value={transferReturnTime}
-                                                                            onChange={(e) => setTransferReturnTime(e.target.value)}
-                                                                        />
                                                                     </div>
                                                                 </div>
                                                             )}
