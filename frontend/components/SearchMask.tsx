@@ -330,6 +330,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
     const [transferType, setTransferType] = useState<'oneway' | 'roundtrip'>('oneway');
     const [transferOrigin, setTransferOrigin] = useState('');
     const [transferDestination, setTransferDestination] = useState('');
+    const [transferTime, setTransferTime] = useState('12:00');
 
     // Filter "bestätigen" visibility
     const showConfirm = location.length > 0;
@@ -362,6 +363,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
             destination: finalDestination,
             flightType,
             transferType,
+            transferTime,
             checkIn: formatDate(checkIn),
             checkOut: formatDate(checkOut),
             adults: adults.toString(),
@@ -793,92 +795,33 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                         )}
                                                     </div>
                                                 ) : searchType === 'transfer' ? (
-                                                    // Transfer-specific: Pickup/Dropoff fields (Redesigned to match Flight UI)
+                                                    // Transfer-specific: Only Type in Step 1
                                                     <div className="space-y-4">
-                                                        {/* Transfer Type Toggle */}
-                                                        <div className="flex justify-center mb-2">
-                                                            <div className="bg-slate-100 p-1 rounded-full flex items-center">
+                                                        <div className="flex justify-center mb-8">
+                                                            <div className="inline-flex gap-4 p-2 bg-slate-50 rounded-[2rem] border border-slate-100">
                                                                 {([
                                                                     { id: 'oneway', label: 'Einfache Fahrt', icon: 'fa-arrow-right-long' },
                                                                     { id: 'roundtrip', label: 'Hin- & Rückfahrt', icon: 'fa-repeat' },
                                                                 ] as const).map(type => (
                                                                     <button
                                                                         key={type.id}
-                                                                        onClick={() => setTransferType(type.id)}
-                                                                        className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full text-[10px] sm:text-xs font-bold transition-all ${transferType === type.id
-                                                                            ? 'bg-white shadow-sm text-slate-900'
-                                                                            : 'text-slate-500 hover:text-slate-700'
+                                                                        onClick={() => {
+                                                                            setTransferType(type.id);
+                                                                            setCurrentStep(2);
+                                                                        }}
+                                                                        className={`flex flex-col items-center justify-center w-32 h-32 rounded-[1.5rem] transition-all border-2 ${transferType === type.id
+                                                                            ? 'bg-white border-orange-500 shadow-xl text-slate-900'
+                                                                            : 'bg-transparent border-transparent hover:bg-white hover:border-slate-200 text-slate-500'
                                                                             }`}
                                                                     >
-                                                                        <i className={`fa-solid ${type.icon}`}></i>
-                                                                        <span>{type.label}</span>
+                                                                        <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 text-xl ${transferType === type.id ? 'bg-orange-50 text-orange-600' : 'bg-slate-100'}`}>
+                                                                            <i className={`fa-solid ${type.icon}`}></i>
+                                                                        </div>
+                                                                        <span className="font-black text-sm">{type.label}</span>
                                                                     </button>
                                                                 ))}
                                                             </div>
                                                         </div>
-
-                                                        <div className="flex flex-col md:flex-row items-center gap-2 relative">
-                                                            <div className="relative group w-full">
-                                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
-                                                                    <i className="fa-solid fa-car text-xl"></i>
-                                                                </div>
-                                                                <input
-                                                                    type="text"
-                                                                    placeholder="Abholung (Flughafen/Ort)"
-                                                                    className="w-full h-20 pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
-                                                                    value={transferOrigin}
-                                                                    onChange={(e) => setTransferOrigin(e.target.value)}
-                                                                    autoFocus
-                                                                />
-                                                            </div>
-
-                                                            {/* Swap Button (Desktop) */}
-                                                            <button
-                                                                onClick={() => {
-                                                                    const temp = transferOrigin;
-                                                                    setTransferOrigin(transferDestination);
-                                                                    setTransferDestination(temp);
-                                                                }}
-                                                                className="hidden md:flex shrink-0 w-12 h-12 bg-slate-100 hover:bg-slate-200 rounded-full items-center justify-center text-slate-500 hover:text-slate-900 transition-all z-10 -mx-6 border-4 border-white"
-                                                            >
-                                                                <i className="fa-solid fa-arrow-right-arrow-left"></i>
-                                                            </button>
-
-                                                            {/* Swap Button (Mobile) */}
-                                                            <button
-                                                                onClick={() => {
-                                                                    const temp = transferOrigin;
-                                                                    setTransferOrigin(transferDestination);
-                                                                    setTransferDestination(temp);
-                                                                }}
-                                                                className="md:hidden w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 transition-all absolute right-4 top-[calc(50%-2.5rem)] rotate-90 z-20"
-                                                            >
-                                                                <i className="fa-solid fa-arrow-right-arrow-left"></i>
-                                                            </button>
-
-                                                            <div className="relative group w-full">
-                                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
-                                                                    <i className="fa-solid fa-location-dot text-xl"></i>
-                                                                </div>
-                                                                <input
-                                                                    type="text"
-                                                                    placeholder="Zielort (Hotel/Adresse)"
-                                                                    className="w-full h-20 pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
-                                                                    value={transferDestination}
-                                                                    onChange={(e) => setTransferDestination(e.target.value)}
-                                                                    onKeyDown={(e) => e.key === 'Enter' && transferDestination.length > 0 && setCurrentStep(2)}
-                                                                />
-                                                            </div>
-                                                        </div>
-
-                                                        {transferOrigin.length > 0 && transferDestination.length > 0 && (
-                                                            <button
-                                                                onClick={() => setCurrentStep(2)}
-                                                                className="w-full h-14 px-8 bg-slate-900 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-black transition-all animate-in fade-in zoom-in"
-                                                            >
-                                                                Bestätigen
-                                                            </button>
-                                                        )}
                                                     </div>
                                                 ) : (
                                                     // Default: Single destination field per Reisen/Unterkünfte
@@ -977,65 +920,149 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                     {/* STEP 2: WANN */}
                                     {currentStep === 2 && (
                                         <div className="w-full max-w-7xl px-4 text-center animate-in slide-in-from-right-8 duration-500">
-                                            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tighter">Wann möchtest du reisen?</h2>
-                                            <p className="text-slate-500 text-lg md:text-xl mb-12 font-medium">Finde die besten Flugpreise.</p>
 
-                                            {searchType === 'fluege' || searchType === 'transfer' ? (
-                                                <div className="flex justify-center w-full">
-                                                    <SearchCalendar
-                                                        checkIn={checkIn}
-                                                        checkOut={checkOut}
-                                                        onChange={(start, end) => {
-                                                            setCheckIn(start);
-                                                            setCheckOut(end);
-                                                        }}
-                                                        onClose={() => setCurrentStep(3)}
-                                                        origin={searchType === 'fluege' ? flightOrigin : transferOrigin}
-                                                        destination={searchType === 'fluege' ? flightDestination : transferDestination}
-                                                    />
-                                                </div>
-                                            ) : (
-                                                <div className="flex flex-col-reverse lg:flex-row gap-8 lg:gap-12 items-start justify-center">
-                                                    {/* Shortcuts */}
-                                                    <div className="flex flex-col gap-4 lg:gap-6 w-full lg:w-96">
-                                                        <button
-                                                            onClick={() => setCurrentStep(3)}
-                                                            className="w-full p-6 lg:p-8 bg-white border border-slate-100 rounded-[2rem] lg:rounded-[2.5rem] flex items-center gap-6 hover:border-[#FF385C] transition-all group text-left shadow-sm order-2 lg:order-1"
-                                                        >
-                                                            <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-colors shrink-0">
-                                                                <i className="fa-solid fa-bolt"></i>
-                                                            </div>
-                                                            <div>
-                                                                <h3 className="font-black text-lg text-slate-900">Dieses Wochenende</h3>
-                                                                <p className="text-xs text-slate-500 font-medium">Perfekt für eine spontane Reise</p>
-                                                            </div>
-                                                        </button>
+                                            {searchType === 'transfer' ? (
+                                                <div className="max-w-xl mx-auto w-full">
+                                                    <h2 className="text-4xl font-black text-slate-900 mb-2 tracking-tighter">Details deiner Fahrt</h2>
+                                                    <p className="text-slate-500 text-lg mb-10 font-medium">Wohin und wann soll es gehen?</p>
 
-                                                        <div className="bg-[#1a1a1a] p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] text-white text-center order-1 lg:order-3 min-w-[280px]">
-                                                            <p className="text-[10px] font-bold uppercase tracking-widest text-[#ffffff60] mb-4">{dateLabels.label}</p>
-                                                            <div className="flex items-center justify-center gap-6">
-                                                                <div className="flex flex-col items-center gap-1">
-                                                                    <span className="text-[9px] text-[#ffffff60] font-bold uppercase tracking-wider">{dateLabels.start}</span>
-                                                                    <span className={`text-xl font-black ${checkIn ? 'text-white' : 'text-[#ffffff40]'}`}>
-                                                                        {checkIn ? checkIn.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-'}
-                                                                    </span>
+                                                    <div className="space-y-6">
+                                                        {/* From/To Inputs */}
+                                                        <div className="relative">
+                                                            <div className="flex flex-col gap-3 relative z-10">
+                                                                <div className="relative group w-full">
+                                                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
+                                                                        <i className="fa-solid fa-car text-xl"></i>
+                                                                    </div>
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder="Abholung (Flughafen/Ort)"
+                                                                        className="w-full h-16 pl-16 pr-6 rounded-2xl border-2 border-slate-100 bg-white text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-slate-300 transition-all font-jakarta"
+                                                                        value={transferOrigin}
+                                                                        onChange={(e) => setTransferOrigin(e.target.value)}
+                                                                        autoFocus
+                                                                    />
                                                                 </div>
-                                                                <div className="h-8 w-px bg-[#ffffff20]"></div>
-                                                                <div className="flex flex-col items-center gap-1">
-                                                                    <span className="text-[9px] text-[#ffffff60] font-bold uppercase tracking-wider">{dateLabels.end}</span>
-                                                                    <span className={`text-xl font-black ${checkOut ? 'text-white' : 'text-[#ffffff40]'}`}>
-                                                                        {checkOut ? checkOut.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-'}
-                                                                    </span>
+
+                                                                <div className="relative group w-full">
+                                                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
+                                                                        <i className="fa-solid fa-location-dot text-xl"></i>
+                                                                    </div>
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder="Zielort (Hotel/Adresse)"
+                                                                        className="w-full h-16 pl-16 pr-6 rounded-2xl border-2 border-slate-100 bg-white text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-slate-300 transition-all font-jakarta"
+                                                                        value={transferDestination}
+                                                                        onChange={(e) => setTransferDestination(e.target.value)}
+                                                                    />
                                                                 </div>
+
+                                                                {/* Swap Button Absolute */}
+                                                                <button
+                                                                    onClick={() => {
+                                                                        const temp = transferOrigin;
+                                                                        setTransferOrigin(transferDestination);
+                                                                        setTransferDestination(temp);
+                                                                    }}
+                                                                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 transition-all rotate-90 z-20"
+                                                                >
+                                                                    <i className="fa-solid fa-arrow-right-arrow-left"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Date & Time Row */}
+                                                        <div className="flex gap-4">
+                                                            <div className="flex-1 relative group" onClick={() => (document.getElementById('transfer-date') as HTMLInputElement)?.showPicker()}>
+                                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
+                                                                    <i className="fa-regular fa-calendar text-xl"></i>
+                                                                </div>
+                                                                <input
+                                                                    id="transfer-date"
+                                                                    type="date"
+                                                                    className="w-full h-16 pl-16 pr-6 rounded-2xl border-2 border-slate-100 bg-white text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-slate-300 transition-all font-jakarta cursor-pointer"
+                                                                    value={checkIn ? checkIn.toISOString().split('T')[0] : ''}
+                                                                    onChange={(e) => setCheckIn(e.target.value ? new Date(e.target.value) : null)}
+                                                                />
+                                                            </div>
+                                                            <div className="w-40 relative group" onClick={() => (document.getElementById('transfer-time') as HTMLInputElement)?.showPicker()}>
+                                                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
+                                                                    <i className="fa-regular fa-clock text-xl"></i>
+                                                                </div>
+                                                                <input
+                                                                    id="transfer-time"
+                                                                    type="time"
+                                                                    className="w-full h-16 pl-16 pr-6 rounded-2xl border-2 border-slate-100 bg-white text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-slate-300 transition-all font-jakarta cursor-pointer"
+                                                                    value={transferTime}
+                                                                    onChange={(e) => setTransferTime(e.target.value)}
+                                                                />
                                                             </div>
                                                         </div>
                                                     </div>
-
-                                                    {/* Calendar */}
-                                                    <div className="flex-1 w-full">
-                                                        {renderCalendar()}
-                                                    </div>
                                                 </div>
+                                            ) : (
+                                                <>
+                                                    <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tighter">Wann möchtest du reisen?</h2>
+                                                    <p className="text-slate-500 text-lg md:text-xl mb-12 font-medium">Finde die besten Flugpreise.</p>
+
+                                                    {searchType === 'fluege' ? (
+                                                        <div className="flex justify-center w-full">
+                                                            <SearchCalendar
+                                                                checkIn={checkIn}
+                                                                checkOut={checkOut}
+                                                                onChange={(start, end) => {
+                                                                    setCheckIn(start);
+                                                                    setCheckOut(end);
+                                                                }}
+                                                                onClose={() => setCurrentStep(3)}
+                                                                origin={searchType === 'fluege' ? flightOrigin : transferOrigin}
+                                                                destination={searchType === 'fluege' ? flightDestination : transferDestination}
+                                                            />
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex flex-col-reverse lg:flex-row gap-8 lg:gap-12 items-start justify-center">
+                                                            {/* Shortcuts */}
+                                                            <div className="flex flex-col gap-4 lg:gap-6 w-full lg:w-96">
+                                                                <button
+                                                                    onClick={() => setCurrentStep(3)}
+                                                                    className="w-full p-6 lg:p-8 bg-white border border-slate-100 rounded-[2rem] lg:rounded-[2.5rem] flex items-center gap-6 hover:border-[#FF385C] transition-all group text-left shadow-sm order-2 lg:order-1"
+                                                                >
+                                                                    <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 group-hover:bg-orange-500 group-hover:text-white transition-colors shrink-0">
+                                                                        <i className="fa-solid fa-bolt"></i>
+                                                                    </div>
+                                                                    <div>
+                                                                        <h3 className="font-black text-lg text-slate-900">Dieses Wochenende</h3>
+                                                                        <p className="text-xs text-slate-500 font-medium">Perfekt für eine spontane Reise</p>
+                                                                    </div>
+                                                                </button>
+
+                                                                <div className="bg-[#1a1a1a] p-6 lg:p-8 rounded-[2rem] lg:rounded-[2.5rem] text-white text-center order-1 lg:order-3 min-w-[280px]">
+                                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-[#ffffff60] mb-4">{dateLabels.label}</p>
+                                                                    <div className="flex items-center justify-center gap-6">
+                                                                        <div className="flex flex-col items-center gap-1">
+                                                                            <span className="text-[9px] text-[#ffffff60] font-bold uppercase tracking-wider">{dateLabels.start}</span>
+                                                                            <span className={`text-xl font-black ${checkIn ? 'text-white' : 'text-[#ffffff40]'}`}>
+                                                                                {checkIn ? checkIn.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-'}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div className="h-8 w-px bg-[#ffffff20]"></div>
+                                                                        <div className="flex flex-col items-center gap-1">
+                                                                            <span className="text-[9px] text-[#ffffff60] font-bold uppercase tracking-wider">{dateLabels.end}</span>
+                                                                            <span className={`text-xl font-black ${checkOut ? 'text-white' : 'text-[#ffffff40]'}`}>
+                                                                                {checkOut ? checkOut.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-'}
+                                                                            </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Calendar */}
+                                                            <div className="flex-1 w-full">
+                                                                {renderCalendar()}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </>
                                             )}
                                         </div>
                                     )}
