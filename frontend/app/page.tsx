@@ -17,8 +17,8 @@ const CITIES = [
     country: "Indonesia",
     lat: -8.4095,
     lon: 115.1889,
-    image: "https://images.unsplash.com/photo-1555400038-63f5ba517a47?auto=format&fit=crop&q=80&w=2000",
-    weatherImage: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=800", // Ubud Rice Terrace
+    image: "/images/destinations/bali.jpg",
+    weatherImage: "/images/destinations/bali-weather.jpg", // Ubud Rice Terrace
     desc: "Perfekt für Surfer und Entdecker.",
     title: "Escape to Paradise.",
     photographer: "Alfatih Yukrie"
@@ -28,8 +28,8 @@ const CITIES = [
     country: "Japan",
     lat: 35.6762,
     lon: 139.6503,
-    image: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&q=80&w=2000",
-    weatherImage: "https://images.unsplash.com/photo-1551641506-ee5bf4cb45f1?auto=format&fit=crop&q=80&w=800", // Lanterns
+    image: "/images/destinations/tokio.jpg",
+    weatherImage: "/images/destinations/tokio-weather.jpg", // Lanterns
     desc: "Neonlichter und alte Traditionen.",
     title: "Discover the Future.",
     photographer: "Jezael Melgoza"
@@ -39,8 +39,8 @@ const CITIES = [
     country: "USA",
     lat: 40.7128,
     lon: -74.0060,
-    image: "https://images.unsplash.com/photo-1499092346589-b9b6be3e94b2?auto=format&fit=crop&q=80&w=2000",
-    weatherImage: "https://images.unsplash.com/photo-1496442226666-8d4a0e62e6e9?auto=format&fit=crop&q=80&w=800", // Times Square
+    image: "/images/destinations/new-york.jpg",
+    weatherImage: "/images/destinations/new-york-weather.jpg", // Times Square
     desc: "Die Stadt, die niemals schläft.",
     title: "Wake Up in NYC.",
     photographer: "New York C"
@@ -50,8 +50,8 @@ const CITIES = [
     country: "UK",
     lat: 51.5074,
     lon: -0.1278,
-    image: "https://images.unsplash.com/photo-1529655683826-ece48428bc80?auto=format&fit=crop&q=80&w=2000",
-    weatherImage: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80&w=800", // Red Bus
+    image: "/images/destinations/london.jpg",
+    weatherImage: "/images/destinations/london-weather.jpg", // Red Bus
     desc: "Königliche Geschichte erleben.",
     title: "Live the Royal Life.",
     photographer: "Marcin Nowak"
@@ -61,8 +61,8 @@ const CITIES = [
     country: "UAE",
     lat: 25.2048,
     lon: 55.2708,
-    image: "https://images.unsplash.com/photo-1512453979798-5ea904ac6605?auto=format&fit=crop&q=80&w=2000",
-    weatherImage: "https://images.unsplash.com/photo-1451296180352-8d76d655f469?auto=format&fit=crop&q=80&w=800", // Desert
+    image: "/images/destinations/dubai.jpg",
+    weatherImage: "/images/destinations/dubai-weather.jpg", // Desert
     desc: "Luxus in der Wüste.",
     title: "Touch the Sky.",
     photographer: "ZQ Lee"
@@ -72,8 +72,8 @@ const CITIES = [
     country: "Australien",
     lat: -33.8688,
     lon: 151.2093,
-    image: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&q=80&w=2000",
-    weatherImage: "https://images.unsplash.com/photo-1590716209211-c7dd3953a9e3?auto=format&fit=crop&q=80&w=800", // Opera House
+    image: "/images/destinations/sydney.jpg",
+    weatherImage: "/images/destinations/sydney-weather.jpg", // Opera House
     desc: "Hafenstadt mit Flair.",
     title: "Adventure Awaits.",
     photographer: "Dan Freeman"
@@ -275,15 +275,17 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Image Side - Styled as a floating card inside existing card */}
-            <div className="w-full md:w-1/2 h-[300px] md:h-full relative md:absolute md:right-0 md:top-0">
-              <div className="absolute inset-4 md:inset-y-8 md:right-8 md:left-0 rounded-[2rem] overflow-hidden shadow-2xl border-[6px] border-white/5 transform md:rotate-2 hover:rotate-0 transition-all duration-700">
-                <Image
-                  src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=800"
-                  alt="Travel Comparison"
-                  fill
-                  className="object-cover"
-                />
+            {/* Banner Image */}
+            <div className="md:w-1/2 relative h-64 md:h-auto overflow-hidden">
+              <Image
+                src="/images/destinations/voyanero-promo.jpg"
+                alt="Travel Promo"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
+                <span className="text-white/80 font-bold uppercase tracking-widest text-sm mb-2">Exklusiver Deal</span>
+                <span className="text-white font-black text-3xl">Bali & Malediven</span>
               </div>
             </div>
           </BentoCard>
