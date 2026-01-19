@@ -23,11 +23,19 @@ router.get('/search', async (req, res) => {
             }
         }
 
+
         console.log(`Searching hotels via Amadeus for: ${cityCode}`);
+
+        // Extract filters
+        const ratings = req.query.ratings ? (req.query.ratings as string).split(',') : undefined;
+        const amenities = req.query.amenities ? (req.query.amenities as string).split(',') : undefined;
+
         const amadeusData = await AmadeusService.searchHotels(
             cityCode,
             parseInt(adults as string) || 1,
-            checkIn as string
+            checkIn as string,
+            ratings,
+            amenities
         );
 
         // Map Amadeus V3 response to frontend-friendly format

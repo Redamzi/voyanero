@@ -89,6 +89,10 @@ function SearchContent() {
 
     // Legacy Filter State (for Hotels/Mixed)
     const [priceRange, setPriceRange] = useState({ min: 0, max: 2000 });
+    const [hotelFilters, setHotelFilters] = useState<{ ratings: number[]; amenities: string[] }>({
+        ratings: [],
+        amenities: []
+    });
     const [counts, setCounts] = useState({ bedrooms: 0, beds: 0, bathrooms: 0 });
     const histogramData = [5, 15, 25, 40, 60, 85, 100, 95, 80, 65, 50, 35, 20, 15, 8];
 
@@ -165,8 +169,15 @@ function SearchContent() {
                         // Don't set global error, just log it. Users will just see no flights.
                     }
 
+
                     try {
-                        const hotelRes = await HotelService.searchHotels(locationQuery, adults, dateQuery);
+                        const hotelRes = await HotelService.searchHotels(
+                            locationQuery,
+                            adults,
+                            dateQuery,
+                            hotelFilters.ratings,
+                            hotelFilters.amenities
+                        );
                         if (hotelRes && hotelRes.length > 0) {
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             hotelListings = hotelRes.map((hotel: any) => ({
@@ -313,7 +324,7 @@ function SearchContent() {
 
         fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [locationQuery, dateQuery, destinationQuery, adults, children, infants, searchType]);
+    }, [locationQuery, dateQuery, destinationQuery, adults, children, infants, searchType, hotelFilters]);
 
     // Derived Flight State
     const filteredFlights = useMemo(() => {
@@ -632,6 +643,54 @@ function SearchContent() {
                                         <p className="text-[11px] font-black text-slate-300 uppercase tracking-[0.3em] mb-3 group-hover:text-slate-900 transition-colors">Maximum</p>
                                         <p className="text-4xl font-black text-slate-900">€{priceRange.max}+</p>
                                     </div>
+                                </div>
+                            </section>
+
+                            {/* Hotel Filter: Sterne */}
+                            <section className="text-left border-t border-slate-100 pt-20">
+                                <h3 className="text-3xl font-black text-slate-900 mb-8">Sterne</h3>
+                                <div className="flex flex-wrap gap-4">
+                                    {[3, 4, 5].map((star) => (
+                                        <button
+                                            key={star}
+                                            onClick={() => {
+                                                const newRatings = hotelFilters.ratings.includes(star)
+                                                    ? hotelFilters.ratings.filter(r => r !== star)
+                                                    : [...hotelFilters.ratings, star];
+                                                setHotelFilters({ ...hotelFilters, ratings: newRatings });
+                                            }}
+                                            className={`px-6 py-3 rounded-full border-2 font-bold transition-all ${hotelFilters.ratings.includes(star)
+                                                ? 'bg-slate-900 border-slate-900 text-white'
+                                                : 'bg-white border-slate-200 text-slate-900 hover:border-slate-900'
+                                                }`}
+                                        >
+                                            {star} Sterne
+                                        </button>
+                                    ))}
+                                </div>
+                            </section>
+
+                            {/* Hotel Filter: Ausstattung */}
+                            <section className="text-left border-t border-slate-100 pt-20">
+                                <h3 className="text-3xl font-black text-slate-900 mb-8">Ausstattung</h3>
+                                <div className="flex flex-wrap gap-4">
+                                    {['WIFI', 'SWIMMING_POOL', 'SPA', 'PARKING', 'RESTAURANT', 'PETS_ALLOWED', 'AIR_CONDITIONING'].map((item) => (
+                                        <button
+                                            key={item}
+                                            onClick={() => {
+                                                const newAmenities = hotelFilters.amenities.includes(item)
+                                                    ? hotelFilters.amenities.filter(a => a !== item)
+                                                    : [...hotelFilters.amenities, item];
+                                                setHotelFilters({ ...hotelFilters, amenities: newAmenities });
+                                            }}
+                                            className={`px-6 py-3 rounded-full border-2 font-bold transition-all ${hotelFilters.amenities.includes(item)
+                                                ? 'bg-slate-900 border-slate-900 text-white'
+                                                : 'bg-white border-slate-200 text-slate-900 hover:border-slate-900'
+                                                }`}
+                                        >
+                                            {item.replace('_', ' ')}
+                                        </button>
+                                    ))}
                                 </div>
                             </section>
 

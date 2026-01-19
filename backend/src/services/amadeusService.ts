@@ -102,21 +102,32 @@ export const AmadeusService = {
     },
 
     // Hotel Search (V3 Workflow: City -> IDs -> Offers)
-    searchHotels: async (cityCode: string, adults: number = 1, checkInDate?: string) => {
+    searchHotels: async (cityCode: string, adults: number = 1, checkInDate?: string, ratings?: string[], amenities?: string[]) => {
         try {
-            console.log(`[HotelSearch] Step 1: Finding hotels in ${cityCode}...`);
+            console.log(`[HotelSearch] Step 1: Finding hotels in ${cityCode} with filters...`, { ratings, amenities });
 
-            // Step 1: Get list of hotels in the city
-            const hotelsList = await amadeus.referenceData.locations.hotels.byCity.get({
-                cityCode: cityCode
-            });
+            // Step 1: Get list of hotels in the city with filters
+            const params: any = {
+                cityCode: cityCode,
+            };
+
+            if (ratings && ratings.length > 0) {
+                params.ratings = ratings.join(','); // Amadeus expects "3,4,5"
+            }
+
+            if (amenities && amenities.length > 0) {
+                // Common amenities mapping if needed, or pass through
+                params.amenities = amenities.join(',');
+            }
+
+            const hotelsList = await amadeus.referenceData.locations.hotels.byCity.get(params);
 
             if (!hotelsList.data || hotelsList.data.length === 0) {
-                console.warn(`[HotelSearch] No hotels found for city ${cityCode}`);
+                console.warn(`[HotelSearch] No hotels found for city ${cityCode} with given filters.`);
                 return [];
             }
 
-            // Extract first 10-20 Hotel IDs (limit to avoid URL length issues)
+            // Extract first 20 Hotel IDs (limit to avoid URL length issues)
             const hotelIds = hotelsList.data.slice(0, 20).map((h: any) => h.hotelId).join(',');
             console.log(`[HotelSearch] Step 2: Fetching offers for ${hotelsList.data.slice(0, 20).length} hotels...`);
 
@@ -131,9 +142,6 @@ export const AmadeusService = {
 
         } catch (error: any) {
             console.error('Amadeus Hotel Search Error:', error?.response?.body || error);
-
-            // Fallback: If 2-step fails, try returning an empty array or mock (handled in controller)
-            // But log the specific Amadeus error for debugging
             throw error;
         }
     },

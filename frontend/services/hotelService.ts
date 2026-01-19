@@ -4,15 +4,20 @@ import { Listing, ListingType, PropertyType } from '../types';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 export const HotelService = {
-    searchHotels: async (query: string, adults: number = 1, date?: string): Promise<Listing[]> => {
+    searchHotels: async (query: string, adults: number = 1, date?: string, ratings?: number[], amenities?: string[]): Promise<Listing[]> => {
         try {
             // Robustly handle API URL (ensure /api suffix)
             const baseUrl = API_BASE_URL.endsWith('/api') ? API_BASE_URL : `${API_BASE_URL}/api`;
-            const queryParams = new URLSearchParams({
+            const params: any = {
                 location: query,
                 adults: adults.toString(),
                 checkIn: date || ''
-            });
+            };
+
+            if (ratings && ratings.length > 0) params.ratings = ratings.join(',');
+            if (amenities && amenities.length > 0) params.amenities = amenities.join(',');
+
+            const queryParams = new URLSearchParams(params);
             const response = await fetch(`${baseUrl}/hotels/search?${queryParams.toString()}`);
             if (!response.ok) throw new Error('Failed to fetch hotels');
 
