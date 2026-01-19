@@ -11,73 +11,72 @@ import BentoCard from '@/components/BentoCard';
 import WeatherWidget from '@/components/WeatherWidget';
 import { MOCK_LISTINGS } from '@/constants';
 
-const CITIES = [
-  {
-    name: "Bali",
+{
+  name: "Bali",
     country: "Indonesia",
-    lat: -8.4095,
-    lon: 115.1889,
-    image: "/images/destinations/bali.jpg",
-    weatherImage: "/images/destinations/bali-weather.jpg", // Ubud Rice Terrace
-    desc: "Perfekt für Surfer und Entdecker.",
-    title: "Escape to Paradise.",
-    photographer: "Alfatih Yukrie"
-  },
-  {
-    name: "Tokio",
+      lat: -8.4095,
+        lon: 115.1889,
+          image: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1600&q=80",
+            weatherImage: "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=800&q=80",
+              desc: "Perfekt für Surfer und Entdecker.",
+                title: "Escape to Paradise.",
+                  photographer: "Alfatih Yukrie"
+},
+{
+  name: "Tokio",
     country: "Japan",
-    lat: 35.6762,
-    lon: 139.6503,
-    image: "/images/destinations/tokio.jpg",
-    weatherImage: "/images/destinations/tokio-weather.jpg", // Lanterns
-    desc: "Neonlichter und alte Traditionen.",
-    title: "Discover the Future.",
-    photographer: "Jezael Melgoza"
-  },
-  {
-    name: "New York",
+      lat: 35.6762,
+        lon: 139.6503,
+          image: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1600&q=80",
+            weatherImage: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=800&q=80",
+              desc: "Neonlichter und alte Traditionen.",
+                title: "Discover the Future.",
+                  photographer: "Jezael Melgoza"
+},
+{
+  name: "New York",
     country: "USA",
-    lat: 40.7128,
-    lon: -74.0060,
-    image: "/images/destinations/new-york.jpg",
-    weatherImage: "/images/destinations/new-york-weather.jpg", // Times Square
-    desc: "Die Stadt, die niemals schläft.",
-    title: "Wake Up in NYC.",
-    photographer: "New York C"
-  },
-  {
-    name: "London",
+      lat: 40.7128,
+        lon: -74.0060,
+          image: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1600&q=80",
+            weatherImage: "https://images.unsplash.com/photo-1534430480872-3498386e7856?auto=format&fit=crop&w=800&q=80",
+              desc: "Die Stadt, die niemals schläft.",
+                title: "Wake Up in NYC.",
+                  photographer: "New York C"
+},
+{
+  name: "London",
     country: "UK",
-    lat: 51.5074,
-    lon: -0.1278,
-    image: "/images/destinations/london.jpg",
-    weatherImage: "/images/destinations/london-weather.jpg", // Red Bus
-    desc: "Königliche Geschichte erleben.",
-    title: "Live the Royal Life.",
-    photographer: "Marcin Nowak"
-  },
-  {
-    name: "Dubai",
+      lat: 51.5074,
+        lon: -0.1278,
+          image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=1600&q=80",
+            weatherImage: "https://images.unsplash.com/photo-1520986606214-8b456906c813?auto=format&fit=crop&w=800&q=80",
+              desc: "Königliche Geschichte erleben.",
+                title: "Live the Royal Life.",
+                  photographer: "Marcin Nowak"
+},
+{
+  name: "Dubai",
     country: "UAE",
-    lat: 25.2048,
-    lon: 55.2708,
-    image: "/images/destinations/dubai.jpg",
-    weatherImage: "/images/destinations/dubai-weather.jpg", // Desert
-    desc: "Luxus in der Wüste.",
-    title: "Touch the Sky.",
-    photographer: "ZQ Lee"
-  },
-  {
-    name: "Sydney",
+      lat: 25.2048,
+        lon: 55.2708,
+          image: "https://images.unsplash.com/photo-1512453979798-5ea904ac66de?auto=format&fit=crop&w=1600&q=80",
+            weatherImage: "https://images.unsplash.com/photo-1544945582-1e42ba9d2e11?auto=format&fit=crop&w=800&q=80",
+              desc: "Luxus in der Wüste.",
+                title: "Touch the Sky.",
+                  photographer: "ZQ Lee"
+},
+{
+  name: "Sydney",
     country: "Australien",
-    lat: -33.8688,
-    lon: 151.2093,
-    image: "/images/destinations/sydney.jpg",
-    weatherImage: "/images/destinations/sydney-weather.jpg", // Opera House
-    desc: "Hafenstadt mit Flair.",
-    title: "Adventure Awaits.",
-    photographer: "Dan Freeman"
-  }
+      lat: -33.8688,
+        lon: 151.2093,
+          image: "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1600&q=80",
+            weatherImage: "https://images.unsplash.com/photo-1524332219808-f46323c2a61f?auto=format&fit=crop&w=800&q=80",
+              desc: "Hafenstadt mit Flair.",
+                title: "Adventure Awaits.",
+                  photographer: "Dan Freeman"
+}
 ];
 
 export default function Home() {
@@ -184,10 +183,7 @@ export default function Home() {
                   <SearchMask variant="hero" />
                 </div>
 
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-40 text-[9px] font-sans font-medium text-white/80 flex items-center gap-1.5 z-20 backdrop-blur-[2px] px-3 py-1 rounded-full bg-black/20 hover:bg-black/40 transition-all cursor-help group-hover:opacity-100">
-                  <i className="fa-solid fa-camera"></i>
-                  <span>Photo by {currentCity.photographer} / Unsplash</span>
-                </div>
+
               </div>
             </BentoCard>
 
