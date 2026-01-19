@@ -136,5 +136,52 @@ export const AmadeusService = {
             // But log the specific Amadeus error for debugging
             throw error;
         }
+    },
+
+    // Destination Experiences (Tours & Activities)
+    searchActivities: async (latitude: number, longitude: number, radius: number = 5) => {
+        try {
+            // Points of Interest / Activities
+            const response = await amadeus.shopping.activities.get({
+                latitude,
+                longitude,
+                radius
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Amadeus Activities Search Error:', error);
+            // Return empty array on error to keep UI stable
+            return [];
+        }
+    },
+
+    // Market Insights (Safety & Location Score)
+    getSafetyScore: async (latitude: number, longitude: number) => {
+        try {
+            const response = await amadeus.safety.safetyRatedLocations.get({
+                latitude,
+                longitude
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Amadeus Safety Score Error:', error);
+            // Return null or empty to indicate no data available
+            return null;
+        }
+    },
+
+    // Itinerary Management (Trip Parser)
+    parseTrip: async (base64Content: string) => {
+        try {
+            // "fromFile" expects base64 encoded content of the booking email/PDF
+            // Amadeus SDK method signature: amadeus.travel.tripParser.post(body)
+            const response = await amadeus.travel.tripParser.post({
+                payload: base64Content
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Amadeus Trip Parser Error:', error);
+            throw error;
+        }
     }
 };
