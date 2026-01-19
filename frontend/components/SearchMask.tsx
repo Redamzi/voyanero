@@ -968,7 +968,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                     <input
                                                                         type="text"
                                                                         placeholder="Abholung (Flughafen/Ort)"
-                                                                        className="w-full h-16 pl-16 pr-6 rounded-2xl border-2 border-slate-100 bg-white text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-slate-300 transition-all font-jakarta"
+                                                                        className="w-full h-16 pl-16 pr-14 rounded-2xl border-2 border-slate-100 bg-white text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-slate-300 transition-all font-jakarta"
                                                                         value={transferOrigin}
                                                                         onChange={(e) => setTransferOrigin(e.target.value)}
                                                                         autoFocus
@@ -982,7 +982,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                     <input
                                                                         type="text"
                                                                         placeholder="Zielort (Hotel/Adresse)"
-                                                                        className="w-full h-16 pl-16 pr-6 rounded-2xl border-2 border-slate-100 bg-white text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-slate-300 transition-all font-jakarta"
+                                                                        className="w-full h-16 pl-16 pr-14 rounded-2xl border-2 border-slate-100 bg-white text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 placeholder:text-slate-300 transition-all font-jakarta"
                                                                         value={transferDestination}
                                                                         onChange={(e) => setTransferDestination(e.target.value)}
                                                                     />
@@ -1005,9 +1005,9 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                         {/* Date & Time Row */}
                                                         <div className="flex flex-col gap-6">
                                                             {/* HINREISE */}
-                                                            <div className="flex gap-4 items-center">
-                                                                {transferType === 'roundtrip' && <div className="w-24 text-sm font-bold text-slate-500 uppercase tracking-wider">Hinreise</div>}
-                                                                <div className="flex-1 relative group" onClick={() => (document.getElementById('transfer-date') as HTMLInputElement)?.showPicker()}>
+                                                            <div className="flex flex-col md:flex-row gap-4 md:items-center">
+                                                                {transferType === 'roundtrip' && <div className="w-full md:w-24 text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 md:mb-0">Hinreise</div>}
+                                                                <div className="flex-1 w-full md:w-auto relative group" onClick={() => (document.getElementById('transfer-date') as HTMLInputElement)?.showPicker()}>
                                                                     <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
                                                                         <i className="fa-regular fa-calendar text-xl"></i>
                                                                     </div>
@@ -1019,7 +1019,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                         onChange={(e) => setCheckIn(e.target.value ? new Date(e.target.value) : null)}
                                                                     />
                                                                 </div>
-                                                                <div className="w-40 relative group" onClick={() => (document.getElementById('transfer-time') as HTMLInputElement)?.showPicker()}>
+                                                                <div className="w-full md:w-40 relative group" onClick={() => (document.getElementById('transfer-time') as HTMLInputElement)?.showPicker()}>
                                                                     <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 z-10">
                                                                         <i className="fa-regular fa-clock text-xl"></i>
                                                                     </div>
@@ -1035,8 +1035,8 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
 
                                                             {/* RÜCKREISE (Only for Roundtrip) */}
                                                             {transferType === 'roundtrip' && (
-                                                                <div className="grid grid-cols-[6rem_1fr] gap-4 items-start animate-in slide-in-from-top-4 duration-300 pt-6 border-t border-slate-100">
-                                                                    <div className="text-sm font-bold text-slate-500 uppercase tracking-wider pt-5">Rückreise</div>
+                                                                <div className="flex flex-col md:grid md:grid-cols-[6rem_1fr] gap-4 items-start animate-in slide-in-from-top-4 duration-300 pt-6 border-t border-slate-100">
+                                                                    <div className="text-sm font-bold text-slate-500 uppercase tracking-wider md:pt-5">Rückreise</div>
 
                                                                     <div className="flex flex-col gap-4 w-full">
                                                                         {/* Read-only Reversed Route */}
