@@ -253,28 +253,10 @@ function SearchContent() {
                         console.warn("Transfer search failed, using fallback", e);
                     }
 
-                    // FALLBACK: If API returns nothing (common in Sandbox), show Mock Data
-                    if (!transferRes || !Array.isArray(transferRes) || transferRes.length === 0) {
-                        transferRes = [
-                            {
-                                id: 'mock-std',
-                                transferType: 'PRIVATE',
-                                vehicle: { category: 'STANDARD', passengerCapacity: 3, description: 'Mercedes E-Class oder ähnlich' },
-                                price: { total: '85.00', currency: 'EUR' }
-                            },
-                            {
-                                id: 'mock-van',
-                                transferType: 'PRIVATE',
-                                vehicle: { category: 'MINIVAN', passengerCapacity: 6, description: 'Mercedes V-Class oder ähnlich' },
-                                price: { total: '120.00', currency: 'EUR' }
-                            },
-                            {
-                                id: 'mock-lux',
-                                transferType: 'PRIVATE',
-                                vehicle: { category: 'LUXURY', passengerCapacity: 3, description: 'Mercedes S-Class' },
-                                price: { total: '180.00', currency: 'EUR' }
-                            }
-                        ];
+
+                    // FALLBACK REMOVED: Only show real Amadeus data
+                    if (!transferRes || !Array.isArray(transferRes)) {
+                        transferRes = [];
                     }
 
                     if (transferRes && Array.isArray(transferRes)) {

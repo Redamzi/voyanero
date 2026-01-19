@@ -9,7 +9,19 @@ router.get('/search', async (req, res) => {
     try {
         const { location, adults, checkIn } = req.query;
         // Default to 'MUC' if no location provided, generic fallback
-        const cityCode = (location as string) || 'MUC';
+        let cityCode = (location as string) || 'MUC';
+
+        // Auto-resolve non-IATA locations (e.g. "Bali" -> "DPS")
+        if (cityCode.length !== 3) {
+            console.log(`Resolving location name: ${cityCode}...`);
+            const citySearch = await AmadeusService.searchCity(cityCode);
+            if (citySearch && citySearch.length > 0) {
+                cityCode = citySearch[0].iataCode;
+                console.log(`Resolved ${location} to IATA: ${cityCode}`);
+            } else {
+                console.warn(`Could not resolve location: ${cityCode}`);
+            }
+        }
 
         console.log(`Searching hotels via Amadeus for: ${cityCode}`);
         const amadeusData = await AmadeusService.searchHotels(

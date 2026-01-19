@@ -10,7 +10,6 @@ import activityRoutes from './routes/activities';
 import insightRoutes from './routes/insights';
 import tripRoutes from './routes/trip';
 import aiRoutes from './routes/ai';
-import aiRoutes from './routes/ai';
 
 dotenv.config();
 

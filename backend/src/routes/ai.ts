@@ -12,8 +12,8 @@ router.post('/chat', async (req, res) => {
         }
 
         // Check for API Key
-        if (!process.env.GEMINI_API_KEY) {
-            console.error('GEMINI_API_KEY is missing');
+        if (!process.env.ANTHROPIC_API_KEY) {
+            console.error('ANTHROPIC_API_KEY is missing');
             return res.status(500).json({
                 error: 'AI Service Config Error',
                 details: 'API Key not configured'
