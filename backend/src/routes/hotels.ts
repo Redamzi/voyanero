@@ -1,6 +1,6 @@
 
 import { Router } from 'express';
-import { AwinService } from '../services/awinService';
+
 import { AmadeusService } from '../services/amadeusService';
 
 const router = Router();
