@@ -166,7 +166,7 @@ function SearchContent() {
                     }
 
                     try {
-                        const hotelRes = await HotelService.searchHotels(locationQuery);
+                        const hotelRes = await HotelService.searchHotels(locationQuery, adults, dateQuery);
                         if (hotelRes && hotelRes.length > 0) {
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
                             hotelListings = hotelRes.map((hotel: any) => ({
@@ -297,7 +297,7 @@ function SearchContent() {
                         setListings(transferListings);
                     }
                 } else if (searchType === 'unterkunft') {
-                    const hotelRes = await HotelService.searchHotels(locationQuery);
+                    const hotelRes = await HotelService.searchHotels(locationQuery, adults, dateQuery);
                     if (hotelRes && hotelRes.length > 0) {
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         const hotelListings: Listing[] = hotelRes.map((hotel: any) => ({

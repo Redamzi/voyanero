@@ -84,6 +84,7 @@ export const AmadeusService = {
         }
     },
 
+
     // Flight Pricing (Verification)
     confirmPrice: async (flightOffer: any) => {
         try {
@@ -96,6 +97,43 @@ export const AmadeusService = {
             return response.data;
         } catch (error) {
             console.error('Amadeus Pricing Error:', error);
+            throw error;
+        }
+    },
+
+    // Hotel Search (V3 Workflow: City -> IDs -> Offers)
+    searchHotels: async (cityCode: string, adults: number = 1, checkInDate?: string) => {
+        try {
+            console.log(`[HotelSearch] Step 1: Finding hotels in ${cityCode}...`);
+
+            // Step 1: Get list of hotels in the city
+            const hotelsList = await amadeus.referenceData.locations.hotels.byCity.get({
+                cityCode: cityCode
+            });
+
+            if (!hotelsList.data || hotelsList.data.length === 0) {
+                console.warn(`[HotelSearch] No hotels found for city ${cityCode}`);
+                return [];
+            }
+
+            // Extract first 10-20 Hotel IDs (limit to avoid URL length issues)
+            const hotelIds = hotelsList.data.slice(0, 20).map((h: any) => h.hotelId).join(',');
+            console.log(`[HotelSearch] Step 2: Fetching offers for ${hotelsList.data.slice(0, 20).length} hotels...`);
+
+            // Step 2: Get offers for these hotels (V3)
+            const offersResponse = await amadeus.shopping.hotelOffersSearch.get({
+                hotelIds: hotelIds,
+                adults: adults,
+                checkInDate: checkInDate // Optional, defaults to today/tomorrow in API if missing
+            });
+
+            return offersResponse.data;
+
+        } catch (error: any) {
+            console.error('Amadeus Hotel Search Error:', error?.response?.body || error);
+
+            // Fallback: If 2-step fails, try returning an empty array or mock (handled in controller)
+            // But log the specific Amadeus error for debugging
             throw error;
         }
     }
