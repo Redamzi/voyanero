@@ -54,10 +54,11 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onPreview }) => {
                     className="flex h-full w-full overflow-x-auto snap-x snap-mandatory scrollbar-hide no-scrollbar"
                 >
                     {listing.images.map((img, idx) => {
+                        const isAirlineLogo = img.includes('avs.io');
                         const ImageContent = (
                             <img
                                 src={img.replace('http:', 'https:')}
-                                className="w-full h-full object-cover"
+                                className={`w-full h-full ${isAirlineLogo ? 'object-contain p-12' : 'object-cover'}`}
                                 alt={listing.title}
                                 draggable={false}
                             />
