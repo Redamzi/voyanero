@@ -6,7 +6,10 @@ dotenv.config();
 const amadeus = new Amadeus({
     clientId: process.env.AMADEUS_CLIENT_ID,
     clientSecret: process.env.AMADEUS_CLIENT_SECRET,
+    hostname: process.env.AMADEUS_ENV === 'production' ? 'production' : 'test'
 });
+
+console.log(`Amadeus Service initialized in ${process.env.AMADEUS_ENV === 'production' ? 'PRODUCTION' : 'BETA/SANDBOX'} mode.`);
 
 export const AmadeusService = {
     // Flight Search
