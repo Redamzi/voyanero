@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { getTravelAdvice } from '@/services/geminiService';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -31,13 +32,26 @@ export default function AIConcierge() {
         setInput('');
         setMessages(prev => [...prev, { role: 'user', content: userMsg }]);
 
-        // Placeholder response
-        setTimeout(() => {
+        try {
+            // Convert existing messages to Gemini format (user/model)
+            const history = messages.map(m => ({
+                role: m.role === 'assistant' ? 'model' : 'user',
+                parts: [{ text: m.content }]
+            }));
+
+            const result = await getTravelAdvice(userMsg, history);
+
             setMessages(prev => [...prev, {
                 role: 'assistant',
-                content: "This is a demo response. The AI Concierge feature will be available soon!"
+                content: result.text
             }]);
-        }, 1000);
+        } catch (error) {
+            console.error(error);
+            setMessages(prev => [...prev, {
+                role: 'assistant',
+                content: "I'm having trouble thinking right now. Please try again later."
+            }]);
+        }
     };
 
     return (
