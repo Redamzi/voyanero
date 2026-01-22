@@ -66,10 +66,16 @@ function SearchContent() {
     const getValidFutureDate = (dateStr: string | null) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        if (!dateStr) return new Date().toISOString().split('T')[0];
+
+        // Default to TOMORROW to avoid "past flight" errors in evening
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        if (!dateStr) return tomorrow.toISOString().split('T')[0];
+
         const date = new Date(dateStr);
         if (isNaN(date.getTime()) || date < today) {
-            return new Date().toISOString().split('T')[0];
+            return tomorrow.toISOString().split('T')[0];
         }
         return dateStr;
     };
@@ -484,8 +490,14 @@ function SearchContent() {
 
                             {/* Error State */}
                             {error && (
-                                <div className="bg-red-50 text-red-600 p-4 rounded-xl text-center font-bold">
-                                    {error}
+                                <div className="bg-red-50 text-red-600 p-6 rounded-xl text-center">
+                                    <div className="font-bold mb-2">Hoppla, das hat nicht geklappt.</div>
+                                    <div className="text-sm opacity-80 mb-4">{error}</div>
+                                    <div className="text-xs bg-white/50 p-3 rounded border border-red-100 inline-block">
+                                        <strong>Tipp für die Test-Umgebung:</strong><br />
+                                        Amadeus Sandbox unterstützt nur limitierte Routen.<br />
+                                        Versuche <strong>MUC</strong> (München) nach <strong>LHR</strong> (London).
+                                    </div>
                                 </div>
                             )}
 
