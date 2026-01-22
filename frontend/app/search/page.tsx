@@ -209,26 +209,35 @@ function SearchContent() {
                     }
 
                 } else if (searchType === 'fluege') {
-                    // Flight Redesign Logic
+                    // Flight Logic (Amadeus API)
 
                     // Smart destination resolution
                     let targetDestination = destinationQuery;
                     if (!targetDestination && locationQuery) {
-                        // Avoid using the cosmetic "Origin nach Dest" string as a destination code
-                        if (!locationQuery.includes(' nach ')) {
-                            targetDestination = locationQuery;
+                        // If location is "Munich nach London", extract
+                        if (locationQuery.toLowerCase().includes(' nach ')) {
+                            const parts = locationQuery.split(/ nach /i);
+                            if (parts.length === 2) targetDestination = parts[1].trim();
+                        } else {
+                            // Otherwise assume location is destination if origin is set, or ignore
+                            if (originQuery) targetDestination = locationQuery;
                         }
                     }
 
-                    // Final fallback to avoid API 400/500 errors if destination is missing
-                    const finalDest = targetDestination?.trim() || "BCN";
+                    // Fallback to "Standard" route if nothing found (Sandbox Limit)
+                    // In production, we would show an error "Please select destination"
+                    const finalDest = targetDestination?.trim() || "JFK";
+                    const finalOrigin = originQuery?.trim() || "LHR";
+
+                    console.log(`Searching Flights: ${finalOrigin} -> ${finalDest}`);
 
                     const flightRes = await FlightService.searchFlights({
-                        origin: originQuery || "MUC",
+                        origin: finalOrigin,
                         destination: finalDest,
                         date: dateQuery || new Date().toISOString().split('T')[0],
                         return_date: returnDateQuery,
-                        adults, children, infants
+                        adults, children, infants,
+                        trip_class: 'ECONOMY' // Default
                     });
 
                     if (flightRes && Array.isArray(flightRes)) {
