@@ -128,7 +128,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ listing, onPreview }) => {
                 </div>
 
                 <p className="text-slate-500 text-[15px] font-medium truncate">
-                    {listing.type === ListingType.AFFILIATE ? `Flug mit ${listing.title.replace('Flug mit ', '')}` : `Hosted by ${listing.title}`}
+                    {listing.type === ListingType.AFFILIATE ? listing.title : `Hosted by ${listing.title}`}
                 </p>
 
                 <p className="text-slate-500 text-[15px] font-medium">
