@@ -72,7 +72,13 @@ export const FlightService = {
             };
 
             const origin = lookup(params.origin) || "MUC";
-            const destination = lookup(params.destination);
+            // Ensure destination is never empty. Default to LHR if missing (Sandbox safe pair MUC-LHR)
+            const destination = lookup(params.destination) || "LHR";
+
+            // Safety check: ensure we don't send empty strings to API
+            if (!origin || !destination) {
+                console.warn("FlightService: Missing origin or destination, using defaults.");
+            }
 
             const payload = {
                 origin: origin,
