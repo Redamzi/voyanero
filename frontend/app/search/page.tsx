@@ -329,7 +329,9 @@ function SearchContent() {
 
             } catch (err) {
                 console.error("Data fetch failed", err);
-                setError("Daten konnten nicht geladen werden.");
+                // Show real error message from backend if available
+                const msg = err instanceof Error ? err.message : "Daten konnten nicht geladen werden.";
+                setError(msg.replace("API Error: 500 - ", "").replace("API Error: 400 - ", ""));
                 setListings([]);
                 setFlightOffers([]);
             } finally {

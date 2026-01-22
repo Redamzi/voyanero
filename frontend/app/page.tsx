@@ -248,41 +248,44 @@ export default function Home() {
 
         {/* 3. PROMO CARD (Bento Style) */}
         <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-          <BentoCard className="!p-0 relative overflow-hidden bg-[#111827] text-white flex flex-col md:flex-row items-center min-h-[500px] md:min-h-[400px]">
-            {/* Background Accents */}
-            <div className="absolute top-0 right-0 w-2/3 h-full bg-gradient-to-l from-amber-600/20 to-transparent skew-x-[-20deg] translate-x-32" />
+          <BentoCard noPadding={true} className="relative overflow-hidden bg-[#111827] text-white min-h-[500px] md:min-h-[400px]">
+            {/* Inner Flex Container to bypass BentoCard's internal div block */}
+            <div className="flex flex-col md:flex-row h-full w-full">
+              {/* Background Accents */}
+              <div className="absolute top-0 right-0 w-2/3 h-full bg-gradient-to-l from-amber-600/20 to-transparent skew-x-[-20deg] translate-x-32 pointer-events-none" />
 
-            {/* Content Side */}
-            <div className="flex-1 p-8 md:p-16 flex flex-col justify-center items-start space-y-8 relative z-10 w-full">
-              <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 text-[10px] uppercase tracking-[0.2em] font-bold">
-                Voyanero Vergleichsportal
+              {/* Content Side */}
+              <div className="flex-1 p-8 md:p-16 flex flex-col justify-center items-start space-y-8 relative z-10 w-full">
+                <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-amber-500/10 border border-amber-500/20 rounded-full text-amber-400 text-[10px] uppercase tracking-[0.2em] font-bold">
+                  Voyanero Vergleichsportal
+                </div>
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[0.95]">
+                  Vergleiche & spare <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">bei jeder Buchung.</span>
+                </h2>
+                <p className="text-slate-400 text-lg max-w-lg leading-relaxed">
+                  Finde die besten Angebote für Hotels, Flüge und Reisepakete – alles an einem Ort mit unserer Tiefpreisgarantie.
+                </p>
+                <button
+                  onClick={() => setShowWizard(true)}
+                  className="group bg-white text-slate-900 px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-amber-400 transition-colors shadow-lg shadow-white/5 hover:shadow-amber-400/20 flex items-center gap-3"
+                >
+                  Jetzt vergleichen
+                  <i className="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </button>
               </div>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[0.95]">
-                Vergleiche & spare <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">bei jeder Buchung.</span>
-              </h2>
-              <p className="text-slate-400 text-lg max-w-lg leading-relaxed">
-                Finde die besten Angebote für Hotels, Flüge und Reisepakete – alles an einem Ort mit unserer Tiefpreisgarantie.
-              </p>
-              <button
-                onClick={() => setShowWizard(true)}
-                className="group bg-white text-slate-900 px-8 py-4 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-amber-400 transition-colors shadow-lg shadow-white/5 hover:shadow-amber-400/20 flex items-center gap-3"
-              >
-                Jetzt vergleichen
-                <i className="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-              </button>
-            </div>
 
-            {/* Banner Image */}
-            <div className="md:w-1/2 relative h-64 md:h-auto overflow-hidden">
-              <Image
-                src="/images/destinations/voyanero-promo.jpg"
-                alt="Travel Promo"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
-                <span className="text-white/80 font-bold uppercase tracking-widest text-sm mb-2">Exklusiver Deal</span>
-                <span className="text-white font-black text-3xl">Bali & Malediven</span>
+              {/* Banner Image */}
+              <div className="md:w-1/2 relative h-64 md:h-auto overflow-hidden">
+                <Image
+                  src="/images/destinations/voyanero-promo.jpg"
+                  alt="Travel Promo"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
+                  <span className="text-white/80 font-bold uppercase tracking-widest text-sm mb-2">Exklusiver Deal</span>
+                  <span className="text-white font-black text-3xl">Bali & Malediven</span>
+                </div>
               </div>
             </div>
           </BentoCard>
