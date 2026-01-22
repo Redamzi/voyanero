@@ -1,7 +1,13 @@
 import Amadeus from 'amadeus';
 import dotenv from 'dotenv';
+import NodeCache from 'node-cache';
 
 dotenv.config();
+
+// Cache Setup
+// stdTTL: Default 1 hour (3600s) for searches
+// checkperiod: Delete expired keys every 600s
+const cache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
 
 const amadeus = new Amadeus({
     clientId: process.env.AMADEUS_CLIENT_ID,
@@ -12,9 +18,19 @@ const amadeus = new Amadeus({
 console.log(`Amadeus Service initialized in ${process.env.AMADEUS_ENV === 'production' ? 'PRODUCTION' : 'BETA/SANDBOX'} mode.`);
 
 export const AmadeusService = {
-    // Flight Search
+    // Flight Search (Cached)
     searchFlights: async (params: any) => {
         try {
+            // Create a unique cache key based on search parameters
+            const cacheKey = `flights_${JSON.stringify(params)}`;
+            const cachedData = cache.get(cacheKey);
+
+            if (cachedData) {
+                console.log('⚡ Using cached Flight data');
+                return cachedData;
+            }
+
+            console.log('🌍 Fetching live Flight data from Amadeus...');
             const response = await amadeus.shopping.flightOffersSearch.get({
                 originLocationCode: params.origin,
                 destinationLocationCode: params.destination,
@@ -25,8 +41,11 @@ export const AmadeusService = {
                 infants: params.infants || 0,
                 travelClass: params.travelClass, // ECONOMY, PREMIUM_ECONOMY, BUSINESS, FIRST
                 currencyCode: 'EUR',
-                max: 20, // Limit results
+                max: 20, // Limit results to save bandwidth
             });
+
+            // Save to cache (TTL: 30 minutes for flights to keep prices relatively fresh)
+            cache.set(cacheKey, response.data, 1800);
             return response.data;
         } catch (error) {
             console.error('Amadeus Flight Search Error:', error);
@@ -34,13 +53,23 @@ export const AmadeusService = {
         }
     },
 
-    // City Search (Autocomplete)
+    // City Search (Autocomplete) - Cached Long Term
     searchCity: async (keyword: string) => {
         try {
+            const cacheKey = `city_${keyword.toLowerCase()}`;
+            const cachedData = cache.get(cacheKey);
+
+            if (cachedData) {
+                return cachedData;
+            }
+
             const response = await amadeus.referenceData.locations.get({
                 keyword,
                 subType: Amadeus.location.any,
             });
+
+            // Cities don't change often -> Cache for 24 hours
+            cache.set(cacheKey, response.data, 86400);
             return response.data;
         } catch (error) {
             console.error('Amadeus City Search Error:', error);
@@ -85,9 +114,11 @@ export const AmadeusService = {
     },
 
 
-    // Flight Pricing (Verification)
+    // Flight Pricing (Verification) - NEVER CACHED
+    // This is the "Live Check"
     confirmPrice: async (flightOffer: any) => {
         try {
+            console.log('💰 Performing LIVE Price Check...');
             const response = await amadeus.shopping.flightOffers.pricing.post({
                 'data': {
                     'type': 'flight-offers-pricing',
@@ -101,12 +132,23 @@ export const AmadeusService = {
         }
     },
 
-    // Hotel Search (V3 Workflow: City -> IDs -> Offers)
+    // Hotel Search (V3 Workflow: City -> IDs -> Offers) - Cached
     searchHotels: async (cityCode: string, adults: number = 1, checkInDate?: string, ratings?: string[], amenities?: string[]) => {
         try {
+            // Cache logic
+            const cacheParams = { cityCode, adults, checkInDate, ratings, amenities };
+            const cacheKey = `hotels_${JSON.stringify(cacheParams)}`;
+            const cachedData = cache.get(cacheKey);
+
+            if (cachedData) {
+                console.log('⚡ Using cached Hotel data');
+                return cachedData;
+            }
+
             console.log(`[HotelSearch] Step 1: Finding hotels in ${cityCode} with filters...`, { ratings, amenities });
 
             // Step 1: Get list of hotels in the city with filters
+            // Note: Hotel List by City is relatively static, could be cached separately but for now we cache the whole flow
             const params: any = {
                 cityCode: cityCode,
             };
@@ -138,6 +180,8 @@ export const AmadeusService = {
                 checkInDate: checkInDate // Optional, defaults to today/tomorrow in API if missing
             });
 
+            // Cache result for 30 minutes
+            cache.set(cacheKey, offersResponse.data, 1800);
             return offersResponse.data;
 
         } catch (error: any) {

@@ -8,8 +8,9 @@ import hotelRoutes from "./routes/hotels";
 import transferRoutes from "./routes/transfers";
 import activityRoutes from './routes/activities';
 import insightRoutes from './routes/insights';
-import tripRoutes from './routes/trip';
+// import tripRoutes from './routes/trip';
 import aiRoutes from './routes/ai';
+import statusRoutes from './routes/status';
 
 dotenv.config();
 
@@ -26,8 +27,9 @@ app.use("/api/hotels", hotelRoutes);
 app.use("/api/transfers", transferRoutes);
 app.use('/api/activities', activityRoutes);
 app.use('/api/insights', insightRoutes);
-app.use('/api/trip', tripRoutes);
+// app.use('/api/trip', tripRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/status', statusRoutes);
 
 app.get("/health", (req, res) => {
     res.status(200).json({ status: "ok" });

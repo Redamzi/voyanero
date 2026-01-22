@@ -188,7 +188,9 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                         <div className="w-full max-w-4xl mb-8">
                             <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Was suchst du?</h3>
                             <div className="grid grid-cols-3 gap-4">
+                                {/* Reisen Card Disabled
                                 {/* Reisen Card */}
+                                {/*
                                 <motion.button
                                     initial={{ y: -50, opacity: 0, scale: 0.5 }}
                                     animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -209,6 +211,7 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                                     <h4 className="text-base font-black text-slate-900 mb-0.5">Reisen</h4>
                                     <p className="text-xs text-slate-500">Komplette Reisepakete</p>
                                 </motion.button>
+                                */}
 
                                 {/* Flüge Card */}
                                 <motion.button

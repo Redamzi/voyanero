@@ -317,7 +317,8 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
     const [isLocating, setIsLocating] = useState(false);
 
     // Search Type Filter (Reisen/Flüge/Unterkünfte/Transfer)
-    const [searchType, setSearchType] = useState<'reisen' | 'fluege' | 'unterkunft' | 'transfer'>('reisen');
+    // 'Reisen' disabled by default as per new scope
+    const [searchType, setSearchType] = useState<'reisen' | 'fluege' | 'unterkunft' | 'transfer'>('fluege');
 
     // Flight-specific states
     const [flightOrigin, setFlightOrigin] = useState('');
@@ -685,12 +686,14 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
 
                                             {/* Filter Toggles */}
                                             <div className="flex items-center justify-center gap-2 sm:gap-4 mb-6 sm:mb-8 scale-75 sm:scale-100">
+                                                {/* Reisen toggle disabled
                                                 <button onClick={() => setSearchType('reisen')} className={`relative inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all ${searchType === 'reisen' ? 'text-slate-900' : 'text-slate-400'}`}>
                                                     <div className={`w-10 sm:w-12 h-6 sm:h-7 rounded-full transition-all ${searchType === 'reisen' ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-slate-300'}`}>
                                                         <div className={`w-4 sm:w-5 h-4 sm:h-5 bg-white rounded-full shadow-md transition-transform duration-200 mt-1 ${searchType === 'reisen' ? 'translate-x-5 sm:translate-x-6' : 'translate-x-1'}`} />
                                                     </div>
                                                     <span className="font-semibold text-xs sm:text-sm">Reisen</span>
                                                 </button>
+                                                */}
                                                 <button onClick={() => setSearchType('fluege')} className={`relative inline-flex items-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-full transition-all ${searchType === 'fluege' ? 'text-slate-900' : 'text-slate-400'}`}>
                                                     <div className={`w-10 sm:w-12 h-6 sm:h-7 rounded-full transition-all ${searchType === 'fluege' ? 'bg-gradient-to-r from-amber-500 to-orange-600' : 'bg-slate-300'}`}>
                                                         <div className={`w-4 sm:w-5 h-4 sm:h-5 bg-white rounded-full shadow-md transition-transform duration-200 mt-1 ${searchType === 'fluege' ? 'translate-x-5 sm:translate-x-6' : 'translate-x-1'}`} />
