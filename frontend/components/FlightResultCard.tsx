@@ -47,10 +47,24 @@ const FlightResultCard: React.FC<FlightResultCardProps & { onClick?: () => void 
         return new Date(isoString).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
     };
 
+    // Helper to format date
+    const formatDate = (isoString: string) => {
+        return new Date(isoString).toLocaleDateString('de-DE', { day: '2-digit', month: 'short' });
+    };
+
     const outboundItinerary = offer.itineraries[0];
     const returnItinerary = offer.itineraries[1];
 
-    const renderItinerarySimple = (itinerary: typeof outboundItinerary) => {
+    // Calculate nights for the middle badge
+    const nightsInDest = (() => {
+        if (!returnItinerary) return 0;
+        const arrivalOut = new Date(outboundItinerary.segments[outboundItinerary.segments.length - 1].arrival.at);
+        const depReturn = new Date(returnItinerary.segments[0].departure.at);
+        const diff = depReturn.getTime() - arrivalOut.getTime();
+        return Math.floor(diff / (1000 * 60 * 60 * 24));
+    })();
+
+    const renderItineraryNew = (itinerary: typeof outboundItinerary, isReturn = false) => {
         if (!itinerary) return null;
 
         const firstSegment = itinerary.segments[0];
@@ -58,43 +72,48 @@ const FlightResultCard: React.FC<FlightResultCardProps & { onClick?: () => void 
         const airlineCode = firstSegment.carrierCode;
         const stops = itinerary.segments.length - 1;
 
-        // Calculate arrival date diff (mock logic for +1)
-        const depDate = new Date(firstSegment.departure.at).getDate();
-        const arrDate = new Date(lastSegment.arrival.at).getDate();
-        const nextDay = arrDate !== depDate;
+        const depTime = formatTime(firstSegment.departure.at);
+        const arrTime = formatTime(lastSegment.arrival.at);
+        const durationShort = formatDuration(itinerary.duration).replace(' std. ', 'h ').replace(' min.', 'm');
 
         return (
-            <div className="flex items-start justify-between py-2">
-                <div className="flex items-center gap-3">
-                    <img
-                        src={`https://pics.avs.io/60/60/${airlineCode}.png`}
-                        alt={airlineCode}
-                        className="w-8 h-8 object-contain rounded-sm"
-                        onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/60x60?text=✈️'; }}
-                    />
-                    <div>
-                        <div className="flex items-baseline gap-1">
-                            <span className="text-base font-bold text-slate-900">
-                                {formatTime(firstSegment.departure.at)}
-                            </span>
-                            <span className="text-slate-400 text-xs">-</span>
-                            <span className="text-base font-bold text-slate-900">
-                                {formatTime(lastSegment.arrival.at)}
-                            </span>
-                            {nextDay && <sup className="text-xs font-bold text-slate-500 ml-0.5">+1</sup>}
-                        </div>
-                        <div className="text-xs text-slate-500 font-medium">
-                            {firstSegment.departure.iataCode} - {lastSegment.arrival.iataCode}
-                        </div>
-                    </div>
+            <div className="py-2">
+                {/* Header: Date & Label */}
+                <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm text-slate-500 font-medium">
+                        {formatDate(firstSegment.departure.at)} • {isReturn ? 'Rückreise' : 'Hinreise'}
+                    </span>
+                    {/* Optional Pin (Mock) */}
+                    <i className="fa-solid fa-thumbtack text-slate-300 ml-auto text-xs opacity-0 md:opacity-100"></i>
                 </div>
 
-                <div className="text-right">
-                    <div className={`text-xs font-bold ${stops === 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {stops === 0 ? 'Direktflug' : `${stops} Zwischenstopp${stops > 1 ? 's' : ''}`}
+                {/* Flight Row */}
+                <div className="flex items-center justify-between">
+                    {/* Departure */}
+                    <div className="text-left w-1/4">
+                        <div className="text-xl font-bold text-slate-900 leading-none">{depTime}</div>
+                        <div className="text-sm text-slate-500 font-medium mt-1">{firstSegment.departure.iataCode}</div>
                     </div>
-                    <div className="text-xs text-slate-400 mt-0.5">
-                        {formatDuration(itinerary.duration)}
+
+                    {/* Center: Duration Pill & Airline */}
+                    <div className="flex-1 px-2 flex flex-col items-center">
+                        <div className="flex items-center gap-2 bg-slate-100 rounded-full px-3 py-1 mb-1">
+                            <span className="text-xs font-bold text-slate-600">{durationShort}</span>
+                            <img
+                                src={`https://pics.avs.io/60/60/${airlineCode}.png`}
+                                alt={airlineCode}
+                                className="w-4 h-4 object-contain"
+                            />
+                        </div>
+                        <div className="text-[10px] text-slate-400 font-medium">
+                            {stops === 0 ? 'Direkt' : `${stops} Stopp${stops > 1 ? 's' : ''}`}
+                        </div>
+                    </div>
+
+                    {/* Arrival */}
+                    <div className="text-right w-1/4">
+                        <div className="text-xl font-bold text-slate-900 leading-none">{arrTime}</div>
+                        <div className="text-sm text-slate-500 font-medium mt-1">{lastSegment.arrival.iataCode}</div>
                     </div>
                 </div>
             </div>
@@ -104,45 +123,69 @@ const FlightResultCard: React.FC<FlightResultCardProps & { onClick?: () => void 
     return (
         <div
             onClick={onClick}
-            className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 cursor-pointer hover:shadow-md transition-all active:scale-[0.99]"
+            className="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 cursor-pointer hover:shadow-md transition-all active:scale-[0.99] relative overflow-hidden"
         >
-            {/* Context Header: Airline Name & Badges */}
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                    <span className="font-bold text-slate-900 text-sm">
-                        {/* Try to get airline name from code or fallback */}
-                        {offer.validatingAirlineCodes[0]} Airlines
+            {/* Guarantee Tag (Top Right - Optional / Mocked) */}
+            {cheapest && (
+                <div className="absolute top-0 right-0 bg-green-500 text-white text-[9px] font-bold px-2 py-1 rounded-bl-lg">
+                    BESTER PREIS
+                </div>
+            )}
+
+            {/* Outbound */}
+            {renderItineraryNew(outboundItinerary, false)}
+
+            {/* Divider with Badge */}
+            <div className="relative py-4">
+                <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-dashed border-slate-200"></div>
+                </div>
+                {returnItinerary && nightsInDest > 0 && (
+                    <div className="relative flex justify-center">
+                        <span className="bg-white border border-slate-100 px-3 py-1 rounded-full text-xs font-bold text-slate-500 shadow-sm">
+                            {nightsInDest} Nächte am Ziel
+                        </span>
+                    </div>
+                )}
+            </div>
+
+            {/* Return */}
+            {returnItinerary && renderItineraryNew(returnItinerary, true)}
+
+            {/* Footer: Guarantee & Price */}
+            <div className="mt-4 pt-3 border-t border-slate-50 bg-emerald-50/50 -mx-4 -mb-4 px-4 py-3">
+                <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-emerald-700 flex items-center gap-1">
+                        <i className="fa-solid fa-shield-halved"></i>
+                        Guarantee verfügbar
                     </span>
+                    <span className="text-xs font-bold text-emerald-700">+18 €</span>
                 </div>
 
-                <div className="flex gap-2">
-                    {cheapest && <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full uppercase tracking-wide">Am günstigsten</span>}
-                    {fastest && <span className="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full uppercase tracking-wide">Am kürzesten</span>}
-                    {best && <span className="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full uppercase tracking-wide">Tipp</span>}
-                </div>
-            </div>
-
-            {/* Itineraries */}
-            <div className="space-y-4 mb-5 border-b border-slate-50 pb-4">
-                {renderItinerarySimple(outboundItinerary)}
-                {returnItinerary && renderItinerarySimple(returnItinerary)}
-            </div>
-
-            {/* Footer: Price */}
-            <div className="flex items-end justify-end">
-                <div className="text-right">
-                    <div className="text-2xl font-black text-slate-900 leading-none">
-                        {Math.ceil(parseFloat(offer.price.total)).toLocaleString('de-DE')} €
+                <div className="flex items-end justify-between">
+                    {/* Left: Baggage (Static Mock from Screenshot) */}
+                    <div className="flex items-center gap-3 text-slate-400">
+                        <div className="flex items-center gap-1">
+                            <i className="fa-solid fa-suitcase text-xs"></i>
+                            <span className="text-xs font-medium">1</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <i className="fa-solid fa-person-walking-luggage text-xs text-slate-300"></i>
+                            <span className="text-xs font-medium text-slate-300">0</span>
+                        </div>
                     </div>
-                    <div className="text-[10px] text-slate-400 font-medium mt-1">
-                        pro Person
+
+                    {/* Right: Price */}
+                    <div className="text-right">
+                        <div className="text-xl font-black text-slate-900 leading-none">
+                            {Math.ceil(parseFloat(offer.price.total)).toLocaleString('de-DE')} €
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
     );
 };
-
-export default FlightResultCard;
 
 
