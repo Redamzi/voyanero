@@ -118,7 +118,7 @@ function SearchContent() {
         maxPrice: null as number | null,
         airlines: [] as string[]
     });
-    const [sortOption, setSortOption] = useState<'best' | 'cheapest' | 'fastest'>('best');
+
     const [sortOption, setSortOption] = useState<'best' | 'cheapest' | 'fastest'>('best');
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedFlight, setSelectedFlight] = useState<any | null>(null);
