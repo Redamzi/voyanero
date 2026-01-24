@@ -27,7 +27,7 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
     onEnter?: () => void;
     showMyLocation?: boolean;
     selectedCode?: string | null;
-    variant?: 'origin' | 'destination' | 'default';
+    variant?: 'origin' | 'destination' | 'default' | 'inline';
 }) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [suggestions, setSuggestions] = useState<any[]>([]);
@@ -70,7 +70,8 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
     const chipColors = {
         origin: 'bg-[#008f7a] text-white border-transparent', // Teal
         destination: 'bg-[#ea580c] text-white border-transparent', // Orange
-        default: 'bg-slate-100 text-slate-900 border-slate-200'
+        default: 'bg-slate-100 text-slate-900 border-slate-200',
+        inline: 'bg-slate-100 text-slate-900 border-slate-200'
     };
 
     const currentColor = selectedCode ? chipColors[variant] || chipColors.default : '';
@@ -112,7 +113,7 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
                 </div>
             )}
             {showSuggestions && suggestions.length > 0 && !selectedCode && (
-                <div className="absolute top-full left-0 right-0 bg-white shadow-2xl rounded-3xl mt-3 z-50 max-h-[400px] overflow-y-auto border border-slate-200 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className={`${variant === 'inline' ? 'relative mt-3' : 'absolute top-full left-0 right-0 mt-3'} bg-white shadow-2xl rounded-3xl z-50 max-h-[400px] overflow-y-auto border border-slate-200 animate-in fade-in slide-in-from-top-2 duration-200`}>
                     {/* Mein Standort Section */}
                     {suggestions.some(loc => loc.isCurrentLocation) && (
                         <div className="border-b border-slate-100">
@@ -626,7 +627,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                 onClick={() => { setIsOpen(false); onClose?.(); }}
                             />
                             <motion.div
-                                className="fixed inset-0 z-[99999] bg-white min-h-screen h-full w-screen overflow-hidden flex flex-col"
+                                className="fixed inset-0 z-[99999] bg-white min-h-[100dvh] h-full w-full overflow-hidden flex flex-col"
                                 variants={modalVariants}
                                 initial="hidden"
                                 animate="visible"
@@ -757,7 +758,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                 autoFocus
                                                                 showMyLocation={true}
                                                                 selectedCode={flightOriginCode || null}
-                                                                variant="origin"
+                                                                variant="inline"
                                                             />
 
                                                             {/* Swap Button (Desktop) */}
@@ -806,7 +807,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                 icon="fa-plane-arrival"
                                                                 onEnter={() => flightDestination.length > 0 && setCurrentStep(2)}
                                                                 selectedCode={flightDestinationCode || null}
-                                                                variant="destination"
+                                                                variant="inline"
                                                             />
                                                         </div>
                                                         {flightOrigin.length > 0 && flightDestination.length > 0 && !flightOriginCode && (

@@ -29,6 +29,13 @@ interface FlightDetailsModalProps {
 
 const FlightDetailsModal: React.FC<FlightDetailsModalProps> = ({ offer, onClose }) => {
 
+    React.useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, []);
+
     const formatTime = (iso: string) => new Date(iso).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
     const formatDate = (iso: string) => new Date(iso).toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
     const formatDuration = (pt: string) => pt.replace('PT', '').replace('H', 'h ').replace('M', 'm').toLowerCase();
@@ -54,7 +61,7 @@ const FlightDetailsModal: React.FC<FlightDetailsModalProps> = ({ offer, onClose 
                 animate={{ x: 0 }}
                 exit={{ x: '100%' }}
                 transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                className="relative w-full max-w-md bg-slate-50 h-full shadow-2xl flex flex-col overflow-hidden"
+                className="relative w-full max-w-md bg-slate-50 h-[100dvh] shadow-2xl flex flex-col overflow-hidden"
             >
                 {/* Header */}
                 <header className="bg-white px-6 py-4 border-b border-slate-100 flex items-center gap-4 shrink-0">
