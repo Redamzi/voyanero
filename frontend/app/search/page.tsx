@@ -463,7 +463,7 @@ function SearchContent() {
                         {/* Main Results */}
                         <div className="flex-1 min-w-0">
                             {/* Sort Tabs */}
-                            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 w-full flex-nowrap max-w-full no-scrollbar">
+                            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 w-[calc(100%+2rem)] -mx-4 px-4 sm:w-full sm:mx-0 sm:px-0 flex-nowrap">
                                 {[
                                     { id: 'best', label: 'Beste Ergebnisse', icon: 'fa-star' },
                                     { id: 'cheapest', label: 'Am billigsten', icon: 'fa-tag' },
