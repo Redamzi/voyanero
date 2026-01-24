@@ -36,7 +36,7 @@ interface FlightResultCardProps {
     best?: boolean;
 }
 
-const FlightResultCard: React.FC<FlightResultCardProps & { onClick?: () => void }> = ({ offer, cheapest, fastest, best, onClick }) => {
+const FlightResultCard: React.FC<FlightResultCardProps & { onClick?: () => void }> = ({ offer, cheapest, onClick }) => {
     // Helper to format duration
     const formatDuration = (ptDuration: string) => {
         return ptDuration.replace('PT', '').replace('H', ' Std. ').replace('M', ' Min.').toLowerCase();
