@@ -188,4 +188,6 @@ const FlightResultCard: React.FC<FlightResultCardProps & { onClick?: () => void 
     );
 };
 
+export default FlightResultCard;
+
 
