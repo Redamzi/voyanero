@@ -160,7 +160,7 @@ export default function ListingDetailPage() {
                         <div className="flex items-center justify-between py-6 border-b border-slate-100">
                             <div>
                                 <h2 className="text-2xl font-bold text-slate-900 mb-1">
-                                    {isAffiliate ? `Flug mit ${listing.title.replace('Flug mit ', '')}` : `Entire villa hosted by Sarah`}
+                                    {isAffiliate ? listing.title : `Entire villa hosted by Sarah`}
                                 </h2>
                                 <p className="text-slate-500">
                                     {listing.maxGuests} Gäste • {Math.ceil(listing.maxGuests / 2)} Schlafzimmer • 2 Badezimmer
