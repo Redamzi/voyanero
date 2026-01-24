@@ -1,7 +1,6 @@
 "use client";
 
 import React from 'react';
-import Link from 'next/link';
 
 interface FlightSegment {
     departure: {
@@ -46,12 +45,6 @@ const FlightResultCard: React.FC<FlightResultCardProps & { onClick?: () => void 
     // Helper to format time
     const formatTime = (isoString: string) => {
         return new Date(isoString).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
-    };
-
-    // Helper to format Date
-    const formatDate = (isoString?: string) => {
-        if (!isoString) return '';
-        return new Date(isoString).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
     };
 
     const outboundItinerary = offer.itineraries[0];
@@ -107,8 +100,6 @@ const FlightResultCard: React.FC<FlightResultCardProps & { onClick?: () => void 
             </div>
         );
     };
-
-    const bookingUrl = `/book/flight?offerId=${offer.id}&context=${encodeURIComponent(JSON.stringify(offer))}`;
 
     return (
         <div
