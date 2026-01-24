@@ -7,6 +7,7 @@ import ListingCard from '@/components/ListingCard';
 import ListingPreviewModal from '@/components/ListingPreviewModal';
 import FlightResultCard from '@/components/FlightResultCard';
 import FilterSidebar from '@/components/FilterSidebar';
+import FlightDetailsModal from '@/components/FlightDetailsModal';
 import DateStrip from '@/components/DateStrip';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -118,6 +119,7 @@ function SearchContent() {
         airlines: [] as string[]
     });
     const [sortOption, setSortOption] = useState<'best' | 'cheapest' | 'fastest'>('best');
+    const [selectedFlight, setSelectedFlight] = useState<any | null>(null);
 
     // Fetch Data (Flights & Hotels)
     React.useEffect(() => {
@@ -511,6 +513,7 @@ function SearchContent() {
                                         offer={offer}
                                         cheapest={idx === 0 && sortOption === 'cheapest'}
                                         best={idx === 0 && sortOption === 'best'}
+                                        onClick={() => setSelectedFlight(offer)}
                                     />
                                 ))}
 
@@ -526,12 +529,53 @@ function SearchContent() {
                             </div>
                         </div>
                     </div>
+                    {selectedFlight && (
+                        <FlightDetailsModal
+                            offer={selectedFlight}
+                            onClose={() => setSelectedFlight(null)}
+                        />
+                    )}
                 </main>
                 <div className="hidden md:block">
                     <div className="hidden md:block">
                         <Footer />
                     </div>
                 </div>
+
+                {/* MOBILE FLIGHT FILTER MODAL */}
+                <AnimatePresence>
+                    {isFilterModalOpen && (
+                        <div className="fixed inset-0 z-[1100] bg-white flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300">
+                            <header className="px-8 py-6 border-b border-slate-100 flex items-center shrink-0 bg-white relative">
+                                <button onClick={() => setIsFilterModalOpen(false)} className="w-12 h-12 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-all z-10">
+                                    <i className="fa-solid fa-xmark text-xl"></i>
+                                </button>
+                                <h2 className="absolute left-1/2 -translate-x-1/2 text-lg font-black text-slate-900 uppercase tracking-widest">Filter</h2>
+                            </header>
+
+                            <main className="flex-1 overflow-y-auto bg-slate-50/10">
+                                <div className="max-w-lg mx-auto py-8 px-6">
+                                    <FilterSidebar
+                                        filters={flightFilters}
+                                        onFilterChange={setFlightFilters}
+                                        minPrice={Math.floor(minPrice)}
+                                        maxPrice={Math.ceil(maxPrice)}
+                                        availableAirlines={availableAirlines}
+                                    />
+                                </div>
+                            </main>
+
+                            <footer className="px-10 py-6 border-t border-slate-100 flex items-center justify-center shrink-0 bg-white shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+                                <button
+                                    onClick={() => setIsFilterModalOpen(false)}
+                                    className="w-full bg-slate-900 text-white px-8 py-4 rounded-xl font-black text-sm uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl active:scale-[0.98]"
+                                >
+                                    {filteredFlights.length} Ergebnisse anzeigen
+                                </button>
+                            </footer>
+                        </div>
+                    )}
+                </AnimatePresence>
             </div>
         );
     }
