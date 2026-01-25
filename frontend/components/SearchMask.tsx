@@ -313,6 +313,12 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
     const [infants, setInfants] = useState(0);
     const [pets, setPets] = useState(0);
 
+    // New Flight Filters
+    const [cabinClass, setCabinClass] = useState('economy');
+    const [mixClasses, setMixClasses] = useState(false);
+    const [cabinBags, setCabinBags] = useState(0);
+    const [checkedBags, setCheckedBags] = useState(0);
+
     // Derived total for display (usually Adults + Children)
     const guests = adults + children;
     const [isLocating, setIsLocating] = useState(false);
@@ -374,7 +380,11 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
             adults: adults.toString(),
             children: children.toString(),
             infants: infants.toString(),
-            pets: pets.toString()
+            pets: pets.toString(),
+            cabinClass,
+            mixClasses: mixClasses.toString(),
+            cabinBags: cabinBags.toString(),
+            checkedBags: checkedBags.toString()
         });
         router.push(`/search?${params.toString()}`);
     };
@@ -1178,106 +1188,194 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
 
                                     {/* STEP 3: WER */}
                                     {currentStep === 3 && (
-                                        <div className="w-full max-w-lg mx-auto px-4 text-center animate-in slide-in-from-right-8 duration-500">
-                                            {/* ... Step 3 Content ... */}
+                                        <div className="w-full max-w-lg mx-auto px-4 text-center animate-in slide-in-from-right-8 duration-500 pb-24">
                                             <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-8 tracking-tighter">Wer reist mit?</h2>
 
-                                            <div className="bg-white border border-slate-100 p-8 rounded-[2.5rem] shadow-xl text-left space-y-8">
+                                            <div className="text-left space-y-8">
+                                                {/* Header: Reisegäste */}
+                                                <h3 className="font-black text-xl text-slate-900">Reisegäste</h3>
+
                                                 {/* Erwachsene */}
-                                                <div className="flex items-center justify-between pb-8 border-b border-slate-50">
+                                                <div className="flex items-center justify-between pb-4">
                                                     <div>
-                                                        <p className="font-black text-lg text-slate-900">Erwachsene</p>
-                                                        <p className="text-slate-400 text-sm font-medium">Ab 13 Jahren</p>
+                                                        <span className="font-bold text-lg text-slate-900 mr-2">Erwachsene</span>
+                                                        <span className="text-slate-500 font-medium">Über 11</span>
                                                     </div>
-                                                    <div className="flex items-center gap-6">
+                                                    <div className="flex items-center gap-4">
                                                         <button
                                                             onClick={() => setAdults(Math.max(1, adults - 1))}
-                                                            className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${adults > 1 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
+                                                            className={`w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center transition-all ${adults > 1 ? 'hover:bg-slate-200 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
                                                             disabled={adults <= 1}
                                                         >
-                                                            <i className="fa-solid fa-minus text-sm"></i>
+                                                            <i className="fa-solid fa-minus text-xs"></i>
                                                         </button>
-                                                        <span className="text-xl font-black text-slate-900 w-6 text-center">{adults}</span>
+                                                        <span className="text-lg font-black text-slate-900 w-6 text-center">{adults}</span>
                                                         <button
                                                             onClick={() => setAdults(adults + 1)}
-                                                            className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
+                                                            className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all"
                                                         >
-                                                            <i className="fa-solid fa-plus text-sm"></i>
+                                                            <i className="fa-solid fa-plus text-xs"></i>
                                                         </button>
                                                     </div>
                                                 </div>
 
                                                 {/* Kinder */}
-                                                <div className="flex items-center justify-between pb-8 border-b border-slate-50">
+                                                <div className="flex items-center justify-between pb-4">
                                                     <div>
-                                                        <p className="font-black text-lg text-slate-900">Kinder</p>
-                                                        <p className="text-slate-400 text-sm font-medium">2–12 Jahre alt</p>
+                                                        <span className="font-bold text-lg text-slate-900 mr-2">Kinder</span>
+                                                        <span className="text-slate-500 font-medium">2 – 11</span>
                                                     </div>
-                                                    <div className="flex items-center gap-6">
+                                                    <div className="flex items-center gap-4">
                                                         <button
                                                             onClick={() => setChildren(Math.max(0, children - 1))}
-                                                            className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${children > 0 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
+                                                            className={`w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center transition-all ${children > 0 ? 'hover:bg-slate-200 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
                                                             disabled={children <= 0}
                                                         >
-                                                            <i className="fa-solid fa-minus text-sm"></i>
+                                                            <i className="fa-solid fa-minus text-xs"></i>
                                                         </button>
-                                                        <span className="text-xl font-black text-slate-900 w-6 text-center">{children}</span>
+                                                        <span className="text-lg font-black text-slate-900 w-6 text-center">{children}</span>
                                                         <button
                                                             onClick={() => setChildren(children + 1)}
-                                                            className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
+                                                            className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all"
                                                         >
-                                                            <i className="fa-solid fa-plus text-sm"></i>
+                                                            <i className="fa-solid fa-plus text-xs"></i>
                                                         </button>
                                                     </div>
                                                 </div>
 
                                                 {/* Kleinkinder */}
-                                                <div className="flex items-center justify-between pb-8 border-b border-slate-50">
+                                                <div className="flex items-center justify-between pb-4">
                                                     <div>
-                                                        <p className="font-black text-lg text-slate-900">Kleinkinder</p>
-                                                        <p className="text-slate-400 text-sm font-medium">Unter 2 Jahren</p>
+                                                        <span className="font-bold text-lg text-slate-900 mr-2">Kleinkinder</span>
+                                                        <span className="text-slate-500 font-medium">Unter 2</span>
                                                     </div>
-                                                    <div className="flex items-center gap-6">
+                                                    <div className="flex items-center gap-4">
                                                         <button
                                                             onClick={() => setInfants(Math.max(0, infants - 1))}
-                                                            className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${infants > 0 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
+                                                            className={`w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center transition-all ${infants > 0 ? 'hover:bg-slate-200 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
                                                             disabled={infants <= 0}
                                                         >
-                                                            <i className="fa-solid fa-minus text-sm"></i>
+                                                            <i className="fa-solid fa-minus text-xs"></i>
                                                         </button>
-                                                        <span className="text-xl font-black text-slate-900 w-6 text-center">{infants}</span>
+                                                        <span className="text-lg font-black text-slate-900 w-6 text-center">{infants}</span>
                                                         <button
                                                             onClick={() => setInfants(infants + 1)}
-                                                            className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
+                                                            className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all"
                                                         >
-                                                            <i className="fa-solid fa-plus text-sm"></i>
+                                                            <i className="fa-solid fa-plus text-xs"></i>
                                                         </button>
                                                     </div>
                                                 </div>
 
-                                                {/* Haustiere */}
-                                                <div className="flex items-center justify-between">
-                                                    <div>
-                                                        <p className="font-black text-lg text-slate-900">Haustiere</p>
-                                                        <a href="#" className="text-slate-400 text-sm font-medium underline underline-offset-4 hover:text-slate-800 transition-colors">Hast du ein Assistenztier dabei?</a>
+                                                {/* Haustiere - NUR BEI UNTERKUNFT */}
+                                                {searchType === 'unterkunft' && (
+                                                    <div className="flex items-center justify-between pb-4">
+                                                        <div>
+                                                            <p className="font-bold text-lg text-slate-900">Haustiere</p>
+                                                            <a href="#" className="text-slate-400 text-sm font-medium underline underline-offset-4 hover:text-slate-800 transition-colors">Assistenztier?</a>
+                                                        </div>
+                                                        <div className="flex items-center gap-4">
+                                                            <button
+                                                                onClick={() => setPets(Math.max(0, pets - 1))}
+                                                                className={`w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center transition-all ${pets > 0 ? 'hover:bg-slate-200 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
+                                                                disabled={pets <= 0}
+                                                            >
+                                                                <i className="fa-solid fa-minus text-xs"></i>
+                                                            </button>
+                                                            <span className="text-lg font-black text-slate-900 w-6 text-center">{pets}</span>
+                                                            <button
+                                                                onClick={() => setPets(pets + 1)}
+                                                                className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all"
+                                                            >
+                                                                <i className="fa-solid fa-plus text-xs"></i>
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                    <div className="flex items-center gap-6">
-                                                        <button
-                                                            onClick={() => setPets(Math.max(0, pets - 1))}
-                                                            className={`w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center transition-all ${pets > 0 ? 'hover:border-slate-800 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
-                                                            disabled={pets <= 0}
-                                                        >
-                                                            <i className="fa-solid fa-minus text-sm"></i>
-                                                        </button>
-                                                        <span className="text-xl font-black text-slate-900 w-6 text-center">{pets}</span>
-                                                        <button
-                                                            onClick={() => setPets(pets + 1)}
-                                                            className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center hover:border-slate-800 text-slate-600 hover:text-slate-900 transition-all"
-                                                        >
-                                                            <i className="fa-solid fa-plus text-sm"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                                )}
+
+                                                {/* GEPÄCKSTÜCKE - NUR BEI FLÜGEN */}
+                                                {searchType === 'fluege' && (
+                                                    <>
+                                                        <h3 className="font-black text-xl text-slate-900 pt-4">Gepäckstücke</h3>
+
+                                                        {/* Handgepäck */}
+                                                        <div className="flex items-center justify-between pb-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <i className="fa-solid fa-suitcase text-slate-900"></i>
+                                                                <span className="font-bold text-lg text-slate-900">Handgepäck</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-4">
+                                                                <button
+                                                                    onClick={() => setCabinBags(Math.max(0, cabinBags - 1))}
+                                                                    className={`w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center transition-all ${cabinBags > 0 ? 'hover:bg-slate-200 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
+                                                                    disabled={cabinBags <= 0}
+                                                                >
+                                                                    <i className="fa-solid fa-minus text-xs"></i>
+                                                                </button>
+                                                                <span className="text-lg font-black text-slate-900 w-6 text-center">{cabinBags}</span>
+                                                                <button
+                                                                    onClick={() => setCabinBags(cabinBags + 1)}
+                                                                    className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all"
+                                                                >
+                                                                    <i className="fa-solid fa-plus text-xs"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Aufgabegepäck */}
+                                                        <div className="flex items-center justify-between pb-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <i className="fa-solid fa-suitcase-rolling text-slate-900"></i>
+                                                                <span className="font-bold text-lg text-slate-900">Aufgabegepäck</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-4">
+                                                                <button
+                                                                    onClick={() => setCheckedBags(Math.max(0, checkedBags - 1))}
+                                                                    className={`w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center transition-all ${checkedBags > 0 ? 'hover:bg-slate-200 text-slate-600 hover:text-slate-900' : 'opacity-30 cursor-not-allowed'}`}
+                                                                    disabled={checkedBags <= 0}
+                                                                >
+                                                                    <i className="fa-solid fa-minus text-xs"></i>
+                                                                </button>
+                                                                <span className="text-lg font-black text-slate-900 w-6 text-center">{checkedBags}</span>
+                                                                <button
+                                                                    onClick={() => setCheckedBags(checkedBags + 1)}
+                                                                    className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-all"
+                                                                >
+                                                                    <i className="fa-solid fa-plus text-xs"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* FLUGKLASSEN */}
+                                                        <h3 className="font-black text-xl text-slate-900 pt-4">Flugklassen</h3>
+                                                        <div className="space-y-4">
+                                                            {[
+                                                                { id: 'economy', label: 'Economy' },
+                                                                { id: 'premium_economy', label: 'Premium Economy' },
+                                                                { id: 'business', label: 'Business Class' },
+                                                                { id: 'first', label: 'First Class' }
+                                                            ].map((cls) => (
+                                                                <div key={cls.id} className="flex items-center gap-3 cursor-pointer" onClick={() => setCabinClass(cls.id)}>
+                                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${cabinClass === cls.id ? 'border-[#0066CC] bg-[#0066CC]' : 'border-slate-300'}`}>
+                                                                        {cabinClass === cls.id && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
+                                                                    </div>
+                                                                    <span className="font-bold text-lg text-slate-900">{cls.label}</span>
+                                                                </div>
+                                                            ))}
+
+                                                            {/* Klassen mischen (Checkbox style) */}
+                                                            <div className="flex items-center gap-3 cursor-pointer mt-6 pt-2" onClick={() => setMixClasses(!mixClasses)}>
+                                                                <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center ${mixClasses ? 'border-slate-900 bg-slate-900' : 'border-slate-300'}`}>
+                                                                    {mixClasses && <i className="fa-solid fa-check text-white text-xs"></i>}
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="font-bold text-lg text-slate-900">Klassen mischen</span>
+                                                                    <i className="fa-solid fa-circle-info text-slate-500 text-sm"></i>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     )}
