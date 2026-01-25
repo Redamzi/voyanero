@@ -77,18 +77,18 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
     const currentColor = selectedCode ? chipColors[variant] || chipColors.default : '';
 
     return (
-        <div className="relative group w-full">
-            <div className={`absolute left-6 top-1/2 -translate-y-1/2 z-10 ${selectedCode ? 'text-white/80' : 'text-slate-400'}`}>
+        <div className="relative group w-full h-16 sm:h-20">
+            <div className={`absolute left-6 top-1/2 -translate-y-1/2 z-10 pointer-events-none ${selectedCode ? 'text-white/80' : 'text-slate-400'}`}>
                 <i className={`fa-solid ${icon} text-xl`}></i>
             </div>
 
             {/* Render Input or Chip */}
             {selectedCode ? (
-                <div className={`w-full h-16 sm:h-20 pl-14 sm:pl-16 pr-12 rounded-full border-2 shadow-sm text-base sm:text-lg font-bold flex items-center justify-between transition-all ${currentColor}`} onClick={() => onChange('')}>
+                <div className={`w-full h-full pl-14 sm:pl-16 pr-12 rounded-full border-2 shadow-sm text-base sm:text-lg font-bold flex items-center justify-between transition-all ${currentColor}`} onClick={() => onChange('')}>
                     <span className="truncate mr-2">{value}</span>
                     <button
                         onClick={handleClear}
-                        className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors shrink-0"
+                        className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors shrink-0 cursor-pointer pointer-events-auto"
                     >
                         <i className="fa-solid fa-xmark text-sm"></i>
                     </button>
@@ -99,7 +99,7 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                     placeholder={placeholder}
-                    className="w-full h-16 sm:h-20 pl-14 sm:pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-base sm:text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
+                    className="w-full h-full pl-14 sm:pl-16 pr-6 rounded-full border-2 border-orange-100 bg-white shadow-[0_8px_30px_rgba(234,88,12,0.06)] text-base sm:text-lg font-bold text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-[#FF385C]/10 placeholder:text-slate-300 transition-all font-jakarta"
                     onFocus={() => setShowSuggestions(true)}
                     onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                     autoFocus={autoFocus}
