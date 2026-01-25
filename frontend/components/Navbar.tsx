@@ -33,8 +33,8 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
     }, [forceCompact]);
 
     return (
-        <nav className={`border-b border-slate-100 bg-white sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'shadow-sm py-2' : 'py-0'}`}>
-            <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-12">
+        <nav className={`border-b border-slate-100 bg-white sticky top-0 z-50 transition-all duration-300 overflow-x-hidden ${isScrolled ? 'shadow-sm py-2' : 'py-0'}`}>
+            <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-12 overflow-x-hidden">
                 <div className="flex justify-between h-20 items-center gap-4">
                     {/* Logo */}
                     <div className="flex items-center gap-2 shrink-0">

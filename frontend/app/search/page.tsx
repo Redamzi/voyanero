@@ -431,26 +431,26 @@ function SearchContent() {
         const maxPrice = flightOffers.length > 0 ? Math.max(...flightOffers.map(f => parseFloat(f.price.total))) : 1000;
 
         return (
-            <div className="min-h-screen bg-slate-50">
+            <div className="min-h-screen bg-slate-50 overflow-x-hidden">
                 <Navbar
                     onFilterClick={() => setIsFilterModalOpen(true)}
                     forceCompact={true}
                     onToggleSelectionMode={() => setIsSelectionMode(!isSelectionMode)}
                 />
 
-                <main className="max-w-7xl mx-auto px-4 md:px-8 py-8">
-                    {/* Date Strip */}
-                    <div className="mb-8">
+                <main className="max-w-7xl mx-auto px-4 md:px-8 py-8 overflow-x-hidden">
+                    {/* Date Selection */}
+                    <section id="date-selection" className="mb-8">
                         <DateStrip
                             currentDate={dateQuery ? new Date(dateQuery) : new Date()}
                             onDateSelect={handleDateSelect}
                             prices={{}} // Mock prices could go here
                         />
-                    </div>
+                    </section>
 
-                    <div className="flex flex-col lg:flex-row gap-8 items-start">
+                    <div className="flex flex-col lg:flex-row gap-8 items-start w-full max-w-full">
                         {/* Sidebar */}
-                        <aside className="hidden lg:block w-72 shrink-0">
+                        <aside className="hidden lg:block w-72 shrink-0 sticky top-24 self-start">
                             <FilterSidebar
                                 filters={flightFilters}
                                 onFilterChange={setFlightFilters}
@@ -461,9 +461,9 @@ function SearchContent() {
                         </aside>
 
                         {/* Main Results */}
-                        <div className="flex-1 min-w-0">
+                        <section id="results" className="flex-1 min-w-0 w-full max-w-full">
                             {/* Sort Tabs */}
-                            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 w-full flex-nowrap scroll-smooth px-4 no-scrollbar">
+                            <div className="-mx-4 px-4 md:mx-0 md:px-0 flex items-center gap-2 mb-6 overflow-x-auto pb-2 w-full max-w-full flex-nowrap scroll-smooth no-scrollbar">
                                 {[
                                     { id: 'best', label: 'Beste Ergebnisse', icon: 'fa-star' },
                                     { id: 'cheapest', label: 'Am billigsten', icon: 'fa-tag' },
@@ -531,7 +531,7 @@ function SearchContent() {
                                     </div>
                                 )}
                             </div>
-                        </div>
+                        </section>
                     </div>
                     {selectedFlight && (
                         <FlightDetailsModal
