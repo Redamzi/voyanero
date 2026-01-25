@@ -8,6 +8,10 @@ interface FlightSearchParams {
     children?: number;
     infants?: number;
     trip_class?: string; // Y or C
+    cabinClass?: string; // economy, business, etc.
+    mixClasses?: boolean;
+    cabinBags?: number;
+    checkedBags?: number;
 }
 
 // Use environment variable for API URL, fallback to same origin in production, localhost in dev
@@ -100,7 +104,14 @@ export const FlightService = {
                 adults: params.adults || 1,
                 children: params.children || 0,
                 infants: params.infants || 0,
-                travelClass: params.trip_class
+                // Prioritize new cabinClass param, fallback to trip_class defaults
+                travelClass: params.mixClasses ? undefined : (params.cabinClass || params.trip_class),
+                // Pass filter params for backend post-processing
+                filters: {
+                    cabinBags: params.cabinBags || 0,
+                    checkedBags: params.checkedBags || 0,
+                    mixClasses: params.mixClasses || false
+                }
             };
 
             const response = await fetch(`${API_BASE_URL}/search`, {

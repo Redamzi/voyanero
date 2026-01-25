@@ -21,8 +21,22 @@ export const AmadeusService = {
     // Flight Search (Cached)
     searchFlights: async (params: any) => {
         try {
-            // Create a unique cache key based on search parameters
-            const cacheKey = `flights_${JSON.stringify(params)}`;
+            // Helper: Map frontend class names to Amadeus API enums
+            const mapCabinClass = (cls: string | undefined): string | undefined => {
+                if (!cls) return undefined;
+                const map: { [key: string]: string } = {
+                    'economy': 'ECONOMY',
+                    'premium_economy': 'PREMIUM_ECONOMY',
+                    'business': 'BUSINESS',
+                    'first': 'FIRST'
+                };
+                return map[cls.toLowerCase()] || cls.toUpperCase();
+            };
+
+            const filters = params.filters || {};
+
+            // Create a unique cache key based on search parameters including filters
+            const cacheKey = `flights_${JSON.stringify({ ...params, filters })}`;
             const cachedData = cache.get(cacheKey);
 
             if (cachedData) {
@@ -31,7 +45,7 @@ export const AmadeusService = {
             }
 
             console.log('🌍 Fetching live Flight data from Amadeus...');
-            const response = await amadeus.shopping.flightOffersSearch.get({
+            const apiParams = {
                 originLocationCode: params.origin,
                 destinationLocationCode: params.destination,
                 departureDate: params.departureDate,
@@ -39,14 +53,40 @@ export const AmadeusService = {
                 adults: params.adults || 1,
                 children: params.children || 0,
                 infants: params.infants || 0,
-                travelClass: params.travelClass, // ECONOMY, PREMIUM_ECONOMY, BUSINESS, FIRST
+                travelClass: mapCabinClass(params.travelClass), // ECONOMY, PREMIUM_ECONOMY, BUSINESS, FIRST
                 currencyCode: 'EUR',
                 max: 20, // Limit results to save bandwidth
-            });
+            };
+
+            const response = await amadeus.shopping.flightOffersSearch.get(apiParams);
+            let results = response.data || [];
+
+            // --- POST-FILTERING (UI-Only filters) ---
+
+            // Filter by Checked Bags
+            if (filters.checkedBags > 0) {
+                console.log(`🔍 Filtering results for ${filters.checkedBags} checked bags...`);
+                results = results.filter((offer: any) => {
+                    // Check first traveler's baggage allowance
+                    const traveler = offer.travelerPricings?.[0];
+                    if (!traveler) return false;
+
+                    // Check all segments? Or just assume if one has it. Usually strictly implies "per flight".
+                    // We check if ANY segment provides the requested bags (simplified logic)
+                    // Or typically "includedCheckedBags" exists.
+                    return traveler.fareDetailsBySegment.some((seg: any) => {
+                        const bagQty = seg.includedCheckedBags?.quantity || 0;
+                        const bagWeight = seg.includedCheckedBags?.weight; // Sometimes it's weight concept
+                        // If quantity is defined and >= requested OR weight is defined (implies baggage included)
+                        return bagQty >= filters.checkedBags || (bagWeight !== undefined && bagWeight > 0);
+                    });
+                });
+                console.log(`✅ Filtered: ${response.data.length} -> ${results.length} offers`);
+            }
 
             // Save to cache (TTL: 30 minutes for flights to keep prices relatively fresh)
-            cache.set(cacheKey, response.data, 1800);
-            return response.data;
+            cache.set(cacheKey, results, 1800);
+            return results;
         } catch (error) {
             console.error('Amadeus Flight Search Error:', error);
             throw error;
