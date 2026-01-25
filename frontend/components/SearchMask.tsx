@@ -742,24 +742,26 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                             </div>
                                                         </div>
 
-                                                        <div className="flex flex-col md:flex-row items-center gap-2 relative">
-                                                            <LocationAutocomplete
-                                                                value={flightOrigin}
-                                                                onChange={(val) => {
-                                                                    setFlightOrigin(val);
-                                                                    setFlightOriginCode('');
-                                                                }}
-                                                                onSelect={(loc) => {
-                                                                    setFlightOrigin(loc.address?.cityName || loc.name);
-                                                                    setFlightOriginCode(loc.iataCode);
-                                                                }}
-                                                                placeholder="Von: Abflugort"
-                                                                icon="fa-plane-departure"
-                                                                autoFocus
-                                                                showMyLocation={true}
-                                                                selectedCode={flightOriginCode || null}
-                                                                variant="inline"
-                                                            />
+                                                        <div className="flex flex-col md:flex-row items-stretch gap-2 md:gap-4 relative">
+                                                            <div className="flex-1">
+                                                                <LocationAutocomplete
+                                                                    value={flightOrigin}
+                                                                    onChange={(val) => {
+                                                                        setFlightOrigin(val);
+                                                                        setFlightOriginCode('');
+                                                                    }}
+                                                                    onSelect={(loc) => {
+                                                                        setFlightOrigin(loc.address?.cityName || loc.name);
+                                                                        setFlightOriginCode(loc.iataCode);
+                                                                    }}
+                                                                    placeholder="Von: Abflugort"
+                                                                    icon="fa-plane-departure"
+                                                                    autoFocus
+                                                                    showMyLocation={true}
+                                                                    selectedCode={flightOriginCode || null}
+                                                                    variant="inline"
+                                                                />
+                                                            </div>
 
                                                             {/* Swap Button (Desktop) */}
                                                             <button
@@ -772,7 +774,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                     setFlightOriginCode(flightDestinationCode);
                                                                     setFlightDestinationCode(tempCode);
                                                                 }}
-                                                                className="hidden md:flex shrink-0 w-12 h-12 bg-slate-100 hover:bg-slate-200 rounded-full items-center justify-center text-slate-500 hover:text-slate-900 transition-all z-10 -mx-6 border-4 border-white"
+                                                                className="hidden md:flex shrink-0 w-12 h-12 bg-slate-100 hover:bg-slate-200 rounded-full items-center justify-center text-slate-500 hover:text-slate-900 transition-all z-10 self-center"
                                                             >
                                                                 <i className="fa-solid fa-arrow-right-arrow-left"></i>
                                                             </button>
@@ -793,22 +795,24 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                 <i className="fa-solid fa-arrow-right-arrow-left"></i>
                                                             </button>
 
-                                                            <LocationAutocomplete
-                                                                value={flightDestination}
-                                                                onChange={(val) => {
-                                                                    setFlightDestination(val);
-                                                                    setFlightDestinationCode('');
-                                                                }}
-                                                                onSelect={(loc) => {
-                                                                    setFlightDestination(loc.address?.cityName || loc.name);
-                                                                    setFlightDestinationCode(loc.iataCode);
-                                                                }}
-                                                                placeholder="Nach: Zielort"
-                                                                icon="fa-plane-arrival"
-                                                                onEnter={() => flightDestination.length > 0 && setCurrentStep(2)}
-                                                                selectedCode={flightDestinationCode || null}
-                                                                variant="inline"
-                                                            />
+                                                            <div className="flex-1">
+                                                                <LocationAutocomplete
+                                                                    value={flightDestination}
+                                                                    onChange={(val) => {
+                                                                        setFlightDestination(val);
+                                                                        setFlightDestinationCode('');
+                                                                    }}
+                                                                    onSelect={(loc) => {
+                                                                        setFlightDestination(loc.address?.cityName || loc.name);
+                                                                        setFlightDestinationCode(loc.iataCode);
+                                                                    }}
+                                                                    placeholder="Nach: Zielort"
+                                                                    icon="fa-plane-arrival"
+                                                                    onEnter={() => flightDestination.length > 0 && setCurrentStep(2)}
+                                                                    selectedCode={flightDestinationCode || null}
+                                                                    variant="inline"
+                                                                />
+                                                            </div>
                                                         </div>
                                                         {flightOrigin.length > 0 && flightDestination.length > 0 && !flightOriginCode && (
                                                             <div className="text-orange-600 text-sm font-medium bg-orange-50 p-3 rounded-xl">
