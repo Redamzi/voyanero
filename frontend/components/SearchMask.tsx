@@ -334,6 +334,30 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
     const [flightDestinationCode, setFlightDestinationCode] = useState('');
     const [flightType, setFlightType] = useState<'roundtrip' | 'oneway' | 'multicity'>('roundtrip');
 
+    // Multi-City State
+    const [segments, setSegments] = useState<{ origin: string; originCode: string; destination: string; destinationCode: string; date: string }[]>([
+        { origin: '', originCode: '', destination: '', destinationCode: '', date: '' },
+        { origin: '', originCode: '', destination: '', destinationCode: '', date: '' }
+    ]);
+
+    const updateSegment = (index: number, field: string, value: any) => {
+        const newSegments = [...segments];
+        (newSegments[index] as any)[field] = value;
+        setSegments(newSegments);
+    };
+
+    const addSegment = () => {
+        if (segments.length < 5) {
+            setSegments([...segments, { origin: '', originCode: '', destination: '', destinationCode: '', date: '' }]);
+        }
+    };
+
+    const removeSegment = (index: number) => {
+        if (segments.length > 2) {
+            setSegments(segments.filter((_, i) => i !== index));
+        }
+    };
+
     // Transfer-specific states
     const [transferType, setTransferType] = useState<'oneway' | 'roundtrip'>('oneway');
     const [transferOrigin, setTransferOrigin] = useState('');
@@ -366,6 +390,11 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
             finalLocation = `${transferOrigin} nach ${transferDestination}`;
         }
 
+        // Serialize segments for Multi-City
+        const serializedSegments = flightType === 'multicity'
+            ? JSON.stringify(segments.map(s => ({ origin: s.originCode || s.origin, destination: s.destinationCode || s.destination, date: s.date })))
+            : undefined;
+
         const params = new URLSearchParams({
             type: searchType,
             location: finalLocation,
@@ -386,6 +415,11 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
             cabinBags: cabinBags.toString(),
             checkedBags: checkedBags.toString()
         });
+
+        if (serializedSegments) {
+            params.append('segments', serializedSegments);
+        }
+
         router.push(`/search?${params.toString()}`);
     };
 
@@ -752,89 +786,174 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                             </div>
                                                         </div>
 
-                                                        <div className="flex flex-col md:flex-row items-stretch gap-2 md:gap-4 relative">
-                                                            <div className="flex-1">
-                                                                <LocationAutocomplete
-                                                                    value={flightOrigin}
-                                                                    onChange={(val) => {
-                                                                        setFlightOrigin(val);
-                                                                        setFlightOriginCode('');
-                                                                    }}
-                                                                    onSelect={(loc) => {
-                                                                        setFlightOrigin(loc.address?.cityName || loc.name);
-                                                                        setFlightOriginCode(loc.iataCode);
-                                                                    }}
-                                                                    placeholder="Von: Abflugort"
-                                                                    icon="fa-plane-departure"
-                                                                    autoFocus
-                                                                    showMyLocation={true}
-                                                                    selectedCode={flightOriginCode || null}
-                                                                    variant="inline"
-                                                                />
+                                                        {flightType === 'multicity' ? (
+                                                            // Multi-City View
+                                                            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+                                                                {segments.map((segment, idx) => (
+                                                                    <div key={idx} className="bg-slate-50 p-4 rounded-2xl border border-slate-200 relative">
+                                                                        <div className="flex items-center justify-between mb-3">
+                                                                            <span className="font-bold text-slate-900 text-sm">Strecke {idx + 1}</span>
+                                                                            {segments.length > 2 && (
+                                                                                <button
+                                                                                    onClick={() => removeSegment(idx)}
+                                                                                    className="text-slate-400 hover:text-red-500 transition-colors"
+                                                                                >
+                                                                                    <i className="fa-solid fa-trash text-sm"></i>
+                                                                                </button>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                                            <LocationAutocomplete
+                                                                                value={segment.origin}
+                                                                                onChange={(val) => {
+                                                                                    updateSegment(idx, 'origin', val);
+                                                                                    updateSegment(idx, 'originCode', '');
+                                                                                }}
+                                                                                onSelect={(loc) => {
+                                                                                    updateSegment(idx, 'origin', loc.address?.cityName || loc.name);
+                                                                                    updateSegment(idx, 'originCode', loc.iataCode);
+                                                                                }}
+                                                                                placeholder="Von"
+                                                                                icon="fa-plane-departure"
+                                                                                selectedCode={segment.originCode || null}
+                                                                                variant="inline"
+                                                                            />
+                                                                            <LocationAutocomplete
+                                                                                value={segment.destination}
+                                                                                onChange={(val) => {
+                                                                                    updateSegment(idx, 'destination', val);
+                                                                                    updateSegment(idx, 'destinationCode', '');
+                                                                                }}
+                                                                                onSelect={(loc) => {
+                                                                                    updateSegment(idx, 'destination', loc.address?.cityName || loc.name);
+                                                                                    updateSegment(idx, 'destinationCode', loc.iataCode);
+                                                                                }}
+                                                                                placeholder="Nach"
+                                                                                icon="fa-plane-arrival"
+                                                                                selectedCode={segment.destinationCode || null}
+                                                                                variant="inline"
+                                                                            />
+                                                                            <div className="relative">
+                                                                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                                                                                    <i className="fa-solid fa-calendar-days text-sm"></i>
+                                                                                </div>
+                                                                                <input
+                                                                                    type="date"
+                                                                                    className="w-full h-12 rounded-xl bg-white border border-slate-200 pl-10 pr-4 text-sm font-bold text-slate-900 focus:outline-none focus:border-orange-500"
+                                                                                    value={segment.date}
+                                                                                    onChange={(e) => updateSegment(idx, 'date', e.target.value)}
+                                                                                    min={new Date().toISOString().split('T')[0]}
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+
+                                                                <div className="flex items-center justify-between pt-2">
+                                                                    <button
+                                                                        onClick={addSegment}
+                                                                        disabled={segments.length >= 5}
+                                                                        className="flex items-center gap-2 text-orange-600 font-bold text-sm hover:underline disabled:opacity-50 disabled:no-underline"
+                                                                    >
+                                                                        <i className="fa-solid fa-plus bg-orange-100 w-6 h-6 rounded-full flex items-center justify-center"></i>
+                                                                        Strecke hinzufügen
+                                                                    </button>
+
+                                                                    <button
+                                                                        onClick={() => setCurrentStep(3)} // Skip Date Step for Multi-City
+                                                                        className="px-8 py-3 bg-slate-900 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-black transition-all shadow-lg"
+                                                                        disabled={segments.some(s => !s.originCode || !s.destinationCode || !s.date)}
+                                                                    >
+                                                                        Weiter
+                                                                    </button>
+                                                                </div>
                                                             </div>
+                                                        ) : (
+                                                            // Standard One-Way / Roundtrip View
+                                                            <div className="flex flex-col md:flex-row items-stretch gap-2 md:gap-4 relative">
+                                                                <div className="flex-1">
+                                                                    <LocationAutocomplete
+                                                                        value={flightOrigin}
+                                                                        onChange={(val) => {
+                                                                            setFlightOrigin(val);
+                                                                            setFlightOriginCode('');
+                                                                        }}
+                                                                        onSelect={(loc) => {
+                                                                            setFlightOrigin(loc.address?.cityName || loc.name);
+                                                                            setFlightOriginCode(loc.iataCode);
+                                                                        }}
+                                                                        placeholder="Von: Abflugort"
+                                                                        icon="fa-plane-departure"
+                                                                        autoFocus
+                                                                        showMyLocation={true}
+                                                                        selectedCode={flightOriginCode || null}
+                                                                        variant="inline"
+                                                                    />
+                                                                </div>
 
-                                                            {/* Swap Button (Desktop) */}
-                                                            <button
-                                                                onClick={() => {
-                                                                    const temp = flightOrigin;
-                                                                    setFlightOrigin(flightDestination);
-                                                                    setFlightDestination(temp);
+                                                                {/* Swap Button (Desktop) */}
+                                                                <button
+                                                                    onClick={() => {
+                                                                        const temp = flightOrigin;
+                                                                        setFlightOrigin(flightDestination);
+                                                                        setFlightDestination(temp);
 
-                                                                    const tempCode = flightOriginCode;
-                                                                    setFlightOriginCode(flightDestinationCode);
-                                                                    setFlightDestinationCode(tempCode);
-                                                                }}
-                                                                className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 shrink-0 w-12 h-12 bg-white hover:bg-slate-50 rounded-full items-center justify-center leading-none text-slate-600 hover:text-slate-900 transition-all z-10 shadow-md border border-slate-200"
-                                                            >
-                                                                <i className="fa-solid fa-arrow-right-arrow-left"></i>
-                                                            </button>
-
-                                                            {/* Swap Button (Mobile) */}
-                                                            <button
-                                                                onClick={() => {
-                                                                    const temp = flightOrigin;
-                                                                    setFlightOrigin(flightDestination);
-                                                                    setFlightDestination(temp);
-
-                                                                    const tempCode = flightOriginCode;
-                                                                    setFlightOriginCode(flightDestinationCode);
-                                                                    setFlightDestinationCode(tempCode);
-                                                                }}
-                                                                className="md:hidden w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 transition-all absolute right-4 top-[calc(50%-2.5rem)] rotate-90 z-20"
-                                                            >
-                                                                <i className="fa-solid fa-arrow-right-arrow-left"></i>
-                                                            </button>
-
-                                                            <div className="flex-1">
-                                                                <LocationAutocomplete
-                                                                    value={flightDestination}
-                                                                    onChange={(val) => {
-                                                                        setFlightDestination(val);
-                                                                        setFlightDestinationCode('');
+                                                                        const tempCode = flightOriginCode;
+                                                                        setFlightOriginCode(flightDestinationCode);
+                                                                        setFlightDestinationCode(tempCode);
                                                                     }}
-                                                                    onSelect={(loc) => {
-                                                                        setFlightDestination(loc.address?.cityName || loc.name);
-                                                                        setFlightDestinationCode(loc.iataCode);
+                                                                    className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 shrink-0 w-12 h-12 bg-white hover:bg-slate-50 rounded-full items-center justify-center leading-none text-slate-600 hover:text-slate-900 transition-all z-10 shadow-md border border-slate-200"
+                                                                >
+                                                                    <i className="fa-solid fa-arrow-right-arrow-left"></i>
+                                                                </button>
+
+                                                                {/* Swap Button (Mobile) */}
+                                                                <button
+                                                                    onClick={() => {
+                                                                        const temp = flightOrigin;
+                                                                        setFlightOrigin(flightDestination);
+                                                                        setFlightDestination(temp);
+
+                                                                        const tempCode = flightOriginCode;
+                                                                        setFlightOriginCode(flightDestinationCode);
+                                                                        setFlightDestinationCode(tempCode);
                                                                     }}
-                                                                    placeholder="Nach: Zielort"
-                                                                    icon="fa-plane-arrival"
-                                                                    onEnter={() => flightDestination.length > 0 && setCurrentStep(2)}
-                                                                    selectedCode={flightDestinationCode || null}
-                                                                    variant="inline"
-                                                                />
+                                                                    className="md:hidden w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 hover:text-slate-900 transition-all absolute right-4 top-[calc(50%-2.5rem)] rotate-90 z-20"
+                                                                >
+                                                                    <i className="fa-solid fa-arrow-right-arrow-left"></i>
+                                                                </button>
+
+                                                                <div className="flex-1">
+                                                                    <LocationAutocomplete
+                                                                        value={flightDestination}
+                                                                        onChange={(val) => {
+                                                                            setFlightDestination(val);
+                                                                            setFlightDestinationCode('');
+                                                                        }}
+                                                                        onSelect={(loc) => {
+                                                                            setFlightDestination(loc.address?.cityName || loc.name);
+                                                                            setFlightDestinationCode(loc.iataCode);
+                                                                        }}
+                                                                        placeholder="Nach: Zielort"
+                                                                        icon="fa-plane-arrival"
+                                                                        onEnter={() => flightDestination.length > 0 && setCurrentStep(2)}
+                                                                        selectedCode={flightDestinationCode || null}
+                                                                        variant="inline"
+                                                                    />
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        {flightOrigin.length > 0 && flightDestination.length > 0 && !flightOriginCode && (
+                                                        )}
+                                                        {flightType !== 'multicity' && flightOrigin.length > 0 && flightDestination.length > 0 && !flightOriginCode && (
                                                             <div className="text-orange-600 text-sm font-medium bg-orange-50 p-3 rounded-xl">
                                                                 ⚠️ Bitte wähle einen Flughafen aus der Vorschlagsliste für &quot;Von&quot;
                                                             </div>
                                                         )}
-                                                        {flightOrigin.length > 0 && flightDestination.length > 0 && !flightDestinationCode && (
+                                                        {flightType !== 'multicity' && flightOrigin.length > 0 && flightDestination.length > 0 && !flightDestinationCode && (
                                                             <div className="text-orange-600 text-sm font-medium bg-orange-50 p-3 rounded-xl">
                                                                 ⚠️ Bitte wähle einen Flughafen aus der Vorschlagsliste für &quot;Nach&quot;
                                                             </div>
                                                         )}
-                                                        {flightOriginCode && flightDestinationCode && (
+                                                        {flightType !== 'multicity' && flightOriginCode && flightDestinationCode && (
                                                             <button
                                                                 onClick={() => setCurrentStep(2)}
                                                                 className="w-full h-14 px-8 bg-slate-900 text-white rounded-full text-xs font-black uppercase tracking-widest hover:bg-black transition-all animate-in fade-in zoom-in"

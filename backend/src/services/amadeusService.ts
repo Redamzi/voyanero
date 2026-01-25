@@ -34,8 +34,9 @@ export const AmadeusService = {
             };
 
             const filters = params.filters || {};
+            const isMultiCity = params.segments && params.segments.length > 0;
 
-            // Create a unique cache key based on search parameters including filters
+            // Create a unique cache key
             const cacheKey = `flights_${JSON.stringify({ ...params, filters })}`;
             const cachedData = cache.get(cacheKey);
 
@@ -45,20 +46,69 @@ export const AmadeusService = {
             }
 
             console.log('🌍 Fetching live Flight data from Amadeus...');
-            const apiParams = {
-                originLocationCode: params.origin,
-                destinationLocationCode: params.destination,
-                departureDate: params.departureDate,
-                returnDate: params.returnDate, // Optional for one-way
-                adults: params.adults || 1,
-                children: params.children || 0,
-                infants: params.infants || 0,
-                travelClass: mapCabinClass(params.travelClass), // ECONOMY, PREMIUM_ECONOMY, BUSINESS, FIRST
-                currencyCode: 'EUR',
-                max: 20, // Limit results to save bandwidth
-            };
+            let response;
 
-            const response = await amadeus.shopping.flightOffersSearch.get(apiParams);
+            if (isMultiCity) {
+                // Multi-City Strategy: Use POST with originDestinations
+                console.log(`🔀 Multi-City Search: ${params.segments.length} segments`);
+                const originDestinations = params.segments.map((seg: any, index: number) => ({
+                    id: (index + 1).toString(),
+                    originLocationCode: seg.origin,
+                    destinationLocationCode: seg.destination,
+                    departureDateTimeRange: {
+                        date: seg.date
+                    }
+                }));
+
+                const requestBody: any = {
+                    currencyCode: 'EUR',
+                    originDestinations: originDestinations,
+                    travelers: [
+                        { id: '1', travelerType: 'ADULT' } // Simplified travelers for now
+                    ],
+                    sources: ['GDS']
+                };
+
+                // Add Travelers correctly based on counts
+                const travelers = [];
+                let travelerId = 1;
+                for (let i = 0; i < (params.adults || 1); i++) travelers.push({ id: (travelerId++).toString(), travelerType: 'ADULT' });
+                for (let i = 0; i < (params.children || 0); i++) travelers.push({ id: (travelerId++).toString(), travelerType: 'CHILD' });
+                requestBody.travelers = travelers;
+
+                if (params.travelClass) {
+                    // Apply class to all travelers/segments settings if needed
+                    // For Search API, class is usually set in searchCriteria.flightFilters.cabinRestrictions
+                    (requestBody as any).searchCriteria = {
+                        flightFilters: {
+                            cabinRestrictions: [{
+                                cabin: mapCabinClass(params.travelClass),
+                                coverage: 'MOST_SEGMENTS',
+                                originDestinationIds: originDestinations.map((od: any) => od.id)
+                            }]
+                        }
+                    };
+                }
+
+                response = await amadeus.shopping.flightOffersSearch.post(JSON.stringify(requestBody));
+
+            } else {
+                // Standard GET Search (One-Way / Roundtrip)
+                const apiParams = {
+                    originLocationCode: params.origin,
+                    destinationLocationCode: params.destination,
+                    departureDate: params.departureDate,
+                    returnDate: params.returnDate,
+                    adults: params.adults || 1,
+                    children: params.children || 0,
+                    infants: params.infants || 0,
+                    travelClass: mapCabinClass(params.travelClass),
+                    currencyCode: 'EUR',
+                    max: 20
+                };
+                response = await amadeus.shopping.flightOffersSearch.get(apiParams);
+            }
+
             let results = response.data || [];
 
             // --- POST-FILTERING (UI-Only filters) ---

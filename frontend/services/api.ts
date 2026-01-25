@@ -12,6 +12,7 @@ interface FlightSearchParams {
     mixClasses?: boolean;
     cabinBags?: number;
     checkedBags?: number;
+    segments?: { origin: string; destination: string; date: string }[];
 }
 
 // Use environment variable for API URL, fallback to same origin in production, localhost in dev
@@ -111,7 +112,9 @@ export const FlightService = {
                     cabinBags: params.cabinBags || 0,
                     checkedBags: params.checkedBags || 0,
                     mixClasses: params.mixClasses || false
-                }
+                },
+                // Multi-City segments
+                segments: params.segments
             };
 
             const response = await fetch(`${API_BASE_URL}/search`, {
