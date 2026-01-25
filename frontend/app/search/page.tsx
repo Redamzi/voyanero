@@ -463,7 +463,7 @@ function SearchContent() {
                         {/* Main Results */}
                         <div className="flex-1 min-w-0">
                             {/* Sort Tabs */}
-                            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 w-full flex-nowrap scroll-smooth">
+                            <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2 w-full flex-nowrap scroll-smooth px-4 no-scrollbar">
                                 {[
                                     { id: 'best', label: 'Beste Ergebnisse', icon: 'fa-star' },
                                     { id: 'cheapest', label: 'Am billigsten', icon: 'fa-tag' },
@@ -473,7 +473,7 @@ function SearchContent() {
                                         key={opt.id}
                                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                         onClick={() => setSortOption(opt.id as any)}
-                                        className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap transition-all
+                                        className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-sm whitespace-nowrap transition-all shrink-0
                                             ${sortOption === opt.id
                                                 ? 'bg-slate-900 text-white shadow-md'
                                                 : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200'
@@ -484,7 +484,7 @@ function SearchContent() {
                                     </button>
                                 ))}
                                 {/* Buffer for right-edge scrolling */}
-                                <div className="min-w-[20px] h-1 shrink-0"></div>
+                                <div className="min-w-[16px] h-1 shrink-0"></div>
                             </div>
 
                             {/* Loading State */}
