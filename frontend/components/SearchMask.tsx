@@ -774,7 +774,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                     setFlightOriginCode(flightDestinationCode);
                                                                     setFlightDestinationCode(tempCode);
                                                                 }}
-                                                                className="hidden md:flex absolute left-1/2 -translate-x-1/2 top-10 shrink-0 w-12 h-12 bg-white hover:bg-slate-50 rounded-full items-center justify-center text-slate-600 hover:text-slate-900 transition-all z-10 shadow-md border border-slate-200"
+                                                                className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 shrink-0 w-12 h-12 bg-white hover:bg-slate-50 rounded-full items-center justify-center leading-none text-slate-600 hover:text-slate-900 transition-all z-10 shadow-md border border-slate-200"
                                                             >
                                                                 <i className="fa-solid fa-arrow-right-arrow-left"></i>
                                                             </button>
