@@ -10,8 +10,20 @@ interface FlightSearchParams {
     trip_class?: string; // Y or C
 }
 
-// Use environment variable for API URL, fallback to localhost for local dev
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000') + '/api/flights';
+// Use environment variable for API URL, fallback to same origin in production, localhost in dev
+const getApiBaseUrl = () => {
+    if (process.env.NEXT_PUBLIC_API_URL) {
+        return process.env.NEXT_PUBLIC_API_URL;
+    }
+    // In browser: use same origin (production) or localhost (dev)
+    if (typeof window !== 'undefined') {
+        return window.location.origin;
+    }
+    // SSR fallback
+    return 'http://localhost:8000';
+};
+
+const API_BASE_URL = getApiBaseUrl() + '/api/flights';
 
 export const FlightService = {
     searchFlights: async (params: FlightSearchParams) => {
@@ -178,7 +190,7 @@ export const TransferService = {
         passengers: number
     }) => {
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/transfers/search`, {
+            const response = await fetch(`${getApiBaseUrl()}/api/transfers/search`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
