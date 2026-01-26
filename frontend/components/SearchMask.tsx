@@ -46,7 +46,6 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
     onEnter?: () => void;
     showMyLocation?: boolean;
     selectedCode?: string | null;
-    selectedCode?: string | null;
     variant?: 'origin' | 'destination' | 'default' | 'inline';
 }) => {
     const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([]);
