@@ -829,7 +829,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                                 }}
                                                                                 onSelect={(loc) => {
                                                                                     updateSegment(idx, 'origin', loc.address?.cityName || loc.name);
-                                                                                    updateSegment(idx, 'originCode', loc.iataCode);
+                                                                                    updateSegment(idx, 'originCode', loc.iataCode || '');
                                                                                 }}
                                                                                 placeholder="Von"
                                                                                 icon="fa-plane-departure"
@@ -844,7 +844,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                                 }}
                                                                                 onSelect={(loc) => {
                                                                                     updateSegment(idx, 'destination', loc.address?.cityName || loc.name);
-                                                                                    updateSegment(idx, 'destinationCode', loc.iataCode);
+                                                                                    updateSegment(idx, 'destinationCode', loc.iataCode || '');
                                                                                 }}
                                                                                 placeholder="Nach"
                                                                                 icon="fa-plane-arrival"
@@ -898,7 +898,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                         }}
                                                                         onSelect={(loc) => {
                                                                             setFlightOrigin(loc.address?.cityName || loc.name);
-                                                                            setFlightOriginCode(loc.iataCode);
+                                                                            setFlightOriginCode(loc.iataCode || '');
                                                                         }}
                                                                         placeholder="Von: Abflugort"
                                                                         icon="fa-plane-departure"
@@ -950,7 +950,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                         }}
                                                                         onSelect={(loc) => {
                                                                             setFlightDestination(loc.address?.cityName || loc.name);
-                                                                            setFlightDestinationCode(loc.iataCode);
+                                                                            setFlightDestinationCode(loc.iataCode || '');
                                                                         }}
                                                                         placeholder="Nach: Zielort"
                                                                         icon="fa-plane-arrival"
