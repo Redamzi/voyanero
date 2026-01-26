@@ -1,0 +1,37 @@
+---
+name: ui-styling-only
+description: Verbessert ausschließlich UI/Design (Spacing, Typografie, Farben, Responsiveness) ohne Geschäftslogik zu ändern. Nutzen für UI-Polish, Redesigns, Layout-Fixes. Keine Refactors, keine Feature-Änderungen.
+---
+
+# UI Styling Only Skill
+
+## Ziel
+Diese Skill-Anleitung sorgt dafür, dass der Agent **nur** die visuelle Oberfläche verbessert und **keine** bestehende Logik, Datenflüsse oder Projektstruktur verändert.
+
+## Wann dieser Skill genutzt werden soll
+Nutze diesen Skill, wenn die Aufgabe Begriffe enthält wie:
+- „Design verbessern", „UI polish", „schöner machen"
+- „Abstände", „Layout", „Typografie", „Farben", „Dark Mode"
+- „Responsiveness", „Mobile optimieren"
+- „UI konsistenter", „modernisieren"
+
+## Wann dieser Skill NICHT genutzt werden soll
+Nicht nutzen, wenn die Aufgabe ist:
+- neue Features, neue Endpoints, neue Datenfelder
+- Bugfixes in Logik, Validierung, State-Management
+- Datenbank/Backend-Integration (z. B. Supabase)
+- Refactoring oder Architektur-Änderungen
+
+## Erlaubte Änderungen
+✅ Erlaubt:
+- CSS / Styling-Dateien (z. B. `.css`, `.scss`, `tailwind.config`, UI-Theme-Dateien)
+- rein visuelle Anpassungen in UI-Komponenten (z. B. Klassen, Layout-Struktur, semantische HTML-Tags)
+- Responsiveness (Breakpoints), Abstände, Typografie, Farben, Schatten, Hover/Focus States
+- Barrierefreiheit im UI (Labels, Kontraste, Fokus-Ringe), **solange keine Logik geändert wird**
+
+## Verbotene Änderungen
+❌ Verboten:
+- Änderungen an Geschäftslogik, Datenlogik, API-Calls, Formular-Submit-Logik
+- Refactoring (Umbenennen/Extrahieren/Verschieben von Funktionen oder Dateien)
+- Änderungen an Datenstrukturen oder State-Management
+- Änderungen an Build-/Tooling-Setup, wenn nicht explizit gefordert

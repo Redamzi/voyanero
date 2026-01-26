@@ -358,10 +358,12 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
         { origin: '', originCode: '', destination: '', destinationCode: '', date: '' }
     ]);
 
-    const updateSegment = (index: number, field: keyof Segment, value: string) => {
-        const newSegments = [...segments];
-        newSegments[index] = { ...newSegments[index], [field]: value };
-        setSegments(newSegments);
+    const updateSegment = (index: number, changes: Partial<Segment>) => {
+        setSegments(prev => {
+            const newSegments = [...prev];
+            newSegments[index] = { ...newSegments[index], ...changes };
+            return newSegments;
+        });
     };
 
     const addSegment = () => {
@@ -824,12 +826,13 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                             <LocationAutocomplete
                                                                                 value={segment.origin}
                                                                                 onChange={(val) => {
-                                                                                    updateSegment(idx, 'origin', val);
-                                                                                    updateSegment(idx, 'originCode', '');
+                                                                                    updateSegment(idx, { origin: val, originCode: '' });
                                                                                 }}
                                                                                 onSelect={(loc) => {
-                                                                                    updateSegment(idx, 'origin', loc.address?.cityName || loc.name);
-                                                                                    updateSegment(idx, 'originCode', loc.iataCode || '');
+                                                                                    updateSegment(idx, {
+                                                                                        origin: loc.address?.cityName || loc.name,
+                                                                                        originCode: loc.iataCode || ''
+                                                                                    });
                                                                                 }}
                                                                                 placeholder="Von"
                                                                                 icon="fa-plane-departure"
@@ -839,12 +842,13 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                             <LocationAutocomplete
                                                                                 value={segment.destination}
                                                                                 onChange={(val) => {
-                                                                                    updateSegment(idx, 'destination', val);
-                                                                                    updateSegment(idx, 'destinationCode', '');
+                                                                                    updateSegment(idx, { destination: val, destinationCode: '' });
                                                                                 }}
                                                                                 onSelect={(loc) => {
-                                                                                    updateSegment(idx, 'destination', loc.address?.cityName || loc.name);
-                                                                                    updateSegment(idx, 'destinationCode', loc.iataCode || '');
+                                                                                    updateSegment(idx, {
+                                                                                        destination: loc.address?.cityName || loc.name,
+                                                                                        destinationCode: loc.iataCode || ''
+                                                                                    });
                                                                                 }}
                                                                                 placeholder="Nach"
                                                                                 icon="fa-plane-arrival"
@@ -859,7 +863,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                                                                     type="date"
                                                                                     className="w-full h-12 rounded-xl bg-white border border-slate-200 pl-10 pr-4 text-sm font-bold text-slate-900 focus:outline-none focus:border-orange-500"
                                                                                     value={segment.date}
-                                                                                    onChange={(e) => updateSegment(idx, 'date', e.target.value)}
+                                                                                    onChange={(e) => updateSegment(idx, { date: e.target.value })}
                                                                                     min={new Date().toISOString().split('T')[0]}
                                                                                 />
                                                                             </div>
