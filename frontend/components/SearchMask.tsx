@@ -16,21 +16,40 @@ interface SearchMaskProps {
     isOpen?: boolean;
 }
 
+interface LocationSuggestion {
+    id?: string;
+    iataCode?: string;
+    name: string;
+    subType?: string; // 'AIRPORT' | 'CITY'
+    address?: {
+        cityName?: string;
+        countryName?: string;
+    };
+    isCurrentLocation?: boolean;
+}
+
+interface Segment {
+    origin: string;
+    originCode: string;
+    destination: string;
+    destinationCode: string;
+    date: string;
+}
+
 const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, autoFocus, onEnter, showMyLocation = false, selectedCode, variant = 'default' }: {
     value: string;
     onChange: (val: string) => void;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onSelect?: (loc: any) => void;
+    onSelect?: (loc: LocationSuggestion) => void;
     placeholder: string;
     icon: string;
     autoFocus?: boolean;
     onEnter?: () => void;
     showMyLocation?: boolean;
     selectedCode?: string | null;
+    selectedCode?: string | null;
     variant?: 'origin' | 'destination' | 'default' | 'inline';
 }) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -45,7 +64,7 @@ const LocationAutocomplete = ({ value, onChange, onSelect, placeholder, icon, au
             if (value.length > 1) {
                 setIsLoading(true);
                 // Debounce is handled by setTimeout wrapper
-                const results = await FlightService.searchLocations(value);
+                const results = await FlightService.searchLocations(value) as LocationSuggestion[];
                 setSuggestions(results);
                 setIsLoading(false);
                 setShowSuggestions(true);
@@ -335,14 +354,14 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
     const [flightType, setFlightType] = useState<'roundtrip' | 'oneway' | 'multicity'>('roundtrip');
 
     // Multi-City State
-    const [segments, setSegments] = useState<{ origin: string; originCode: string; destination: string; destinationCode: string; date: string }[]>([
+    const [segments, setSegments] = useState<Segment[]>([
         { origin: '', originCode: '', destination: '', destinationCode: '', date: '' },
         { origin: '', originCode: '', destination: '', destinationCode: '', date: '' }
     ]);
 
-    const updateSegment = (index: number, field: string, value: any) => {
+    const updateSegment = (index: number, field: keyof Segment, value: string) => {
         const newSegments = [...segments];
-        (newSegments[index] as any)[field] = value;
+        newSegments[index] = { ...newSegments[index], [field]: value };
         setSegments(newSegments);
     };
 
