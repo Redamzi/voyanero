@@ -133,7 +133,7 @@ export default function WeatherWidget({ city }: WeatherWidgetProps) {
                     </div>
 
                     {/* Rechte Seite: Wetter-Icon (Rechtsbündig) */}
-                    <div className={`w-10 h-10 shrink-0 rounded-full bg-white/20 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-none ml-2 ${weatherInfo.color}`}>
+                    <div className={`w-10 h-10 shrink-0 rounded-full bg-white/40 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-none ml-2 ${weatherInfo.color}`}>
                         <i className={`fa-solid ${weatherInfo.icon} text-sm drop-shadow-sm`}></i>
                     </div>
                 </div>

@@ -122,7 +122,7 @@ export default function Home() {
           <div className="grid grid-cols-1 gap-6 auto-rows-[minmax(180px,auto)]">
 
             {/* HERO (Span 3) */}
-            <BentoCard className="relative min-h-[500px] lg:min-h-[600px] flex flex-col items-center justify-center text-center !p-0 border-0 shadow-2xl overflow-hidden group">
+            <BentoCard className="relative min-h-[65dvh] lg:min-h-[600px] flex flex-col items-center justify-center text-center !p-0 border-0 shadow-2xl overflow-hidden group">
               {/* Background Image - Synced with Weather Widget */}
               <div className="absolute inset-0 z-0 bg-slate-900">
                 <AnimatePresence mode="popLayout" initial={false}>
@@ -151,7 +151,7 @@ export default function Home() {
               </div>
 
               {/* Content */}
-              <div className="relative z-10 w-full max-w-5xl mx-auto px-6 py-12 flex flex-col items-center justify-center gap-10 text-center">
+              <div className="relative z-10 w-full max-w-5xl mx-auto px-6 pt-44 pb-12 md:py-12 flex flex-col items-center justify-center gap-10 text-center">
                 <div className="space-y-6 flex flex-col items-center">
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-[10px] sm:text-xs uppercase tracking-[0.2em] font-bold shadow-lg transform transition-all hover:scale-105 cursor-default">
                     <i className="fa-solid fa-star text-amber-300"></i>
@@ -187,8 +187,8 @@ export default function Home() {
 
               </div>
 
-              {/* Weather Widget - Rechts oben positioniert */}
-              <div className="absolute top-[10px] right-[10px] z-20 w-64">
+              {/* Weather Widget - Responsive Positionierung */}
+              <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 w-64 md:top-[10px] md:right-[10px] md:left-auto md:translate-x-0">
                 <WeatherWidget city={{
                   ...currentCity,
                   image: currentCity.weatherImage || currentCity.image
