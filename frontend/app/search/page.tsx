@@ -221,54 +221,100 @@ function SearchContent() {
                 } else if (searchType === 'fluege') {
                     // Flight Logic (Amadeus API)
 
-                    // Smart destination resolution
-                    let targetDestination = destinationQuery;
-                    if (!targetDestination && locationQuery) {
-                        // If location is "Munich nach London", extract
-                        if (locationQuery.toLowerCase().includes(' nach ')) {
-                            const parts = locationQuery.split(/ nach /i);
-                            if (parts.length === 2) targetDestination = parts[1].trim();
-                        } else {
-                            // Otherwise assume location is destination if origin is set, or ignore
-                            if (originQuery) targetDestination = locationQuery;
+                    // Check for multi-city segments
+                    const segmentsParam = searchParams.get('segments');
+                    let parsedSegments = null;
+
+                    if (segmentsParam) {
+                        try {
+                            parsedSegments = JSON.parse(segmentsParam);
+                            console.log('Multi-City Segments:', parsedSegments);
+                        } catch (e) {
+                            console.error('Failed to parse segments:', e);
                         }
                     }
 
-                    // Fallback to "Standard" route if nothing found (Sandbox Limit)
-                    // In production, we would show an error "Please select destination"
-                    const finalDest = targetDestination?.trim() || "JFK";
-                    const finalOrigin = originQuery?.trim() || "LHR";
+                    // If we have segments, use multi-city search
+                    if (parsedSegments && Array.isArray(parsedSegments) && parsedSegments.length > 0) {
+                        console.log(`Searching Multi-City Flights with ${parsedSegments.length} segments`);
 
-                    console.log(`Searching Flights: ${finalOrigin} -> ${finalDest}`);
-
-                    const flightRes = await FlightService.searchFlights({
-                        origin: finalOrigin,
-                        destination: finalDest,
-                        date: dateQuery || new Date().toISOString().split('T')[0],
-                        return_date: returnDateQuery,
-                        adults, children, infants,
-                        trip_class: 'ECONOMY' // Default
-                    });
-
-                    if (flightRes && Array.isArray(flightRes)) {
-                        setFlightOffers(flightRes);
-
-                        // Extract airlines for filter
-                        const airlines = new Set<string>();
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        flightRes.forEach((f: any) => {
-                            f.validatingAirlineCodes?.forEach((code: string) => airlines.add(code));
+                        const flightRes = await FlightService.searchFlights({
+                            segments: parsedSegments,
+                            adults, children, infants,
+                            trip_class: 'ECONOMY'
                         });
-                        setAvailableAirlines(Array.from(airlines));
 
-                        // Set initial max price for filter slider if not set
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const maxP = Math.max(...flightRes.map((f: any) => parseFloat(f.price.total)));
-                        if (!flightFilters.maxPrice) {
-                            setFlightFilters(prev => ({ ...prev, maxPrice: Math.ceil(maxP) }));
+                        if (flightRes && Array.isArray(flightRes)) {
+                            setFlightOffers(flightRes);
+
+                            // Extract airlines for filter
+                            const airlines = new Set<string>();
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            flightRes.forEach((f: any) => {
+                                f.validatingAirlineCodes?.forEach((code: string) => airlines.add(code));
+                            });
+                            setAvailableAirlines(Array.from(airlines));
+
+                            // Set initial max price for filter slider if not set
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            const maxP = Math.max(...flightRes.map((f: any) => parseFloat(f.price.total)));
+                            if (!flightFilters.maxPrice) {
+                                setFlightFilters(prev => ({ ...prev, maxPrice: Math.ceil(maxP) }));
+                            }
+                        } else {
+                            setFlightOffers([]);
                         }
                     } else {
-                        setFlightOffers([]);
+                        // Standard one-way or roundtrip search
+                        // Smart destination resolution
+                        let targetDestination = destinationQuery;
+                        if (!targetDestination && locationQuery) {
+                            // If location is "Munich nach London", extract
+                            if (locationQuery.toLowerCase().includes(' nach ')) {
+                                const parts = locationQuery.split(/ nach /i);
+                                if (parts.length === 2) targetDestination = parts[1].trim();
+                            } else {
+                                // Otherwise assume location is destination if origin is set, or ignore
+                                if (originQuery) targetDestination = locationQuery;
+                            }
+                        }
+
+                        // Fallback to "Standard" route if nothing found (Sandbox Limit)
+                        // In production, we would show an error "Please select destination"
+                        const finalDest = targetDestination?.trim() || "JFK";
+                        const finalOrigin = originQuery?.trim() || "LHR";
+
+                        console.log(`Searching Flights: ${finalOrigin} -> ${finalDest}`);
+
+                        const flightRes = await FlightService.searchFlights({
+                            origin: finalOrigin,
+                            destination: finalDest,
+                            date: dateQuery || new Date().toISOString().split('T')[0],
+                            return_date: returnDateQuery,
+                            adults, children, infants,
+                            trip_class: 'ECONOMY' // Default
+                        });
+
+                        if (flightRes && Array.isArray(flightRes)) {
+                            setFlightOffers(flightRes);
+
+                            // Extract airlines for filter
+                            const airlines = new Set<string>();
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            flightRes.forEach((f: any) => {
+                                f.validatingAirlineCodes?.forEach((code: string) => airlines.add(code));
+                            });
+                            setAvailableAirlines(Array.from(airlines));
+
+                            // Set initial max price for filter slider if not set
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            const maxP = Math.max(...flightRes.map((f: any) => parseFloat(f.price.total)));
+                            if (!flightFilters.maxPrice) {
+                                setFlightFilters(prev => ({ ...prev, maxPrice: Math.ceil(maxP) }));
+                            }
+                        } else {
+                            setFlightOffers([]);
+                        }
                     }
                 } else if (searchType === 'transfer') {
                     let transferRes = [];
