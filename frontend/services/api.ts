@@ -1,8 +1,9 @@
 
+
 interface FlightSearchParams {
-    origin: string;
-    destination: string;
-    date: string; // YYYY-MM-DD
+    origin?: string;
+    destination?: string;
+    date?: string; // YYYY-MM-DD
     return_date?: string;
     adults?: number;
     children?: number;
@@ -14,6 +15,7 @@ interface FlightSearchParams {
     checkedBags?: number;
     segments?: { origin: string; destination: string; date: string }[];
 }
+
 
 // Use environment variable for API URL, fallback to same origin in production, localhost in dev
 const getApiBaseUrl = () => {
@@ -88,9 +90,9 @@ export const FlightService = {
                 return loc; // Fallback (API will likely error if not IATA)
             };
 
-            const origin = lookup(params.origin) || "MUC";
+            const origin = lookup(params.origin || "") || "MUC";
             // Ensure destination is never empty. Default to LHR if missing (Sandbox safe pair MUC-LHR)
-            const destination = lookup(params.destination) || "LHR";
+            const destination = lookup(params.destination || "") || "LHR";
 
             // Safety check: ensure we don't send empty strings to API
             if (!origin || !destination) {
