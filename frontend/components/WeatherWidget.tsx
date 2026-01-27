@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import BentoCard from './BentoCard';
 
 // 1. Safe/Public Data Sources (OpenMeteo for Weather)
@@ -66,10 +65,6 @@ export default function WeatherWidget({ city }: WeatherWidgetProps) {
 
     const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
     const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
-
-    // Background movement (opposite to rotation for depth)
-    const bgX = useTransform(mouseXSpring, [-0.5, 0.5], ["-10%", "10%"]);
-    const bgY = useTransform(mouseYSpring, [-0.5, 0.5], ["-10%", "10%"]);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!ref.current) return;
