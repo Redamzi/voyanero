@@ -198,8 +198,8 @@ export default function Home() {
 
             {/* SIDE WIDGET 2: Promo / Login */}
             <BentoCard className="lg:col-span-1 bg-white flex flex-col justify-center items-center text-center gap-4 shadow-xl">
-              <div className="w-16 h-16 rounded-full bg-orange-100 grid place-items-center text-orange-500 text-2xl mb-2">
-                <i className="fa-solid fa-user-astronaut leading-none"></i>
+              <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center text-orange-500 text-2xl mb-2 mx-auto">
+                <i className="fa-solid fa-user-astronaut"></i>
               </div>
               <div>
                 <h3 className="text-lg font-bold text-slate-900 leading-tight">Melde dich an</h3>
@@ -293,7 +293,10 @@ export default function Home() {
 
         {/* 4. WHY VOYANERO? (Bento Grid) */}
         <section className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 pb-10">
-          <div className="mb-10 text-center md:text-left">
+          <div className="mb-10 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-100 to-orange-50 rounded-2xl mb-4">
+              <i className="fa-solid fa-star text-2xl text-orange-600"></i>
+            </div>
             <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tighter leading-none mb-3">Warum Voyanero?</h2>
             <p className="text-slate-500 text-lg font-medium opacity-60">Lokale Authentizität trifft globale Zuverlässigkeit.</p>
           </div>
@@ -305,9 +308,9 @@ export default function Home() {
               { title: "Geprüft", desc: "Über 2 Millionen verifizierte Hotels.", icon: "fa-check-double", bg: "bg-emerald-50", text: "text-emerald-600" },
               { title: "Bestpreis", desc: "Wir garantieren den besten Preis.", icon: "fa-shield-halved", bg: "bg-amber-50", text: "text-amber-600" }
             ].map((item, i) => (
-              <BentoCard key={i} className="flex flex-col items-center text-center p-8 hover:bg-slate-50/80 transition-colors group border-slate-100 shadow-sm hover:shadow-lg">
-                <div className={`w-16 h-16 ${item.bg} rounded-2xl grid place-items-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <i className={`fa-solid ${item.icon} text-2xl ${item.text} leading-none`}></i>
+              <BentoCard key={i} className="flex flex-col items-center justify-center text-center p-8 hover:bg-slate-50/80 transition-colors group border-slate-100 shadow-sm hover:shadow-lg">
+                <div className={`w-16 h-16 ${item.bg} rounded-2xl flex items-center justify-center mb-6 mx-auto group-hover:scale-110 transition-transform duration-300`}>
+                  <i className={`fa-solid ${item.icon} text-2xl ${item.text}`}></i>
                 </div>
                 <h3 className="text-xl font-black text-slate-900 mb-2">{item.title}</h3>
                 <p className="text-slate-500 font-medium text-sm leading-relaxed">{item.desc}</p>

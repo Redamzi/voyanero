@@ -17,7 +17,8 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCompact = false, onToggleSelectionMode }) => {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-    const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+    const [showSearchMask, setShowSearchMask] = useState(false);
+    const [searchType, setSearchType] = useState<'fluege' | 'unterkunft' | 'transfer'>('fluege');
 
     React.useEffect(() => {
         if (forceCompact) {
@@ -50,17 +51,48 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                     <div className="flex-1 flex justify-center w-full max-w-3xl mx-auto relative px-4">
                         {/* Default Links */}
                         <div className={`transition-all duration-300 absolute inset-0 flex items-center justify-center ${isScrolled ? 'opacity-0 pointer-events-none scale-95' : 'opacity-100 scale-100'}`}>
-                            <div className="hidden md:flex items-center gap-1 p-1 bg-slate-50/50 rounded-full border border-slate-100">
-                                <Link href="/search" className="px-5 py-2.5 rounded-full text-sm font-bold text-slate-900 bg-white shadow-sm ring-1 ring-black/5">
-                                    Entdecken
-                                </Link>
-                                <button onClick={() => setIsSearchModalOpen(true)} className="px-5 py-2.5 rounded-full text-sm font-bold text-slate-500 hover:text-slate-900 hover:bg-white/50 transition-all">
-                                    Suchen
+                            <div className="hidden md:flex items-center gap-3">
+                                {/* Flüge Button */}
+                                <button
+                                    onClick={() => {
+                                        setSearchType('fluege');
+                                        setShowSearchMask(true);
+                                    }}
+                                    className="group flex flex-col items-center gap-1 px-4 py-2 rounded-xl hover:bg-blue-50 transition-all"
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-blue-100 group-hover:bg-blue-500 flex items-center justify-center transition-all">
+                                        <i className="fa-solid fa-plane text-blue-600 group-hover:text-white transition-colors"></i>
+                                    </div>
+                                    <span className="text-xs font-bold text-slate-700 group-hover:text-blue-600">Flüge</span>
                                 </button>
-                                <Link href="/ai-concierge" className="px-5 py-2.5 rounded-full text-sm font-bold text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all flex items-center gap-2">
-                                    <i className="fa-solid fa-wand-magic-sparkles"></i>
-                                    AI Concierge
-                                </Link>
+
+                                {/* Unterkünfte Button */}
+                                <button
+                                    onClick={() => {
+                                        setSearchType('unterkunft');
+                                        setShowSearchMask(true);
+                                    }}
+                                    className="group flex flex-col items-center gap-1 px-4 py-2 rounded-xl hover:bg-emerald-50 transition-all"
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-emerald-100 group-hover:bg-emerald-500 flex items-center justify-center transition-all">
+                                        <i className="fa-solid fa-hotel text-emerald-600 group-hover:text-white transition-colors"></i>
+                                    </div>
+                                    <span className="text-xs font-bold text-slate-700 group-hover:text-emerald-600">Unterkünfte</span>
+                                </button>
+
+                                {/* Transfer Button */}
+                                <button
+                                    onClick={() => {
+                                        setSearchType('transfer');
+                                        setShowSearchMask(true);
+                                    }}
+                                    className="group flex flex-col items-center gap-1 px-4 py-2 rounded-xl hover:bg-orange-50 transition-all"
+                                >
+                                    <div className="w-10 h-10 rounded-full bg-orange-100 group-hover:bg-orange-500 flex items-center justify-center transition-all">
+                                        <i className="fa-solid fa-car text-orange-600 group-hover:text-white transition-colors"></i>
+                                    </div>
+                                    <span className="text-xs font-bold text-slate-700 group-hover:text-orange-600">Transfer</span>
+                                </button>
                             </div>
                         </div>
 
@@ -171,100 +203,14 @@ const Navbar: React.FC<NavbarProps> = ({ user, onLogout, onFilterClick, forceCom
                 </div>
             </div>
 
-            {/* Fullscreen Search Modal */}
-            {isSearchModalOpen && (
-                <div className="fixed inset-0 z-[9999] bg-white flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300">
-                    <div className="px-4 sm:px-8 py-4 sm:py-6 border-b border-slate-100 flex items-center justify-between">
-                        <h2 className="hidden sm:block text-lg font-black text-slate-900 uppercase tracking-widest">Suche starten</h2>
-                        <button
-                            onClick={() => setIsSearchModalOpen(false)}
-                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-slate-900 transition-all ml-auto"
-                        >
-                            <i className="fa-solid fa-xmark text-lg sm:text-xl"></i>
-                        </button>
-                    </div>
-                    <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center p-8">
-                        {/* Category Filter Cards */}
-                        <div className="w-full max-w-4xl mb-8">
-                            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Was suchst du?</h3>
-                            <div className="grid grid-cols-3 gap-4">
-                                {/* Reisen Card Disabled
-                                {/* Reisen Card */}
-                                {/*
-                                <motion.button
-                                    initial={{ y: -50, opacity: 0, scale: 0.5 }}
-                                    animate={{ y: 0, opacity: 1, scale: 1 }}
-                                    transition={{
-                                        type: "spring",
-                                        stiffness: 200,
-                                        damping: 15,
-                                        delay: 0.1
-                                    }}
-                                    className="group relative bg-white border-2 border-slate-200 rounded-2xl p-4 hover:border-orange-500 hover:shadow-lg transition-all text-left"
-                                >
-                                    <div className="flex items-start justify-between mb-2">
-                                        <div className="w-10 h-10 bg-gradient-to-br from-orange-100 to-orange-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <i className="fa-solid fa-suitcase-rolling text-orange-600 text-lg"></i>
-                                        </div>
-                                        <div className="w-5 h-5 border-2 border-slate-300 rounded-full group-hover:border-orange-500 transition-colors"></div>
-                                    </div>
-                                    <h4 className="text-base font-black text-slate-900 mb-0.5">Reisen</h4>
-                                    <p className="text-xs text-slate-500">Komplette Reisepakete</p>
-                                </motion.button>
-                                */}
-
-                                {/* Flüge Card */}
-                                <motion.button
-                                    initial={{ y: -50, opacity: 0, scale: 0.5 }}
-                                    animate={{ y: 0, opacity: 1, scale: 1 }}
-                                    transition={{
-                                        type: "spring",
-                                        stiffness: 200,
-                                        damping: 15,
-                                        delay: 0.2
-                                    }}
-                                    className="group relative bg-white border-2 border-slate-200 rounded-2xl p-4 hover:border-blue-500 hover:shadow-lg transition-all text-left"
-                                >
-                                    <div className="flex items-start justify-between mb-2">
-                                        <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <i className="fa-solid fa-plane-departure text-blue-600 text-lg"></i>
-                                        </div>
-                                        <div className="w-5 h-5 border-2 border-slate-300 rounded-full group-hover:border-blue-500 transition-colors"></div>
-                                    </div>
-                                    <h4 className="text-base font-black text-slate-900 mb-0.5">Flüge</h4>
-                                    <p className="text-xs text-slate-500">Nur Flugtickets</p>
-                                </motion.button>
-
-                                {/* Hotels Card */}
-                                <motion.button
-                                    initial={{ y: -50, opacity: 0, scale: 0.5 }}
-                                    animate={{ y: 0, opacity: 1, scale: 1 }}
-                                    transition={{
-                                        type: "spring",
-                                        stiffness: 200,
-                                        damping: 15,
-                                        delay: 0.3
-                                    }}
-                                    className="group relative bg-white border-2 border-slate-200 rounded-2xl p-4 hover:border-emerald-500 hover:shadow-lg transition-all text-left"
-                                >
-                                    <div className="flex items-start justify-between mb-2">
-                                        <div className="w-10 h-10 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                            <i className="fa-solid fa-hotel text-emerald-600 text-lg"></i>
-                                        </div>
-                                        <div className="w-5 h-5 border-2 border-slate-300 rounded-full group-hover:border-emerald-500 transition-colors"></div>
-                                    </div>
-                                    <h4 className="text-base font-black text-slate-900 mb-0.5">Hotels</h4>
-                                    <p className="text-xs text-slate-500">Nur Unterkünfte</p>
-                                </motion.button>
-                            </div>
-                        </div>
-
-                        {/* Search Form */}
-                        <div className="w-full max-w-4xl">
-                            <SearchMask variant="hero" />
-                        </div>
-                    </div>
-                </div>
+            {/* SearchMask Modal */}
+            {showSearchMask && (
+                <SearchMask
+                    variant="compact"
+                    isOpen={true}
+                    onClose={() => setShowSearchMask(false)}
+                    initialSearchType={searchType}
+                />
             )}
         </nav>
     );

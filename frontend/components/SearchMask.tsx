@@ -14,6 +14,7 @@ interface SearchMaskProps {
     initialLocation?: string;
     onClose?: () => void;
     isOpen?: boolean;
+    initialSearchType?: 'fluege' | 'unterkunft' | 'transfer';
 }
 
 interface LocationSuggestion {
@@ -288,7 +289,7 @@ const DESTINATIONS = [
 
 
 
-const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLocation = "", onClose, isOpen: isOpenProp }) => {
+const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLocation = "", onClose, isOpen: isOpenProp, initialSearchType }) => {
     const router = useRouter();
 
     // Animation Variants
@@ -343,7 +344,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
 
     // Search Type Filter (Reisen/Flüge/Unterkünfte/Transfer)
     // 'Reisen' disabled by default as per new scope
-    const [searchType, setSearchType] = useState<'reisen' | 'fluege' | 'unterkunft' | 'transfer'>('fluege');
+    const [searchType, setSearchType] = useState<'reisen' | 'fluege' | 'unterkunft' | 'transfer'>(initialSearchType || 'fluege');
 
     // Flight-specific states
     const [flightOrigin, setFlightOrigin] = useState('');
