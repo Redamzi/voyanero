@@ -123,6 +123,10 @@ function SearchContent() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedFlight, setSelectedFlight] = useState<any | null>(null);
 
+    // Pagination State
+    const [visibleFlightCount, setVisibleFlightCount] = useState(20);
+    const FLIGHTS_PER_PAGE = 20;
+
     // Fetch Data (Flights & Hotels)
     React.useEffect(() => {
         const fetchData = async () => {
@@ -393,6 +397,11 @@ function SearchContent() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [locationQuery, dateQuery, destinationQuery, adults, children, infants, searchType, hotelFilters]);
 
+    // Reset pagination when flight results change
+    React.useEffect(() => {
+        setVisibleFlightCount(FLIGHTS_PER_PAGE);
+    }, [flightOffers, FLIGHTS_PER_PAGE]);
+
     // Derived Flight State
     const filteredFlights = useMemo(() => {
         let res = [...flightOffers];
@@ -557,7 +566,7 @@ function SearchContent() {
 
                             {/* Results List */}
                             <div className="space-y-4">
-                                {filteredFlights.map((offer, idx) => (
+                                {filteredFlights.slice(0, visibleFlightCount).map((offer, idx) => (
                                     <FlightResultCard
                                         key={offer.id}
                                         offer={offer}
@@ -566,6 +575,26 @@ function SearchContent() {
                                         onClick={() => setSelectedFlight(offer)}
                                     />
                                 ))}
+
+                                {/* Load More Button */}
+                                {!isLoading && filteredFlights.length > visibleFlightCount && (
+                                    <div className="flex justify-center pt-8 pb-4">
+                                        <button
+                                            onClick={() => setVisibleFlightCount(prev => prev + FLIGHTS_PER_PAGE)}
+                                            className="group relative px-8 py-4 bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-slate-900 rounded-2xl font-bold text-slate-900 transition-all shadow-sm hover:shadow-xl flex items-center gap-3"
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <i className="fa-solid fa-plane text-orange-500 group-hover:text-orange-600"></i>
+                                                <span>
+                                                    {Math.min(FLIGHTS_PER_PAGE, filteredFlights.length - visibleFlightCount)} weitere Flüge laden
+                                                </span>
+                                            </div>
+                                            <div className="text-xs text-slate-500 font-normal">
+                                                ({visibleFlightCount} von {filteredFlights.length})
+                                            </div>
+                                        </button>
+                                    </div>
+                                )}
 
                                 {!isLoading && filteredFlights.length === 0 && !error && (
                                     <div className="text-center py-20 bg-white rounded-xl border border-slate-200 border-dashed">

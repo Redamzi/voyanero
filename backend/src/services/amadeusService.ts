@@ -104,7 +104,7 @@ export const AmadeusService = {
                     infants: params.infants || 0,
                     travelClass: mapCabinClass(params.travelClass),
                     currencyCode: 'EUR',
-                    max: 20
+                    max: 250 // Amadeus API limit - Frontend will paginate
                 };
                 response = await amadeus.shopping.flightOffersSearch.get(apiParams);
             }
