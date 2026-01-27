@@ -106,73 +106,40 @@ export default function WeatherWidget({ city }: WeatherWidgetProps) {
             }}
             className="h-full w-full"
         >
-            <BentoCard className="h-full !p-0 relative overflow-hidden group shadow-xl border-0 bg-slate-900">
-                {/* Dynamic Background Image with Scale & Parallax */}
-                <div className="absolute inset-0 z-0">
-                    <AnimatePresence mode="popLayout" initial={false}>
-                        <motion.div
-                            key={city.image}
-                            initial={{ opacity: 0, scale: 1.1 }}
-                            animate={{ opacity: 1, scale: 1.0 }}
-                            exit={{ opacity: 0 }}
-                            transition={{
-                                opacity: { duration: 1.5, ease: "easeInOut" },
-                                scale: { duration: 10, ease: "linear" }
-                            }}
-                            className="absolute inset-0 w-full h-full"
-                            style={{ x: bgX, y: bgY, willChange: "transform, opacity" }} // Combine parallax with transition
-                        >
-                            <Image
-                                src={city.image}
-                                alt={city.name}
-                                fill
-                                className="object-cover"
-                                priority
-                            />
-                            <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-500" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
+            <BentoCard className="h-full !p-0 relative overflow-hidden group !bg-transparent !border-0 !shadow-none">
+                {/* Super-Subtle-Glass Hintergrund */}
+                <div className="absolute inset-0 bg-white/10 backdrop-blur-md rounded-[2rem] border border-white/10 shadow-none"></div>
 
                 {/* Content Overlay */}
-                <div className="relative z-10 p-6 flex flex-col justify-between h-full text-white">
-                    <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-widest opacity-80 bg-black/30 px-2 py-1 rounded-full backdrop-blur-md">
-                            Live Wetter
-                        </span>
-                        <div className={`w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center shadow-lg ${weatherInfo.color}`}>
-                            <i className={`fa-solid ${weatherInfo.icon} text-sm`}></i>
-                        </div>
-                    </div>
-
-                    <div className="mt-auto">
+                <div className="relative z-10 w-full h-full px-3 py-2 flex items-center justify-between text-white">
+                    {/* Linke Seite: Temperatur & Stadt (Linksbündig) */}
+                    <div className="flex flex-col items-start justify-center gap-0 overflow-hidden flex-1">
                         <motion.div
                             key={weather?.temp || "loading"}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="flex items-start gap-1"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.4 }}
+                            className="flex items-start"
                         >
-                            <span className="text-6xl font-black tracking-tighter leading-none shadow-black drop-shadow-lg">
+                            <span className="text-5xl font-[900] tracking-tighter leading-none drop-shadow-md filter">
                                 {weather ? `${weather.temp}°` : '--'}
                             </span>
                         </motion.div>
 
                         <motion.div
                             key={city.name}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.1 }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.4, delay: 0.1 }}
+                            className="w-full"
                         >
-                            <h3 className="text-xl font-bold mt-2 leading-tight drop-shadow-md">{city.name}</h3>
-                            <p className="text-xs text-white/80 font-medium">{city.country}</p>
+                            <h3 className="text-[11px] font-[800] leading-tight drop-shadow-md uppercase tracking-wider opacity-90 whitespace-nowrap text-left mt-0.5">{city.name}, {city.country.substring(0, 2)}</h3>
                         </motion.div>
+                    </div>
 
-                        <div className="mt-4 pt-4 border-t border-white/20">
-                            <p className="text-[10px] font-medium opacity-90 leading-relaxed truncate">
-                                {city.desc}
-                            </p>
-                        </div>
+                    {/* Rechte Seite: Wetter-Icon (Rechtsbündig) */}
+                    <div className={`w-10 h-10 shrink-0 rounded-full bg-white/20 backdrop-blur-md border border-white/10 flex items-center justify-center shadow-none ml-2 ${weatherInfo.color}`}>
+                        <i className={`fa-solid ${weatherInfo.icon} text-sm drop-shadow-sm`}></i>
                     </div>
                 </div>
             </BentoCard>
