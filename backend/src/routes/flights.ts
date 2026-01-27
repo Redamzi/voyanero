@@ -5,9 +5,14 @@ const router = express.Router();
 
 router.post('/search', async (req, res) => {
     try {
-        const { origin, destination, date, returnDate, adults, children, infants, travelClass } = req.body;
+        const { origin, destination, date, returnDate, adults, children, infants, travelClass, segments, filters } = req.body;
 
-        console.log(`Searching flights (Amadeus): ${origin} -> ${destination} on ${date}`);
+        // Log appropriate message based on search type
+        if (segments && segments.length > 0) {
+            console.log(`Searching Multi-City flights (Amadeus): ${segments.length} segments`);
+        } else {
+            console.log(`Searching flights (Amadeus): ${origin} -> ${destination} on ${date}`);
+        }
 
         // Amadeus Flight Offers Search
         const data = await AmadeusService.searchFlights({
@@ -18,7 +23,9 @@ router.post('/search', async (req, res) => {
             adults,
             children,
             infants,
-            travelClass
+            travelClass,
+            segments,
+            filters
         });
 
         res.json({ success: true, data });
