@@ -692,7 +692,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                 onClick={() => { setIsOpen(false); onClose?.(); }}
                             />
                             <motion.div
-                                className="fixed inset-0 z-[99999] bg-white h-full min-h-0 w-full overflow-hidden flex flex-col"
+                                className="fixed inset-0 z-[99999] bg-white h-[100dvh] min-h-0 w-full overflow-hidden flex flex-col"
                                 variants={modalVariants}
                                 initial="hidden"
                                 animate="visible"
