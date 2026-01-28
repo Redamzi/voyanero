@@ -579,8 +579,8 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                 if (document.activeElement &&
                     (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
                     setTimeout(() => {
-                        document.activeElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 300);
+                        document.activeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
                 }
             }
         };
@@ -599,9 +599,15 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
         };
     }, []);
 
-    // Styles for the modal container - Use ABSOLUTE for better mobile keyboard handling
+    // Styles for the modal container - Revert to FIXED but use visualViewport height
     const modalStyle = viewportHeight
-        ? { height: `${viewportHeight}px`, position: 'absolute' as const, top: 0, left: 0 }
+        ? {
+            height: `${viewportHeight}px`,
+            position: 'fixed' as const,
+            top: 0,
+            left: 0,
+            bottom: 'auto' // Prevent conflicting constraints
+        }
         : { height: '100dvh' };
 
     return (
