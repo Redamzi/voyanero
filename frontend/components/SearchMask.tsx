@@ -568,6 +568,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
 
     // Visual Viewport Hook & Scroll-to-View Logic
     const [viewportHeight, setViewportHeight] = useState<number | null>(null);
+    const [viewportTop, setViewportTop] = useState<number>(0);
 
     useEffect(() => {
         if (typeof window === "undefined" || !window.visualViewport) return;
@@ -575,6 +576,8 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
         const handleResize = () => {
             if (window.visualViewport) {
                 setViewportHeight(window.visualViewport.height);
+                setViewportTop(window.visualViewport.offsetTop);
+
                 // Scroll active element into view on resize (keyboard open)
                 if (document.activeElement &&
                     (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
@@ -599,14 +602,14 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
         };
     }, []);
 
-    // Styles for the modal container - Revert to FIXED but use visualViewport height
+    // Styles for the modal container - Fixed positioning with explicit Viewport Offsets
     const modalStyle = viewportHeight
         ? {
             height: `${viewportHeight}px`,
             position: 'fixed' as const,
-            top: 0,
+            top: `${viewportTop}px`,
             left: 0,
-            bottom: 'auto' // Prevent conflicting constraints
+            bottom: 'auto'
         }
         : { height: '100dvh' };
 
