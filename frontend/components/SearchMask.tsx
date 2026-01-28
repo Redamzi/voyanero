@@ -530,14 +530,26 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
         return () => window.removeEventListener('scroll', handleScroll);
     }, [variant]);
 
-    // Lock body scroll when modal is open
+    // Strict Body Lock for iOS (prevents background scrolling and bouncing)
     useEffect(() => {
         if (isOpen) {
+            const scrollY = window.scrollY;
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollY}px`;
+            document.body.style.width = '100%';
             document.body.style.overflow = 'hidden';
         } else {
+            const scrollY = document.body.style.top;
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
             document.body.style.overflow = '';
+            if (scrollY) window.scrollTo(0, parseInt(scrollY || '0') * -1);
         }
         return () => {
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
             document.body.style.overflow = '';
         };
     }, [isOpen]);
@@ -554,7 +566,7 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
     };
     const dateLabels = getDateLabels();
 
-    // Visual Viewport Hook for Mobile Keyboard Fix
+    // Visual Viewport Hook & Scroll-to-View Logic
     const [viewportHeight, setViewportHeight] = useState<number | null>(null);
 
     useEffect(() => {
@@ -563,22 +575,33 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
         const handleResize = () => {
             if (window.visualViewport) {
                 setViewportHeight(window.visualViewport.height);
+                // Scroll active element into view on resize (keyboard open)
+                if (document.activeElement &&
+                    (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+                    setTimeout(() => {
+                        document.activeElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 300);
+                }
             }
         };
 
         window.visualViewport.addEventListener("resize", handleResize);
-        handleResize(); // Initial check
+        // Also listen to scroll to handle keyboard appearing/disappearing affecting layout
+        window.visualViewport.addEventListener("scroll", handleResize);
+
+        handleResize();
 
         return () => {
             if (window.visualViewport) {
                 window.visualViewport.removeEventListener("resize", handleResize);
+                window.visualViewport.removeEventListener("scroll", handleResize);
             }
         };
     }, []);
 
-    // Styles for the modal container
+    // Styles for the modal container - Use ABSOLUTE for better mobile keyboard handling
     const modalStyle = viewportHeight
-        ? { height: `${viewportHeight}px` }
+        ? { height: `${viewportHeight}px`, position: 'absolute' as const, top: 0, left: 0 }
         : { height: '100dvh' };
 
     return (
