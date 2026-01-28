@@ -554,6 +554,33 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
     };
     const dateLabels = getDateLabels();
 
+    // Visual Viewport Hook for Mobile Keyboard Fix
+    const [viewportHeight, setViewportHeight] = useState<number | null>(null);
+
+    useEffect(() => {
+        if (typeof window === "undefined" || !window.visualViewport) return;
+
+        const handleResize = () => {
+            if (window.visualViewport) {
+                setViewportHeight(window.visualViewport.height);
+            }
+        };
+
+        window.visualViewport.addEventListener("resize", handleResize);
+        handleResize(); // Initial check
+
+        return () => {
+            if (window.visualViewport) {
+                window.visualViewport.removeEventListener("resize", handleResize);
+            }
+        };
+    }, []);
+
+    // Styles for the modal container
+    const modalStyle = viewportHeight
+        ? { height: `${viewportHeight}px` }
+        : { height: '100dvh' };
+
     return (
         <>
             {/* --- CLOSED STATE (Floating Bar) --- */}
@@ -678,7 +705,6 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
             </div>
 
             {/* --- OPEN STATE (Overlay Wizard) --- */}
-            {/* --- OPEN STATE (Overlay Wizard) --- */}
             {(typeof document !== 'undefined') && createPortal(
                 <AnimatePresence>
                     {isOpen && (
@@ -692,7 +718,8 @@ const SearchMask: React.FC<SearchMaskProps> = ({ variant = 'default', initialLoc
                                 onClick={() => { setIsOpen(false); onClose?.(); }}
                             />
                             <motion.div
-                                className="fixed inset-0 z-[99999] bg-white h-[100dvh] min-h-0 w-full overflow-hidden flex flex-col"
+                                className="fixed inset-0 z-[99999] bg-white min-h-0 w-full overflow-hidden flex flex-col"
+                                style={modalStyle} // Apply dynamic height here
                                 variants={modalVariants}
                                 initial="hidden"
                                 animate="visible"
